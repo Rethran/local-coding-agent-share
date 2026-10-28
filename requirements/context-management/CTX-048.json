@@ -1,0 +1,129 @@
+{
+  "id": "CTX-048",
+  "type": "task",
+  "summary": "Escape dashboard text and narrow the MCP result",
+  "dependsOn": [
+    "CTX-018",
+    "CTX-047"
+  ],
+  "description": "SEC-15 and SEC-16. Dashboard text is escaped. The public MCP result has only enums and numbers. check_context itself stays as CTX-018 left it.",
+  "scope": [
+    "Script text is escaped and the page has no innerHTML",
+    "The public tool result has four keys and rejects a negative token count"
+  ],
+  "acceptanceCriteria": "escape_text of a script tag returns the escaped form with no raw <script>. index.html does not contain innerHTML. public_tool_result keys are exactly action, reason, tokens_saved_est, and tokens_potential_est. used_tokens -1 raises ValueError. SEC-15 SEC-16.",
+  "constraints": [
+    "Do not render model text as HTML.",
+    "Do not add license or admin tools to the MCP server.",
+    "Do not change the return type of check_context."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_048_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_048_1_escape.py -q -k CTX_048_1",
+    "python -m pytest tests/test_ctx_048_2_result.py -q -k CTX_048_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-048.1",
+      "title": "Escape text and avoid innerHTML",
+      "summary": "A script tag is escaped, and index.html does not contain innerHTML.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/html_text.py",
+        "test": "tests/test_ctx_048_1_escape.py",
+        "function": "escape_text"
+      },
+      "scope": [
+        "<script> becomes &lt;script&gt;",
+        "index.html has no innerHTML"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_048_1_escape.py -q -k CTX_048_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_048_1.",
+        "This subtask's only job: A script tag is escaped, and index.html does not contain innerHTML.",
+        "Touch only src/context_mgmt/html_text.py and tests/test_ctx_048_1_escape.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Read static/index.html as text for the innerHTML assertion.",
+        "Run python -m pytest tests/test_ctx_048_1_escape.py -q -k CTX_048_1."
+      ],
+      "dataExamples": [
+        {
+          "raw": "<script>alert(1)</script>",
+          "escaped": "&lt;script&gt;alert(1)&lt;/script&gt;"
+        }
+      ],
+      "businessRules": [
+        "SEC-15: content is plain text."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "static/index.html",
+          "purpose": "Dashboard page. Do not add innerHTML."
+        }
+      ]
+    },
+    {
+      "id": "CTX-048.2",
+      "title": "Return only enums and numbers",
+      "summary": "public_tool_result has the four keys, and a negative used_tokens raises ValueError.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/mcp_server.py",
+        "test": "tests/test_ctx_048_2_result.py",
+        "function": "public_tool_result"
+      },
+      "scope": [
+        "Exact key set",
+        "reason is an enum code",
+        "used_tokens -1 raises ValueError"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_048_2_result.py -q -k CTX_048_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_048_2.",
+        "This subtask's only job: public_tool_result has the four keys, and a negative used_tokens raises ValueError.",
+        "Touch only src/context_mgmt/mcp_server.py and tests/test_ctx_048_2_result.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Do not include a sentence in the result. Keep check_context working for CTX-018.",
+        "Run python -m pytest tests/test_ctx_048_2_result.py -q -k CTX_048_2."
+      ],
+      "dataExamples": [
+        {
+          "keys": [
+            "action",
+            "reason",
+            "tokens_saved_est",
+            "tokens_potential_est"
+          ],
+          "bad_used_tokens": -1
+        }
+      ],
+      "businessRules": [
+        "SEC-16: the only developer tool result is enums and numbers."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/html_text.py",
+      "src/context_mgmt/mcp_server.py"
+    ],
+    "businessRules": [
+      "Reason codes stay the rule-engine codes, not free text."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_048_1_escape.py -q -k CTX_048_1",
+      "python -m pytest tests/test_ctx_048_2_result.py -q -k CTX_048_2"
+    ]
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "id": "GRAPH-026",
+  "type": "task",
+  "summary": "Find all descendants of a node",
+  "dependsOn": [
+    "GRAPH-010"
+  ],
+  "description": "Given a fixed edge list and a target node, return every node that the target calls directly or transitively.",
+  "scope": [
+    "Add descendants(edges, target_id) in src/living_graph/query.py",
+    "Use a tiny in-memory chain A -> B -> C",
+    "descendants of B is {C}",
+    "Do not include the target itself"
+  ],
+  "acceptanceCriteria": "descendants(edges, 'B') for A->B and B->C returns C only, not A.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-027.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not compute ancestors.",
+    "Do not compute a highlight set."
+  ],
+  "verification": [
+    "python -m pytest tests/test_descendants.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-026.1",
+      "title": "Return transitive callees",
+      "summary": "Descendants only. Do not include the target. No ancestors.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "descendants",
+        "module": "src/living_graph/query.py",
+        "test": "tests/test_descendants.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "src/living_graph/model.py",
+          "purpose": "GRAPH-002 Node and Edge contracts."
+        }
+      ],
+      "scope": [
+        "Add descendants(edges, target_id) in src/living_graph/query.py",
+        "Use a tiny in-memory chain A -> B -> C",
+        "descendants of B is {C}",
+        "Do not include the target itself"
+      ],
+      "dataExamples": [
+        "Edges: A -> B, B -> C.",
+        "descendants(B) is [C] or {C}.",
+        "descendants(C) is empty."
+      ],
+      "businessRules": [
+        "Walk outgoing edges transitively.",
+        "Return a set or sorted unique ids."
+      ],
+      "verification": [
+        "python -m pytest tests/test_descendants.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_descendants.py first.",
+        "Run python -m pytest tests/test_descendants.py -q and confirm failure.",
+        "Implement only descendants in src/living_graph/query.py.",
+        "Run python -m pytest tests/test_descendants.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/query.py"
+    ],
+    "businessRules": [
+      "Walk outgoing edges transitively.",
+      "Return a set or sorted unique ids."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_descendants.py -q"
+    ]
+  }
+}

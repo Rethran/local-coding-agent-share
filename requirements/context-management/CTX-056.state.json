@@ -1,0 +1,38 @@
+{
+  "taskId": "CTX-056",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-07T17:25:46+00:00",
+  "updatedAt": "2026-10-07T17:28:17+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "CTX-056.1",
+      "title": "Return the local preset",
+      "status": "DONE",
+      "summary": "Writing failing tests for local preset (CTX_056_1)."
+    },
+    {
+      "id": "CTX-056.2",
+      "title": "Reject a GPU library",
+      "status": "DONE",
+      "summary": "Implementing no_gpu_dependency in src/context_mgmt/deploy.py"
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

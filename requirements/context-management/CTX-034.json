@@ -1,0 +1,80 @@
+{
+  "id": "CTX-034",
+  "type": "task",
+  "summary": "Log license decisions without content or user ids",
+  "dependsOn": [
+    "CTX-033"
+  ],
+  "description": "FR-C7-18, P6, and T3. A license log line contains license_id, state, and reason only. A context dict that holds a prompt or a user id is ignored.",
+  "scope": [
+    "The line contains lic-1, expired, and past_grace",
+    "SECRET-PROMPT and alice are absent"
+  ],
+  "acceptanceCriteria": "license_log_line('lic-1', 'expired', 'past_grace', context) equals 'lic-1 expired past_grace'. The context holds prompt SECRET-PROMPT and user_id alice, and neither string appears in the line. FR-C7-18 P6 T3.",
+  "constraints": [
+    "Do not interpolate context values into the log line.",
+    "Do not log prompt text.",
+    "Do not log a raw or hashed user id."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_034_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_034_1_log.py -q -k CTX_034_1"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-034.1",
+      "title": "Write the three license fields",
+      "summary": "The log line is lic-1 expired past_grace and drops the prompt and the user id.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/license.py",
+        "test": "tests/test_ctx_034_1_log.py",
+        "function": "license_log_line"
+      },
+      "scope": [
+        "Line equals lic-1 expired past_grace",
+        "SECRET-PROMPT absent",
+        "alice absent"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_034_1_log.py -q -k CTX_034_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_034_1.",
+        "This subtask's only job: The log line is lic-1 expired past_grace and drops the prompt and the user id.",
+        "Touch only src/context_mgmt/license.py and tests/test_ctx_034_1_log.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Pass the context dict. Assert both forbidden strings are absent.",
+        "Run python -m pytest tests/test_ctx_034_1_log.py -q -k CTX_034_1."
+      ],
+      "dataExamples": [
+        {
+          "line": "lic-1 expired past_grace",
+          "prompt": "SECRET-PROMPT",
+          "user_id": "alice"
+        }
+      ],
+      "businessRules": [
+        "T3. License logs are metadata only."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/license.py"
+    ],
+    "businessRules": [
+      "P6: logs store the verdict, not content."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_034_1_log.py -q -k CTX_034_1"
+    ]
+  }
+}

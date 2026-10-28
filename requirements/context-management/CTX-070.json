@@ -1,0 +1,145 @@
+{
+  "id": "CTX-070",
+  "type": "task",
+  "summary": "List model ids on the data plane",
+  "dependsOn": [
+    "CTX-009",
+    "CTX-040"
+  ],
+  "description": "FR-C1-11 and SEC-01. GET /v1/models returns the configured model ids and nothing else. When the route is switched off, it returns the same generic 404 as every other undefined data-plane path.",
+  "scope": [
+    "An enabled route lists the profile ids",
+    "A disabled route is the generic 404"
+  ],
+  "acceptanceCriteria": "models_response(['qwen3:8b'], True) returns status 200, object list, and data [{id: qwen3:8b, object: model}]. The result has no license key and no url. models_response(['qwen3:8b'], False) returns status 404, code not_found, and message Not found. That body does not contain qwen3:8b. FR-C1-11 SEC-01 SEC-03.",
+  "constraints": [
+    "Do not include license, version, upstream URL, or auth in the model list.",
+    "Do not add a Server or X-Powered-By header.",
+    "Do not change the generic 404 body used by CTX-040."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_070_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_070_1_list.py -q -k CTX_070_1",
+    "python -m pytest tests/test_ctx_070_2_off.py -q -k CTX_070_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-070.1",
+      "title": "Return the configured model ids",
+      "summary": "An enabled list contains qwen3:8b and no license or url.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/models_route.py",
+        "test": "tests/test_ctx_070_1_list.py",
+        "function": "models_response"
+      },
+      "scope": [
+        "status 200",
+        "id qwen3:8b",
+        "no license key",
+        "no url"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_070_1_list.py -q -k CTX_070_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_070_1.",
+        "This subtask's only job: An enabled list contains qwen3:8b and no license or url.",
+        "Touch only src/context_mgmt/models_route.py and tests/test_ctx_070_1_list.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "models_response(model_ids, enabled) returns a dict. Each data item has only id and object model.",
+        "Assert license is not a key and the JSON text does not contain http.",
+        "Run python -m pytest tests/test_ctx_070_1_list.py -q -k CTX_070_1."
+      ],
+      "dataExamples": [
+        {
+          "input": {
+            "model_ids": [
+              "qwen3:8b"
+            ],
+            "enabled": true
+          },
+          "output": {
+            "status": 200,
+            "object": "list",
+            "data": [
+              {
+                "id": "qwen3:8b",
+                "object": "model"
+              }
+            ]
+          }
+        }
+      ],
+      "businessRules": [
+        "FR-C1-11: the data plane lists profile model ids and nothing else. SEC-03: no layer details."
+      ]
+    },
+    {
+      "id": "CTX-070.2",
+      "title": "Hide the route when it is switched off",
+      "summary": "A disabled list is the generic 404 and does not echo the model id.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/models_route.py",
+        "test": "tests/test_ctx_070_2_off.py",
+        "function": "models_response"
+      },
+      "scope": [
+        "status 404",
+        "code not_found",
+        "message Not found.",
+        "body does not contain qwen3:8b"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_070_2_off.py -q -k CTX_070_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_070_2.",
+        "This subtask's only job: A disabled list is the generic 404 and does not echo the model id.",
+        "Touch only src/context_mgmt/models_route.py and tests/test_ctx_070_2_off.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Use the same code, message, and status as the CTX-040 generic 404.",
+        "Assert the text qwen3:8b is absent.",
+        "Run python -m pytest tests/test_ctx_070_2_off.py -q -k CTX_070_2."
+      ],
+      "dataExamples": [
+        {
+          "input": {
+            "model_ids": [
+              "qwen3:8b"
+            ],
+            "enabled": false
+          },
+          "output": {
+            "status": 404,
+            "code": "not_found",
+            "message": "Not found."
+          }
+        }
+      ],
+      "businessRules": [
+        "FR-C1-11: the route can be switched off. SEC-02: a switched-off path is indistinguishable from an unknown path."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/models_route.py"
+    ],
+    "businessRules": [
+      "Enabled data items are id and object only. Disabled returns status 404, code not_found, message Not found."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_070_1_list.py -q -k CTX_070_1",
+      "python -m pytest tests/test_ctx_070_2_off.py -q -k CTX_070_2"
+    ]
+  }
+}

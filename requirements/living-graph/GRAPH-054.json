@@ -1,0 +1,82 @@
+{
+  "id": "GRAPH-054",
+  "type": "task",
+  "summary": "Lock camera pitch — orbit into depth is the remaining seasick cause",
+  "dependsOn": [
+    "GRAPH-053"
+  ],
+  "description": "Bug: even with a planar graph, OrbitControls let the camera pitch. zoomToFit and drag tilt the view so the xy plane is seen on edge; nodes then stack in screen-depth and the user feels motion-sick. Lock minPolarAngle and maxPolarAngle to Math.PI / 2 so the camera stays face-on. Keep zoom and pan. Do not enable autoRotate.",
+  "scope": [
+    "After ForceGraph3D is created, set controls minPolarAngle and maxPolarAngle to Math.PI / 2",
+    "Keep zoomToFit",
+    "Do not enable auto-rotate"
+  ],
+  "acceptanceCriteria": "viewer.js contains minPolarAngle, maxPolarAngle, and Math.PI / 2.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not add work beyond this task.",
+    "Do not add a watcher or CLI unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not add autoRotate.",
+    "Do not add npm or a bundler."
+  ],
+  "verification": [
+    "python -m pytest tests/test_camera_plane.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-054.1",
+      "title": "Lock polar angle to the horizon",
+      "summary": "Face-on camera. No pitch. File-content tests. Problem is orbit pitching into depth.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "viewer.js",
+        "module": "src/living_graph/static/viewer.js",
+        "test": "tests/test_camera_plane.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "src/living_graph/static/viewer.js",
+          "purpose": "GRAPH-053 2D layout. Camera still pitches unless polar angle is locked."
+        }
+      ],
+      "scope": [
+        "After ForceGraph3D is created, set controls minPolarAngle and maxPolarAngle to Math.PI / 2",
+        "Keep zoomToFit",
+        "Do not enable auto-rotate"
+      ],
+      "dataExamples": [
+        "controls().minPolarAngle = Math.PI / 2.",
+        "controls().maxPolarAngle = Math.PI / 2.",
+        "Do not set autoRotate true."
+      ],
+      "businessRules": [
+        "Tests read JS as text. Do not use a browser.",
+        "Do not set autoRotate to true.",
+        "Pitch lock is the last seasick fix; pan and zoom stay."
+      ],
+      "verification": [
+        "python -m pytest tests/test_camera_plane.py -q"
+      ],
+      "instructions": [
+        "Add polar-angle assertions to tests/test_camera_plane.py.",
+        "Run python -m pytest tests/test_camera_plane.py -q and confirm failure.",
+        "Lock minPolarAngle and maxPolarAngle in viewer.js.",
+        "Run python -m pytest tests/test_camera_plane.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/static/viewer.js"
+    ],
+    "businessRules": [
+      "Tests read JS as text. Do not use a browser.",
+      "Do not set autoRotate to true.",
+      "Pitch lock is the last seasick fix; pan and zoom stay."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_camera_plane.py -q"
+    ]
+  }
+}

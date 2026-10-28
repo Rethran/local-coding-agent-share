@@ -1,0 +1,124 @@
+{
+  "id": "CTX-081",
+  "type": "task",
+  "summary": "Install the ctx command",
+  "dependsOn": [
+    "CTX-080"
+  ],
+  "description": "ctx is a command with init, serve, mcp, and config. python -m context_mgmt reaches the same main.",
+  "scope": [
+    "command_names returns init, serve, mcp, config",
+    "pyproject.toml registers the ctx script"
+  ],
+  "acceptanceCriteria": "command_names() is ['init', 'serve', 'mcp', 'config']. pyproject.toml contains ctx = \"context_mgmt.cli:main\". python -m context_mgmt calls main.",
+  "constraints": [
+    "Use argparse. Do not add a dependency for the CLI.",
+    "Stub subcommands may return 0. Later tasks fill them in.",
+    "Do not bind a public address."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_081_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_081_1_commands.py -q -k CTX_081_1",
+    "python -m pytest tests/test_ctx_081_2_script.py -q -k CTX_081_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-081.1",
+      "title": "List the local commands",
+      "summary": "command_names returns init, serve, mcp, and config, in that order.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/cli.py",
+        "test": "tests/test_ctx_081_1_commands.py",
+        "function": "command_names"
+      },
+      "scope": [
+        "init",
+        "serve",
+        "mcp",
+        "config"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_081_1_commands.py -q -k CTX_081_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_081_1.",
+        "This subtask's only job: command_names returns init, serve, mcp, and config, in that order.",
+        "Touch src/context_mgmt/cli.py, src/context_mgmt/__main__.py, and tests/test_ctx_081_1_commands.py.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "main(argv) uses argparse subparsers for those four names. Each stub returns 0.",
+        "__main__.py calls sys.exit(main()).",
+        "The test must call command_names.",
+        "Run python -m pytest tests/test_ctx_081_1_commands.py -q -k CTX_081_1."
+      ],
+      "dataExamples": [
+        {
+          "input": {},
+          "output": [
+            "init",
+            "serve",
+            "mcp",
+            "config"
+          ]
+        }
+      ],
+      "businessRules": [
+        "The four commands are the local test surface."
+      ]
+    },
+    {
+      "id": "CTX-081.2",
+      "title": "Register the ctx script",
+      "summary": "pyproject.toml maps ctx to context_mgmt.cli:main.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "pyproject.toml",
+        "test": "tests/test_ctx_081_2_script.py"
+      },
+      "scope": [
+        "project script ctx"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_081_2_script.py -q -k CTX_081_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_081_2.",
+        "This subtask's only job: pyproject.toml maps ctx to context_mgmt.cli:main.",
+        "Touch only pyproject.toml and tests/test_ctx_081_2_script.py.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Add [project.scripts] with ctx = \"context_mgmt.cli:main\".",
+        "The test reads pyproject.toml as text.",
+        "Run python -m pytest tests/test_ctx_081_2_script.py -q -k CTX_081_2."
+      ],
+      "dataExamples": [
+        {
+          "required": "ctx = \"context_mgmt.cli:main\""
+        }
+      ],
+      "businessRules": [
+        "pip install -e . exposes ctx."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/cli.py",
+      "src/context_mgmt/__main__.py",
+      "pyproject.toml"
+    ],
+    "businessRules": [
+      "argparse commands init, serve, mcp, config. Script entry ctx."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_081_1_commands.py -q -k CTX_081_1",
+      "python -m pytest tests/test_ctx_081_2_script.py -q -k CTX_081_2"
+    ]
+  }
+}

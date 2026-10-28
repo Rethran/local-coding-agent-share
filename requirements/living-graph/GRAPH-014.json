@@ -1,0 +1,89 @@
+{
+  "id": "GRAPH-014",
+  "type": "task",
+  "summary": "Serialize graph JSON to the data contract",
+  "dependsOn": [
+    "GRAPH-012"
+  ],
+  "description": "Serialize a small in-memory graph of nodes and edges, including fan_in and fan_out, to the JSON object defined in docs/data-contracts.md.",
+  "scope": [
+    "Add serialize_graph(nodes, edges) in src/living_graph/serialize.py",
+    "Add tests/fixtures/expected_graph.json copied from the docs/data-contracts.md sample",
+    "Assert the function output matches that fixture keys and values"
+  ],
+  "acceptanceCriteria": "serialize_graph(nodes, edges) matches tests/fixtures/expected_graph.json field by field for the Happy Path sample.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-015.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not scan the fixtures folder.",
+    "Do not write a live output path other than returning JSON text or a dict."
+  ],
+  "verification": [
+    "python -m pytest tests/test_serialize_graph.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-014.1",
+      "title": "Match the contract JSON fixture",
+      "summary": "One serialize function. Compare against expected_graph.json. No repo scan.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "serialize_graph",
+        "module": "src/living_graph/serialize.py",
+        "test": "tests/test_serialize_graph.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "docs/data-contracts.md",
+          "purpose": "Node and Edge contract source of truth."
+        },
+        {
+          "path": "tests/fixtures/expected_graph.json",
+          "purpose": "Exact expected serialize_graph output."
+        },
+        {
+          "path": "src/living_graph/model.py",
+          "purpose": "GRAPH-002 Node and Edge contracts."
+        }
+      ],
+      "scope": [
+        "Add serialize_graph(nodes, edges) in src/living_graph/serialize.py",
+        "Add tests/fixtures/expected_graph.json copied from the docs/data-contracts.md sample",
+        "Assert the function output matches that fixture keys and values"
+      ],
+      "dataExamples": [
+        "Sample node id: tests/fixtures/simple_test.robot::Happy Path.",
+        "Sample node fan_out: 2.",
+        "Sample edge caller_name: Happy Path.",
+        "Top-level keys are nodes and edges."
+      ],
+      "businessRules": [
+        "Output is JSON-serializable with keys nodes and edges.",
+        "Paths use forward slashes."
+      ],
+      "verification": [
+        "python -m pytest tests/test_serialize_graph.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_serialize_graph.py first.",
+        "Run python -m pytest tests/test_serialize_graph.py -q and confirm failure.",
+        "Implement only serialize_graph in src/living_graph/serialize.py.",
+        "Run python -m pytest tests/test_serialize_graph.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/serialize.py"
+    ],
+    "businessRules": [
+      "Output is JSON-serializable with keys nodes and edges.",
+      "Paths use forward slashes."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_serialize_graph.py -q"
+    ]
+  }
+}

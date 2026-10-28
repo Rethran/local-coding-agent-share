@@ -1,0 +1,92 @@
+{
+  "id": "CTX-019",
+  "type": "task",
+  "summary": "Post a gateway-shaped event from check_context",
+  "dependsOn": [
+    "CTX-018"
+  ],
+  "description": "FR-C6-02. Each check_context call emits one stored event with the same fields as the gateway, token_source estimate, and no prompt text.",
+  "scope": [
+    "emit is called once",
+    "prompt_tokens equals used_tokens and completion_tokens is 0",
+    "The raw user id is absent"
+  ],
+  "acceptanceCriteria": "check_context(6000, 10000, 10) emits one event with action compact_recommended, prompt_tokens 6000, completion_tokens 0, context_window 10000, token_source estimate, and user_id_hash of test-salt:alice. The event has no content key and does not contain alice. FR-C6-02.",
+  "constraints": [
+    "Do not emit the tool message content.",
+    "Do not skip emit when decide returns none.",
+    "Do not put rule thresholds in this module."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_019_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_019_1_emit.py -q -k CTX_019_1"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-019.1",
+      "title": "Emit one stored event",
+      "summary": "check_context emits a hashed metadata event and returns the decide action.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/mcp_server.py",
+        "test": "tests/test_ctx_019_1_emit.py",
+        "function": "make_check_context"
+      },
+      "scope": [
+        "Capture emit arguments",
+        "Assert token fields and the hash",
+        "Assert one call"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_019_1_emit.py -q -k CTX_019_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_019_1.",
+        "This subtask's only job: check_context emits a hashed metadata event and returns the decide action.",
+        "Touch only src/context_mgmt/mcp_server.py and tests/test_ctx_019_1_emit.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "user_id alice, salt test-salt, provider ollama, model_id qwen3:8b, org_id org-a.",
+        "expected hash is hashlib.sha256(b'test-salt:alice').hexdigest().",
+        "Assert alice and tool-output are absent from json.dumps(event).",
+        "Run python -m pytest tests/test_ctx_019_1_emit.py -q -k CTX_019_1."
+      ],
+      "dataExamples": [
+        {
+          "prompt_tokens": 6000,
+          "completion_tokens": 0,
+          "context_window": 10000,
+          "token_source": "estimate",
+          "action": "compact_recommended"
+        }
+      ],
+      "businessRules": [
+        "FR-C6-02: same stored shape as the gateway event."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/events.py",
+          "purpose": "Event contract and salted user id hash."
+        }
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/mcp_server.py"
+    ],
+    "businessRules": [
+      "Use to_stored_event so the hash and field checks stay in events.py.",
+      "provider and model_id come from make_check_context arguments."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_019_1_emit.py -q -k CTX_019_1"
+    ]
+  }
+}

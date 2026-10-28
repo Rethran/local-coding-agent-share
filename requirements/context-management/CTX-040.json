@@ -1,0 +1,125 @@
+{
+  "id": "CTX-040",
+  "type": "task",
+  "summary": "Split the data plane from the management plane",
+  "dependsOn": [
+    "CTX-031"
+  ],
+  "description": "SEC-01, SEC-02, and SEC-03. The data plane serves chat and a minimal health body. Every other path returns one generic 404. Responses do not advertise the server or the license.",
+  "scope": [
+    "Health is status ok and carries no version",
+    "Unknown paths share one 404 body and hide framework headers"
+  ],
+  "acceptanceCriteria": "GET /health returns 200 and {\"status\": \"ok\"} with no version key. GET /license, GET /docs, and GET /no-such return the same status 404 and the same body, with code not_found. Headers have no server and no x-powered-by. The body does not contain license or version. SEC-01 SEC-02 SEC-03.",
+  "constraints": [
+    "Do not serve OpenAPI, metrics, or license routes on the data plane.",
+    "Do not add a Server or X-Powered-By header.",
+    "Do not remove the existing create_gateway chat route."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_040_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_040_1_health.py -q -k CTX_040_1",
+    "python -m pytest tests/test_ctx_040_2_missing.py -q -k CTX_040_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-040.1",
+      "title": "Serve a minimal health body",
+      "summary": "GET /health returns status ok and no version field.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/planes.py",
+        "test": "tests/test_ctx_040_1_health.py",
+        "function": "create_data_plane"
+      },
+      "scope": [
+        "Status 200",
+        "Body status ok",
+        "No version key"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_040_1_health.py -q -k CTX_040_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_040_1.",
+        "This subtask's only job: GET /health returns status ok and no version field.",
+        "Touch only src/context_mgmt/planes.py and tests/test_ctx_040_1_health.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Use TestClient. Do not start a socket server.",
+        "Run python -m pytest tests/test_ctx_040_1_health.py -q -k CTX_040_1."
+      ],
+      "dataExamples": [
+        {
+          "status": 200,
+          "body": {
+            "status": "ok"
+          }
+        }
+      ],
+      "businessRules": [
+        "SEC-03: the data plane does not describe the layer."
+      ]
+    },
+    {
+      "id": "CTX-040.2",
+      "title": "Return one generic 404",
+      "summary": "The three unknown paths return equal 404 bodies and no server header.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/planes.py",
+        "test": "tests/test_ctx_040_2_missing.py",
+        "function": "create_data_plane"
+      },
+      "scope": [
+        "Paths /license, /docs, and /no-such",
+        "Equal bodies",
+        "No server or x-powered-by header"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_040_2_missing.py -q -k CTX_040_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_040_2.",
+        "This subtask's only job: The three unknown paths return equal 404 bodies and no server header.",
+        "Touch only src/context_mgmt/planes.py and tests/test_ctx_040_2_missing.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Compare response content bytes, not only the status.",
+        "Run python -m pytest tests/test_ctx_040_2_missing.py -q -k CTX_040_2."
+      ],
+      "dataExamples": [
+        {
+          "status": 404,
+          "code": "not_found",
+          "message": "Not found.",
+          "paths": [
+            "/license",
+            "/docs",
+            "/no-such"
+          ]
+        }
+      ],
+      "businessRules": [
+        "SEC-02: undefined data-plane paths are indistinguishable."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/planes.py"
+    ],
+    "businessRules": [
+      "create_management_plane is a separate app. Do not mount it inside create_data_plane."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_040_1_health.py -q -k CTX_040_1",
+      "python -m pytest tests/test_ctx_040_2_missing.py -q -k CTX_040_2"
+    ]
+  }
+}

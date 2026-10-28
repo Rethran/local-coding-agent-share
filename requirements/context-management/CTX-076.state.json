@@ -1,0 +1,32 @@
+{
+  "taskId": "CTX-076",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-14T13:46:39+00:00",
+  "updatedAt": "2026-10-14T13:48:01+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "CTX-076.1",
+      "title": "Hash the plaintext key",
+      "status": "DONE",
+      "summary": "Implementing key_digest in src/context_mgmt/friend_keys.py"
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

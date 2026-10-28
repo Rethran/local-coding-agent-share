@@ -1,0 +1,80 @@
+{
+  "id": "GRAPH-028",
+  "type": "task",
+  "summary": "CLI exit codes for scan success and fatal parse error",
+  "dependsOn": [
+    "GRAPH-016"
+  ],
+  "description": "The command-line entry point exits 0 when a scan writes valid JSON, and exits non-zero when a fixture is malformed enough to be a fatal parse error.",
+  "scope": [
+    "Add main(argv) in src/living_graph/cli.py that scans a root and writes JSON",
+    "Success case: tests/fixtures -> exit code 0 and an output file exists",
+    "Failure case: a tiny malformed fixture raises a fatal parse error -> non-zero exit code"
+  ],
+  "acceptanceCriteria": "Running the CLI against tests/fixtures writes JSON and returns 0. Running it against a malformed fixture returns a non-zero code.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not add work beyond this task.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not add 3D rendering.",
+    "Do not start a watch loop."
+  ],
+  "verification": [
+    "python -m pytest tests/test_cli_exit_codes.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-028.1",
+      "title": "Exit 0 on success, non-zero on fatal parse error",
+      "summary": "CLI wrapper only. Two cases. No watcher and no UI.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "main",
+        "module": "src/living_graph/cli.py",
+        "test": "tests/test_cli_exit_codes.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "src/living_graph/scan.py",
+          "purpose": "write_graph from GRAPH-016."
+        }
+      ],
+      "scope": [
+        "Add main(argv) in src/living_graph/cli.py that scans a root and writes JSON",
+        "Success case: tests/fixtures -> exit code 0 and an output file exists",
+        "Failure case: a tiny malformed fixture raises a fatal parse error -> non-zero exit code"
+      ],
+      "dataExamples": [
+        "argv example: ['--root', 'tests/fixtures', '--output', 'graph.json'].",
+        "Success return is 0.",
+        "Malformed robot file with an unclosed section or invalid syntax returns not 0."
+      ],
+      "businessRules": [
+        "main returns an int exit code; tests do not need to spawn a subprocess if they call main().",
+        "A fatal parse error is an exception from the Robot or Python parser, not an unresolved keyword."
+      ],
+      "verification": [
+        "python -m pytest tests/test_cli_exit_codes.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_cli_exit_codes.py first.",
+        "Run python -m pytest tests/test_cli_exit_codes.py -q and confirm failure.",
+        "Implement only main in src/living_graph/cli.py.",
+        "Run python -m pytest tests/test_cli_exit_codes.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/cli.py"
+    ],
+    "businessRules": [
+      "main returns an int exit code; tests do not need to spawn a subprocess if they call main().",
+      "A fatal parse error is an exception from the Robot or Python parser, not an unresolved keyword."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_cli_exit_codes.py -q"
+    ]
+  }
+}

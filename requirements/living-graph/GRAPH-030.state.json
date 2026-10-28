@@ -1,0 +1,32 @@
+{
+  "taskId": "GRAPH-030",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-09-17T09:35:13+00:00",
+  "updatedAt": "2026-09-17T09:37:26+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "GRAPH-030.1",
+      "title": "Write JSON with computed fan-in and fan-out",
+      "status": "DONE",
+      "summary": "Implementing write_graph metrics calls in scan.py"
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

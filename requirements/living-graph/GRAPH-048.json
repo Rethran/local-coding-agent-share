@@ -1,0 +1,87 @@
+{
+  "id": "GRAPH-048",
+  "type": "task",
+  "summary": "Incremental update uses the same node typing as nodes_from_edges",
+  "dependsOn": [
+    "GRAPH-018",
+    "GRAPH-031",
+    "GRAPH-047"
+  ],
+  "description": "incremental_update rebuilds replacement nodes with _nodes_from_edge_ids, which forces every caller to test_case and ignores .py / .resource rules. Replacement nodes must use nodes_from_edges instead.",
+  "scope": [
+    "Change incremental_update in src/living_graph/scan.py to build replacement nodes with nodes_from_edges(new_edges)",
+    "A replacement .py edge keeps caller type library_keyword",
+    "Kept nodes from other files stay the same objects as GRAPH-019"
+  ],
+  "acceptanceCriteria": "After incremental_update with a simple_library.py edge, the open_session node type is library_keyword and its id is tests/fixtures/simple_library.py::open_session, not a doubled path.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-049.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not start a watcher.",
+    "Do not change GRAPH-018 edge replace/keep behavior."
+  ],
+  "verification": [
+    "python -m pytest tests/test_incremental_node_types.py tests/test_incremental_replace.py tests/test_incremental_unchanged.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-048.1",
+      "title": "Reuse nodes_from_edges in incremental_update",
+      "summary": "Drop _nodes_from_edge_ids or make it call nodes_from_edges. No doubled ids.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "incremental_update",
+        "module": "src/living_graph/scan.py",
+        "test": "tests/test_incremental_node_types.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "src/living_graph/merge.py",
+          "purpose": "nodes_from_edges type rules from GRAPH-031 and GRAPH-047."
+        },
+        {
+          "path": "tests/test_incremental_replace.py",
+          "purpose": "GRAPH-018 edge replace tests must still pass."
+        }
+      ],
+      "scope": [
+        "Change incremental_update in src/living_graph/scan.py to build replacement nodes with nodes_from_edges(new_edges)",
+        "A replacement .py edge keeps caller type library_keyword",
+        "Kept nodes from other files stay the same objects as GRAPH-019"
+      ],
+      "dataExamples": [
+        "Changed path tests/fixtures/simple_library.py.",
+        "New edge open_session -> connect.",
+        "Node id is tests/fixtures/simple_library.py::open_session.",
+        "Node type is library_keyword."
+      ],
+      "businessRules": [
+        "Do not build ids from source_path plus caller_id; use edge.caller_id and edge.callee_id.",
+        "Call nodes_from_edges. Do not copy a second type-switch in scan.py."
+      ],
+      "verification": [
+        "python -m pytest tests/test_incremental_node_types.py tests/test_incremental_replace.py tests/test_incremental_unchanged.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_incremental_node_types.py first.",
+        "Run python -m pytest tests/test_incremental_node_types.py -q and confirm failure against _nodes_from_edge_ids.",
+        "Implement only the incremental_update node rebuild.",
+        "Run python -m pytest tests/test_incremental_node_types.py tests/test_incremental_replace.py tests/test_incremental_unchanged.py -q and stop when they pass."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/scan.py"
+    ],
+    "businessRules": [
+      "Do not build ids from source_path plus caller_id; use edge.caller_id and edge.callee_id.",
+      "Call nodes_from_edges. Do not copy a second type-switch in scan.py."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_incremental_node_types.py tests/test_incremental_replace.py tests/test_incremental_unchanged.py -q"
+    ]
+  }
+}

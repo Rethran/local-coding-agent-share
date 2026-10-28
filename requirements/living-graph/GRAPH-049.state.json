@@ -1,0 +1,32 @@
+{
+  "taskId": "GRAPH-049",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-09-17T12:46:17+00:00",
+  "updatedAt": "2026-09-17T12:54:04+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "GRAPH-049.1",
+      "title": "Drop Robot builtin callees",
+      "status": "DONE",
+      "summary": "Resuming from handoff GRAPH-049-0004. Tests and fixture already written. Need to implement builtin dropping in extract_robot_edges and update test_robot_extractor.py."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

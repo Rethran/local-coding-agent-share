@@ -1,0 +1,196 @@
+{
+  "id": "CTX-077",
+  "type": "task",
+  "summary": "Authorize a bearer friend key",
+  "dependsOn": [
+    "CTX-075",
+    "CTX-076"
+  ],
+  "description": "An active matching bearer key returns the user id. Expired, revoked, missing, and wrong secrets return one identical denial.",
+  "scope": [
+    "Bearer friend-key with a matching digest and an active key returns ann",
+    "Expired, revoked, a missing header, and a wrong secret share one denial"
+  ],
+  "acceptanceCriteria": "authorize_bearer of Bearer friend-key, the SHA-256 of friend-key, ann, a future expiry, revoked false, and now before that expiry returns allowed true and user_id ann. The other four cases return allowed false, user_id null, code access_denied, and the fixed message. Those four results are equal.",
+  "constraints": [
+    "Hash only the token after 'Bearer '. Do not hash the whole header.",
+    "Do not put expired, revoked, or the secret in the denial dict.",
+    "Do not use a different message for each failure."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_077_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_077_1_allow.py -q -k CTX_077_1",
+    "python -m pytest tests/test_ctx_077_2_deny.py -q -k CTX_077_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-077.1",
+      "title": "Accept an active bearer key",
+      "summary": "Bearer friend-key with a matching digest returns ann.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/friend_keys.py",
+        "test": "tests/test_ctx_077_1_allow.py",
+        "function": "authorize_bearer"
+      },
+      "scope": [
+        "Bearer friend-key",
+        "matching digest",
+        "user ann"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_077_1_allow.py -q -k CTX_077_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_077_1.",
+        "This subtask's only job: Bearer friend-key with a matching digest returns ann.",
+        "Touch only src/context_mgmt/friend_keys.py and tests/test_ctx_077_1_allow.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Strip one 'Bearer ' prefix, digest the token with key_digest, and compare it to stored_digest.",
+        "Call key_status. Active and a matching digest returns allowed true, user_id, code null, message null.",
+        "The test must call authorize_bearer.",
+        "Run python -m pytest tests/test_ctx_077_1_allow.py -q -k CTX_077_1."
+      ],
+      "dataExamples": [
+        {
+          "input": {
+            "authorization": "Bearer friend-key",
+            "stored_digest": "c3f39b05cd8145b99d7d26a9633ff6527dc2c635fabc25c738e31f2fe64a7834",
+            "user_id": "ann",
+            "expires_at": "2026-12-01T00:00:00Z",
+            "revoked": false,
+            "now": "2026-10-07T00:00:00Z"
+          },
+          "output": {
+            "allowed": true,
+            "user_id": "ann",
+            "code": null,
+            "message": null
+          }
+        }
+      ],
+      "businessRules": [
+        "The user id comes from the stored key, not from the header."
+      ]
+    },
+    {
+      "id": "CTX-077.2",
+      "title": "Deny every bad key the same way",
+      "summary": "Expired, revoked, a missing header, and a wrong secret return one denial.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/friend_keys.py",
+        "test": "tests/test_ctx_077_2_deny.py",
+        "function": "authorize_bearer"
+      },
+      "scope": [
+        "expired",
+        "revoked",
+        "missing header",
+        "wrong secret",
+        "one denial"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_077_2_deny.py -q -k CTX_077_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_077_2.",
+        "This subtask's only job: Expired, revoked, a missing header, and a wrong secret return one denial.",
+        "Touch only src/context_mgmt/friend_keys.py and tests/test_ctx_077_2_deny.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "The denial is allowed false, user_id null, code access_denied, message 'Access to this service is not available. Contact your administrator.'.",
+        "The four results must be equal. Do not add a field that tells the cases apart.",
+        "The test must call authorize_bearer.",
+        "Run python -m pytest tests/test_ctx_077_2_deny.py -q -k CTX_077_2."
+      ],
+      "dataExamples": [
+        {
+          "input": {
+            "authorization": "Bearer friend-key",
+            "stored_digest": "c3f39b05cd8145b99d7d26a9633ff6527dc2c635fabc25c738e31f2fe64a7834",
+            "user_id": "ann",
+            "expires_at": "2026-10-01T00:00:00Z",
+            "revoked": false,
+            "now": "2026-10-07T00:00:00Z"
+          },
+          "output": {
+            "allowed": false,
+            "user_id": null,
+            "code": "access_denied",
+            "message": "Access to this service is not available. Contact your administrator."
+          }
+        },
+        {
+          "input": {
+            "authorization": "Bearer friend-key",
+            "stored_digest": "c3f39b05cd8145b99d7d26a9633ff6527dc2c635fabc25c738e31f2fe64a7834",
+            "user_id": "ann",
+            "expires_at": "2026-12-01T00:00:00Z",
+            "revoked": true,
+            "now": "2026-10-07T00:00:00Z"
+          },
+          "output": {
+            "allowed": false,
+            "user_id": null,
+            "code": "access_denied",
+            "message": "Access to this service is not available. Contact your administrator."
+          }
+        },
+        {
+          "input": {
+            "authorization": "",
+            "stored_digest": "c3f39b05cd8145b99d7d26a9633ff6527dc2c635fabc25c738e31f2fe64a7834",
+            "user_id": "ann",
+            "expires_at": "2026-12-01T00:00:00Z",
+            "revoked": false,
+            "now": "2026-10-07T00:00:00Z"
+          },
+          "output": {
+            "allowed": false,
+            "user_id": null,
+            "code": "access_denied",
+            "message": "Access to this service is not available. Contact your administrator."
+          }
+        },
+        {
+          "input": {
+            "authorization": "Bearer other-key",
+            "stored_digest": "c3f39b05cd8145b99d7d26a9633ff6527dc2c635fabc25c738e31f2fe64a7834",
+            "user_id": "ann",
+            "expires_at": "2026-12-01T00:00:00Z",
+            "revoked": false,
+            "now": "2026-10-07T00:00:00Z"
+          },
+          "output": {
+            "allowed": false,
+            "user_id": null,
+            "code": "access_denied",
+            "message": "Access to this service is not available. Contact your administrator."
+          }
+        }
+      ],
+      "businessRules": [
+        "Expired, revoked, missing, and wrong secrets are indistinguishable."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/friend_keys.py"
+    ],
+    "businessRules": [
+      "Match the digest, then key_status. Any failure is the same access_denied dict."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_077_1_allow.py -q -k CTX_077_1",
+      "python -m pytest tests/test_ctx_077_2_deny.py -q -k CTX_077_2"
+    ]
+  }
+}

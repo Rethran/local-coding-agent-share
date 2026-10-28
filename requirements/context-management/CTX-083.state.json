@@ -1,0 +1,32 @@
+{
+  "taskId": "CTX-083",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-14T14:08:37+00:00",
+  "updatedAt": "2026-10-14T14:10:45+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "CTX-083.1",
+      "title": "Return the loopback layout",
+      "status": "DONE",
+      "summary": "Implementing init_layout in src/context_mgmt/init_cmd.py"
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

@@ -1,0 +1,123 @@
+{
+  "id": "CTX-028",
+  "type": "task",
+  "summary": "Disable a component that the license does not include",
+  "dependsOn": [
+    "CTX-027"
+  ],
+  "description": "FR-C7-14. A component missing from features is denied. The data plane uses the generic denial. The management plane uses code feature_not_licensed.",
+  "scope": [
+    "A listed feature is allowed",
+    "Data-plane denial matches the generic body",
+    "Management-plane denial uses feature_not_licensed"
+  ],
+  "acceptanceCriteria": "features [gateway] allows component gateway. Component mcp on the data plane returns allowed false, code access_denied, and the generic message. The same component on the management plane returns code feature_not_licensed. FR-C7-14 SEC-05.",
+  "constraints": [
+    "Do not put the specific feature code on the data-plane result.",
+    "Do not allow a component that is absent from features.",
+    "Do not include license expiry text in the denial."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_028_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_028_1_allow.py -q -k CTX_028_1",
+    "python -m pytest tests/test_ctx_028_2_deny.py -q -k CTX_028_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-028.1",
+      "title": "Allow a licensed component",
+      "summary": "feature_decision for gateway with features [gateway] returns allowed true.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/license.py",
+        "test": "tests/test_ctx_028_1_allow.py",
+        "function": "feature_decision"
+      },
+      "scope": [
+        "component gateway",
+        "features contains gateway",
+        "allowed true"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_028_1_allow.py -q -k CTX_028_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_028_1.",
+        "This subtask's only job: feature_decision for gateway with features [gateway] returns allowed true.",
+        "Touch only src/context_mgmt/license.py and tests/test_ctx_028_1_allow.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Call feature_decision(features, component, plane).",
+        "Run python -m pytest tests/test_ctx_028_1_allow.py -q -k CTX_028_1."
+      ],
+      "dataExamples": [
+        {
+          "features": [
+            "gateway"
+          ],
+          "component": "gateway",
+          "allowed": true
+        }
+      ],
+      "businessRules": [
+        "Listed features are enabled."
+      ]
+    },
+    {
+      "id": "CTX-028.2",
+      "title": "Deny an unlicensed component differently per plane",
+      "summary": "mcp is access_denied on the data plane and feature_not_licensed on the management plane.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/license.py",
+        "test": "tests/test_ctx_028_2_deny.py",
+        "function": "feature_decision"
+      },
+      "scope": [
+        "Data plane code access_denied and the generic message",
+        "Management plane code feature_not_licensed",
+        "Neither body contains the word expired"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_028_2_deny.py -q -k CTX_028_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_028_2.",
+        "This subtask's only job: mcp is access_denied on the data plane and feature_not_licensed on the management plane.",
+        "Touch only src/context_mgmt/license.py and tests/test_ctx_028_2_deny.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Assert the two codes differ.",
+        "Run python -m pytest tests/test_ctx_028_2_deny.py -q -k CTX_028_2."
+      ],
+      "dataExamples": [
+        {
+          "component": "mcp",
+          "data_code": "access_denied",
+          "management_code": "feature_not_licensed",
+          "message": "Access to this service is not available. Contact your administrator."
+        }
+      ],
+      "businessRules": [
+        "FR-C7-14 splits the data plane from the management plane."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/license.py"
+    ],
+    "businessRules": [
+      "Data-plane denials stay indistinguishable."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_028_1_allow.py -q -k CTX_028_1",
+      "python -m pytest tests/test_ctx_028_2_deny.py -q -k CTX_028_2"
+    ]
+  }
+}

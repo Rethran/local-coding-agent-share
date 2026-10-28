@@ -1,0 +1,83 @@
+{
+  "name": "Context Management",
+  "projectName": "Context Management",
+  "workspaceRoot": "C:\\Users\\santt\\Desktop\\context-management",
+  "requirementsDir": "C:\\Users\\santt\\Desktop\\local-coding-agent\\requirements\\context-management",
+  "taskPrefix": "CTX",
+  "defaultModel": "night-runner:latest",
+  "defaultFromId": "CTX-001",
+  "defaultToId": "CTX-004",
+  "autoPush": false,
+  "implementationPrefixes": [
+    "src/",
+    "tests/",
+    "static/"
+  ],
+  "readFileAllowedPrefixes": [
+    "src/",
+    "tests/",
+    "static/"
+  ],
+  "readFileAllowedSuffixes": [
+    ".py",
+    ".html",
+    ".js",
+    ".css",
+    ".toml",
+    ".json",
+    ".md",
+    ".txt",
+    ".yml",
+    ".yaml"
+  ],
+  "legacyPrefixes": [],
+  "promptGuidance": "Implement exactly the active CTX subtask. Use the subtask dataExamples as the contract. Keep decide a pure function. Do not add a telemetry client, a frontend build, or a second service.",
+  "taskPromptGuidance": [
+    {
+      "from": "CTX-002",
+      "to": "CTX-004",
+      "guidance": "Rule engine slice. Precedence is R3, then R2, then R1, else none. Do not open the network or a database."
+    },
+    {
+      "from": "CTX-009",
+      "to": "CTX-013",
+      "guidance": "Gateway slice. Call the injected httpx client. When decide returns trim, forward decide messages. If decide or emit raises, return the upstream response unchanged."
+    },
+    {
+      "from": "CTX-014",
+      "to": "CTX-015",
+      "guidance": "Dashboard slice. Edit static/index.html only for markup. Tests read GET /. Do not add npm or a framework."
+    },
+    {
+      "from": "CTX-022",
+      "to": "CTX-022",
+      "guidance": "Event contract slice. Store tokens_potential_est and source only when the payload includes them. Payloads that omit them keep the CTX-005 stored keys."
+    },
+    {
+      "from": "CTX-023",
+      "to": "CTX-035",
+      "guidance": "License slice. license_state is a pure function. Block only on a verified blocked verdict. An unreachable revocation server must not change state. Do not put a private key in the package."
+    },
+    {
+      "from": "CTX-036",
+      "to": "CTX-039",
+      "guidance": "Savings slice. Session totals stay in memory. Realized and potential savings are separate estimates and are never added together."
+    },
+    {
+      "from": "CTX-040",
+      "to": "CTX-055",
+      "guidance": "Security slice. Data-plane denials use one generic body. Do not reveal license state, stack traces, or upstream URLs. Do not change hash_user_id."
+    },
+    {
+      "from": "CTX-056",
+      "to": "CTX-069",
+      "guidance": "Deployment and proof slice. Presets are configuration data. Do not call a real model, ZAP, Nuitka, or a cloud API."
+    },
+    {
+      "from": "CTX-070",
+      "to": "CTX-074",
+      "guidance": "v0.5 portability slice. GET /v1/models lists profile ids only. Unknown model ids use the default profile and are not rejected. The tool cap is the smaller of 4000 and 10 percent of the served window when context_window is present. Streaming requests ask for usage. Pre-flight token estimates run before the upstream call. Do not change CTX-003 when context_window is absent."
+    }
+  ],
+  "knowledgePacks": []
+}

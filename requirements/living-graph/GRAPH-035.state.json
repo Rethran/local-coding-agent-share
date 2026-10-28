@@ -1,0 +1,32 @@
+{
+  "taskId": "GRAPH-035",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-09-17T11:06:22+00:00",
+  "updatedAt": "2026-09-17T11:08:18+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "GRAPH-035.1",
+      "title": "Write static/graph-force.json",
+      "status": "DONE",
+      "summary": "Implementing publish_force_graph in src/living_graph/render.py. Tests already exist from prior session."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

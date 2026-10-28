@@ -1,0 +1,38 @@
+{
+  "taskId": "CTX-062",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-07T17:50:11+00:00",
+  "updatedAt": "2026-10-07T17:52:28+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "CTX-062.1",
+      "title": "Keep the model off the public bind",
+      "status": "DONE",
+      "summary": "Adding model_port/data_port to local preset and model_url to cloud preset."
+    },
+    {
+      "id": "CTX-062.2",
+      "title": "Keep the observer off the request path",
+      "status": "DONE",
+      "summary": "Adding observer_on_request_path: False to local and cloud presets."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

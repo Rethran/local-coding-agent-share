@@ -1,0 +1,80 @@
+{
+  "id": "CTX-076",
+  "type": "task",
+  "summary": "Digest a friend key",
+  "dependsOn": [
+    "CTX-075"
+  ],
+  "description": "Store and compare only the SHA-256 hex of the friend key. Do not invent a hash.",
+  "scope": [
+    "friend-key digests to its SHA-256 hex"
+  ],
+  "acceptanceCriteria": "key_digest('friend-key') is c3f39b05cd8145b99d7d26a9633ff6527dc2c635fabc25c738e31f2fe64a7834.",
+  "constraints": [
+    "Use hashlib.sha256. Do not use a custom hash.",
+    "Return the hex digest, not the raw bytes.",
+    "Do not log the plaintext."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_076_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_076_1_digest.py -q -k CTX_076_1"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-076.1",
+      "title": "Hash the plaintext key",
+      "summary": "friend-key returns its SHA-256 hex digest.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/friend_keys.py",
+        "test": "tests/test_ctx_076_1_digest.py",
+        "function": "key_digest"
+      },
+      "scope": [
+        "plain friend-key",
+        "sha256 hex"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_076_1_digest.py -q -k CTX_076_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_076_1.",
+        "This subtask's only job: friend-key returns its SHA-256 hex digest.",
+        "Touch only src/context_mgmt/friend_keys.py and tests/test_ctx_076_1_digest.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "key_digest(plain) returns hashlib.sha256(plain.encode('utf-8')).hexdigest().",
+        "The test must call key_digest.",
+        "Run python -m pytest tests/test_ctx_076_1_digest.py -q -k CTX_076_1."
+      ],
+      "dataExamples": [
+        {
+          "input": {
+            "plain": "friend-key"
+          },
+          "output": "c3f39b05cd8145b99d7d26a9633ff6527dc2c635fabc25c738e31f2fe64a7834"
+        }
+      ],
+      "businessRules": [
+        "Only the hex digest is stored."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/friend_keys.py"
+    ],
+    "businessRules": [
+      "SHA-256 hex of the UTF-8 plaintext."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_076_1_digest.py -q -k CTX_076_1"
+    ]
+  }
+}

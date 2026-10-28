@@ -1,0 +1,195 @@
+{
+  "schema": "eval-report/v1",
+  "createdAt": "2026-09-30T19:57:17+00:00",
+  "sourceLog": "evals.runner",
+  "model": "night-runner:latest",
+  "promptVariant": "v2",
+  "criteria": {
+    "subtask_done": {
+      "what": "The orchestrator marked the pinned subtask DONE after the independent verifier passed.",
+      "why": "This is the outcome that matters: the agent's own declared verification succeeded and the coordinator agreed. A fluent transcript that never reaches DONE is still a failure.",
+      "how": "Code. Read the copied requirements <task_id>.state.json after the run. Pass iff the matching subtask status is DONE.",
+      "grader": "code"
+    },
+    "reference_tests_pass": {
+      "what": "Tests from the historically accepted commit still pass against the code the agent just wrote.",
+      "why": "The agent's own tests can be too weak or accidentally rewritten. Overlaying the accepted commit's test files is a cheap substitute for hidden tests. These are regression tests, not independently authored hidden tests.",
+      "how": "Code. After the agent finishes, overlay tests/ files from accepted_commit, then run pytest on those paths in the worktree.",
+      "grader": "code"
+    },
+    "process_budget": {
+      "what": "The agent finished without looping, blowing the step budget, or drowning in tool errors.",
+      "why": "Local models often fail on process before they fail on correctness. A pass that took 80 identical read_file calls is not a prompt you want to keep.",
+      "how": "Code, from run_summary.json. Fail if attempts > 10, steps > 160, any identical tool fingerprint repeats more than 5 times, or tool error rate > 40%.",
+      "grader": "code",
+      "thresholds": {
+        "max_attempts": 10,
+        "max_steps": 160,
+        "max_repeat_of_one_call": 5,
+        "max_tool_error_rate": 0.4
+      }
+    }
+  },
+  "summary": {
+    "scorers": {
+      "process_budget": {
+        "passRate": 1.0,
+        "stderr": 0.0,
+        "n": 3,
+        "passed": 3,
+        "delta": null
+      },
+      "reference_tests_pass": {
+        "passRate": 0.0,
+        "stderr": 0.0,
+        "n": 3,
+        "passed": 0,
+        "delta": null
+      },
+      "subtask_done": {
+        "passRate": 0.0,
+        "stderr": 0.0,
+        "n": 3,
+        "passed": 0,
+        "delta": null
+      }
+    },
+    "p95WallSeconds": 0.0,
+    "meanWallSeconds": 0.0,
+    "totalTokens": 0,
+    "nTrials": 3,
+    "nSamples": 3
+  },
+  "failures": [
+    {
+      "sampleId": "GRAPH-011.1",
+      "epoch": 1,
+      "title": "Count distinct callers",
+      "input": "Implement GRAPH-011.1: Count distinct callers. fan_in only. Distinct caller_id values. No fan-out.",
+      "criterion": "subtask_done",
+      "explanation": "Subtask GRAPH-011.1 status=FAILED. dry_run",
+      "stopReason": "exit=1"
+    },
+    {
+      "sampleId": "GRAPH-011.1",
+      "epoch": 1,
+      "title": "Count distinct callers",
+      "input": "Implement GRAPH-011.1: Count distinct callers. fan_in only. Distinct caller_id values. No fan-out.",
+      "criterion": "reference_tests_pass",
+      "explanation": "Gold tests failed (exit 1).\nFFF                                                                      [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n___ TestComputeFanIn.test_callee_fan_in_counts_distinct_callers_GRAPH_011_1 ___\ntests\\test_fan_in.py:30: in test_callee_fan_in_counts_distinct_callers_GRAPH_011_1\n    from src.living_graph.metrics import compute_fan_in\nE   ModuleNotFoundError: No module named 'src.living_graph.metrics'\n_ TestComputeFanIn.test_node_without_incoming_edges_has_fan_in_zero_GRAPH_011_1 _\ntests\\test_fan_in.py:47: in test_node_without_incoming_edges_has_fan_in_zero_GRAPH_011_1\n    from src.living_graph.metrics import compute_fan_in\nE   ModuleNotFoundError: No module named 'src.living_graph.metrics'\n________ TestComputeFanIn.test_duplicate_edges_count_once_GRAPH_011_1 _________\ntests\\test_fan_in.py:60: in test_duplicate_edges_count_once_GRAPH_011_1\n    from src.living_graph.metrics import compute_fan_in\nE   ModuleNotFoundError: No module named 'src.living_graph.metrics'\n=========================== short test summary info ===========================\nFAILED tests/test_fan_in.py::TestComputeFanIn::test_callee_fan_in_counts_distinct_callers_GRAPH_011_1\nFAILED tests/test_fan_in.py::TestComputeFanIn::test_node_without_incoming_edges_has_fan_in_zero_GRAPH_011_1\nFAILED tests/test_fan_in.py::TestComputeFanIn::test_duplicate_edges_count_once_GRAPH_011_1\n3 failed in 0.12s\n\n",
+      "stopReason": "exit=1"
+    },
+    {
+      "sampleId": "GRAPH-013.1",
+      "epoch": 1,
+      "title": "True on a two-node cycle, False on a chain",
+      "input": "Implement GRAPH-013.1: True on a two-node cycle, False on a chain. One boolean function. Two tiny in-memory graphs. No serialization.",
+      "criterion": "subtask_done",
+      "explanation": "Subtask GRAPH-013.1 status=FAILED. dry_run",
+      "stopReason": "exit=1"
+    },
+    {
+      "sampleId": "GRAPH-013.1",
+      "epoch": 1,
+      "title": "True on a two-node cycle, False on a chain",
+      "input": "Implement GRAPH-013.1: True on a two-node cycle, False on a chain. One boolean function. Two tiny in-memory graphs. No serialization.",
+      "criterion": "reference_tests_pass",
+      "explanation": "Gold tests failed (exit 1).\nFF                                                                       [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n__________ TestHasCycle.test_two_node_cycle_returns_true_GRAPH_013_1 __________\ntests\\test_cycles.py:20: in test_two_node_cycle_returns_true_GRAPH_013_1\n    from src.living_graph.metrics import has_cycle\nE   ImportError: cannot import name 'has_cycle' from 'src.living_graph.metrics' (C:\\Users\\santt\\AppData\\Local\\Temp\\eval-GRAPH-013.1-e1-work-o9b_4k3h\\src\\living_graph\\metrics.py)\n_________ TestHasCycle.test_two_node_chain_returns_false_GRAPH_013_1 __________\ntests\\test_cycles.py:30: in test_two_node_chain_returns_false_GRAPH_013_1\n    from src.living_graph.metrics import has_cycle\nE   ImportError: cannot import name 'has_cycle' from 'src.living_graph.metrics' (C:\\Users\\santt\\AppData\\Local\\Temp\\eval-GRAPH-013.1-e1-work-o9b_4k3h\\src\\living_graph\\metrics.py)\n=========================== short test summary info ===========================\nFAILED tests/test_cycles.py::TestHasCycle::test_two_node_cycle_returns_true_GRAPH_013_1\nFAILED tests/test_cycles.py::TestHasCycle::test_two_node_chain_returns_false_GRAPH_013_1\n2 failed in 0.13s\n\n",
+      "stopReason": "exit=1"
+    },
+    {
+      "sampleId": "GRAPH-047.1",
+      "epoch": 1,
+      "title": "Resource callers are user_keyword",
+      "input": "Implement GRAPH-047.1: Resource callers are user_keyword. Suffix .resource means caller user_keyword. .robot callers stay test_case.",
+      "criterion": "subtask_done",
+      "explanation": "Subtask GRAPH-047.1 status=FAILED. dry_run",
+      "stopReason": "exit=1"
+    },
+    {
+      "sampleId": "GRAPH-047.1",
+      "epoch": 1,
+      "title": "Resource callers are user_keyword",
+      "input": "Implement GRAPH-047.1: Resource callers are user_keyword. Suffix .resource means caller user_keyword. .robot callers stay test_case.",
+      "criterion": "reference_tests_pass",
+      "explanation": "Gold tests failed (exit 1).\nF..F                                                                     [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n______________ test_resource_caller_is_user_keyword_GRAPH_047_1 _______________\ntests\\test_resource_caller_type.py:37: in test_resource_caller_is_user_keyword_GRAPH_047_1\n    assert caller[0].type == \"user_keyword\"\nE   AssertionError: assert 'test_case' == 'user_keyword'\nE     \nE     - user_keyword\nE     + test_case\n_______ test_scan_fixtures_resource_caller_is_user_keyword_GRAPH_047_1 ________\ntests\\test_resource_caller_type.py:86: in test_scan_fixtures_resource_caller_is_user_keyword_GRAPH_047_1\n    assert keyword_one[0].type == \"user_keyword\"\nE   AssertionError: assert 'test_case' == 'user_keyword'\nE     \nE     - user_keyword\nE     + test_case\n=========================== short test summary info ===========================\nFAILED tests/test_resource_caller_type.py::test_resource_caller_is_user_keyword_GRAPH_047_1\nFAILED tests/test_resource_caller_type.py::test_scan_fixtures_resource_caller_is_user_keyword_GRAPH_047_1\n2 failed, 2 passed in 0.21s\n\n",
+      "stopReason": "exit=1"
+    }
+  ],
+  "flaky": [],
+  "trend": [],
+  "trials": [
+    {
+      "sampleId": "GRAPH-011.1",
+      "epoch": 1,
+      "input": "Implement GRAPH-011.1: Count distinct callers. fan_in only. Distinct caller_id values. No fan-out.",
+      "title": "Count distinct callers",
+      "scores": {
+        "subtask_done": {
+          "ok": false,
+          "explanation": "Subtask GRAPH-011.1 status=FAILED. dry_run"
+        },
+        "reference_tests_pass": {
+          "ok": false,
+          "explanation": "Gold tests failed (exit 1).\nFFF                                                                      [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n___ TestComputeFanIn.test_callee_fan_in_counts_distinct_callers_GRAPH_011_1 ___\ntests\\test_fan_in.py:30: in test_callee_fan_in_counts_distinct_callers_GRAPH_011_1\n    from src.living_graph.metrics import compute_fan_in\nE   ModuleNotFoundError: No module named 'src.living_graph.metrics'\n_ TestComputeFanIn.test_node_without_incoming_edges_has_fan_in_zero_GRAPH_011_1 _\ntests\\test_fan_in.py:47: in test_node_without_incoming_edges_has_fan_in_zero_GRAPH_011_1\n    from src.living_graph.metrics import compute_fan_in\nE   ModuleNotFoundError: No module named 'src.living_graph.metrics'\n________ TestComputeFanIn.test_duplicate_edges_count_once_GRAPH_011_1 _________\ntests\\test_fan_in.py:60: in test_duplicate_edges_count_once_GRAPH_011_1\n    from src.living_graph.metrics import compute_fan_in\nE   ModuleNotFoundError: No module named 'src.living_graph.metrics'\n=========================== short test summary info ===========================\nFAILED tests/test_fan_in.py::TestComputeFanIn::test_callee_fan_in_counts_distinct_callers_GRAPH_011_1\nFAILED tests/test_fan_in.py::TestComputeFanIn::test_node_without_incoming_edges_has_fan_in_zero_GRAPH_011_1\nFAILED tests/test_fan_in.py::TestComputeFanIn::test_duplicate_edges_count_once_GRAPH_011_1\n3 failed in 0.12s\n\n"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=0/10, steps=0/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.0/0.4"
+        }
+      },
+      "wallSeconds": 0.0,
+      "tokens": 0,
+      "stopReason": "exit=1",
+      "exitCode": 1
+    },
+    {
+      "sampleId": "GRAPH-013.1",
+      "epoch": 1,
+      "input": "Implement GRAPH-013.1: True on a two-node cycle, False on a chain. One boolean function. Two tiny in-memory graphs. No serialization.",
+      "title": "True on a two-node cycle, False on a chain",
+      "scores": {
+        "subtask_done": {
+          "ok": false,
+          "explanation": "Subtask GRAPH-013.1 status=FAILED. dry_run"
+        },
+        "reference_tests_pass": {
+          "ok": false,
+          "explanation": "Gold tests failed (exit 1).\nFF                                                                       [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n__________ TestHasCycle.test_two_node_cycle_returns_true_GRAPH_013_1 __________\ntests\\test_cycles.py:20: in test_two_node_cycle_returns_true_GRAPH_013_1\n    from src.living_graph.metrics import has_cycle\nE   ImportError: cannot import name 'has_cycle' from 'src.living_graph.metrics' (C:\\Users\\santt\\AppData\\Local\\Temp\\eval-GRAPH-013.1-e1-work-o9b_4k3h\\src\\living_graph\\metrics.py)\n_________ TestHasCycle.test_two_node_chain_returns_false_GRAPH_013_1 __________\ntests\\test_cycles.py:30: in test_two_node_chain_returns_false_GRAPH_013_1\n    from src.living_graph.metrics import has_cycle\nE   ImportError: cannot import name 'has_cycle' from 'src.living_graph.metrics' (C:\\Users\\santt\\AppData\\Local\\Temp\\eval-GRAPH-013.1-e1-work-o9b_4k3h\\src\\living_graph\\metrics.py)\n=========================== short test summary info ===========================\nFAILED tests/test_cycles.py::TestHasCycle::test_two_node_cycle_returns_true_GRAPH_013_1\nFAILED tests/test_cycles.py::TestHasCycle::test_two_node_chain_returns_false_GRAPH_013_1\n2 failed in 0.13s\n\n"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=0/10, steps=0/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.0/0.4"
+        }
+      },
+      "wallSeconds": 0.0,
+      "tokens": 0,
+      "stopReason": "exit=1",
+      "exitCode": 1
+    },
+    {
+      "sampleId": "GRAPH-047.1",
+      "epoch": 1,
+      "input": "Implement GRAPH-047.1: Resource callers are user_keyword. Suffix .resource means caller user_keyword. .robot callers stay test_case.",
+      "title": "Resource callers are user_keyword",
+      "scores": {
+        "subtask_done": {
+          "ok": false,
+          "explanation": "Subtask GRAPH-047.1 status=FAILED. dry_run"
+        },
+        "reference_tests_pass": {
+          "ok": false,
+          "explanation": "Gold tests failed (exit 1).\nF..F                                                                     [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n______________ test_resource_caller_is_user_keyword_GRAPH_047_1 _______________\ntests\\test_resource_caller_type.py:37: in test_resource_caller_is_user_keyword_GRAPH_047_1\n    assert caller[0].type == \"user_keyword\"\nE   AssertionError: assert 'test_case' == 'user_keyword'\nE     \nE     - user_keyword\nE     + test_case\n_______ test_scan_fixtures_resource_caller_is_user_keyword_GRAPH_047_1 ________\ntests\\test_resource_caller_type.py:86: in test_scan_fixtures_resource_caller_is_user_keyword_GRAPH_047_1\n    assert keyword_one[0].type == \"user_keyword\"\nE   AssertionError: assert 'test_case' == 'user_keyword'\nE     \nE     - user_keyword\nE     + test_case\n=========================== short test summary info ===========================\nFAILED tests/test_resource_caller_type.py::test_resource_caller_is_user_keyword_GRAPH_047_1\nFAILED tests/test_resource_caller_type.py::test_scan_fixtures_resource_caller_is_user_keyword_GRAPH_047_1\n2 failed, 2 passed in 0.21s\n\n"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=0/10, steps=0/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.0/0.4"
+        }
+      },
+      "wallSeconds": 0.0,
+      "tokens": 0,
+      "stopReason": "exit=1",
+      "exitCode": 1
+    }
+  ]
+}

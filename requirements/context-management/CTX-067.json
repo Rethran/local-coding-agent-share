@@ -1,0 +1,118 @@
+{
+  "id": "CTX-067",
+  "type": "task",
+  "summary": "Reject a blocked license and a forged identity",
+  "dependsOn": [
+    "CTX-031",
+    "CTX-042"
+  ],
+  "description": "T8-6, SEC-06, and SEC-07. A blocked license does not call the upstream. A forged user header does not change the user on the event.",
+  "scope": [
+    "The upstream client is not called while the license is blocked",
+    "The emitted user hash matches alice, not bob"
+  ],
+  "acceptanceCriteria": "With a blocked cache, the upstream request count is 0 and the status is 403. With an active license, header X-User-Id bob and key k-alice produce a stored user hash of alice, and the event text does not contain bob. T8-6 SEC-06 SEC-07.",
+  "constraints": [
+    "Do not call the upstream when the license is blocked.",
+    "Do not hash the header user instead of the key user.",
+    "Do not put bob in the event."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_067_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_067_1_bypass.py -q -k CTX_067_1",
+    "python -m pytest tests/test_ctx_067_2_identity.py -q -k CTX_067_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-067.1",
+      "title": "Skip the upstream when blocked",
+      "summary": "A blocked license yields status 403 and zero upstream requests.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/gateway.py",
+        "test": "tests/test_ctx_067_1_bypass.py",
+        "function": "create_gateway"
+      },
+      "scope": [
+        "Status 403",
+        "Upstream count 0"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_067_1_bypass.py -q -k CTX_067_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_067_1.",
+        "This subtask's only job: A blocked license yields status 403 and zero upstream requests.",
+        "Touch only src/context_mgmt/gateway.py and tests/test_ctx_067_1_bypass.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Use the generic denial body from CTX-031.",
+        "Run python -m pytest tests/test_ctx_067_1_bypass.py -q -k CTX_067_1."
+      ],
+      "dataExamples": [
+        {
+          "status": 403,
+          "upstream_calls": 0
+        }
+      ],
+      "businessRules": [
+        "T8-6 and SEC-07: the blocked path does not reach the model."
+      ]
+    },
+    {
+      "id": "CTX-067.2",
+      "title": "Hash the key user, not the header",
+      "summary": "The event hash matches alice and the body does not contain bob.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/gateway.py",
+        "test": "tests/test_ctx_067_2_identity.py",
+        "function": "create_gateway"
+      },
+      "scope": [
+        "Key user alice",
+        "Header bob",
+        "Event does not contain bob"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_067_2_identity.py -q -k CTX_067_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_067_2.",
+        "This subtask's only job: The event hash matches alice and the body does not contain bob.",
+        "Touch only src/context_mgmt/gateway.py and tests/test_ctx_067_2_identity.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Compare hash_user_id of the salt and alice. Do not change hash_user_id.",
+        "Run python -m pytest tests/test_ctx_067_2_identity.py -q -k CTX_067_2."
+      ],
+      "dataExamples": [
+        {
+          "key_user": "alice",
+          "header_user": "bob",
+          "salt": "test-salt"
+        }
+      ],
+      "businessRules": [
+        "SEC-06 and T8-6: a forged identity is ignored."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/gateway.py"
+    ],
+    "businessRules": [
+      "The direct-to-upstream network policy is deployment config in CTX-057, not a second socket in this test."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_067_1_bypass.py -q -k CTX_067_1",
+      "python -m pytest tests/test_ctx_067_2_identity.py -q -k CTX_067_2"
+    ]
+  }
+}

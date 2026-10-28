@@ -1,0 +1,126 @@
+{
+  "id": "CTX-056",
+  "type": "task",
+  "summary": "Describe the three deployment presets",
+  "dependsOn": [
+    "CTX-001",
+    "CTX-055"
+  ],
+  "description": "DEP-01, DEP-02, and DEP-03. One preset function returns local, gpu-server, and cloud. local is the developer workstation: loopback and SQLite, and this layer declares no GPU library. The working model, observer, summarizer, and judge are OpenAI-compatible URLs from config. gpu-server is the operator's own GPU host, reached the same way as cloud. It is not the developer workstation and not a rented cloud GPU.",
+  "scope": [
+    "The local preset matches the workstation shape",
+    "torch is rejected and fastapi is accepted"
+  ],
+  "acceptanceCriteria": "deployment_preset('local') has management_host 127.0.0.1, model_host 127.0.0.1, storage sqlite, and gpu false. An unknown name raises ValueError. no_gpu_dependency(['fastapi', 'httpx']) is true. no_gpu_dependency(['torch']) is false. DEP-01 DEP-02 DEP-03.",
+  "constraints": [
+    "Do not import torch.",
+    "Do not give the three presets different Python code paths beyond the preset dict.",
+    "Do not bind the local management host to 0.0.0.0.",
+    "Do not treat the developer workstation as the GPU host."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_056_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_056_1_local.py -q -k CTX_056_1",
+    "python -m pytest tests/test_ctx_056_2_gpu.py -q -k CTX_056_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-056.1",
+      "title": "Return the local preset",
+      "summary": "The local preset uses loopback, SQLite, and gpu false. An unknown name raises ValueError.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/deploy.py",
+        "test": "tests/test_ctx_056_1_local.py",
+        "function": "deployment_preset"
+      },
+      "scope": [
+        "management_host 127.0.0.1",
+        "model_host 127.0.0.1",
+        "storage sqlite",
+        "gpu false"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_056_1_local.py -q -k CTX_056_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_056_1.",
+        "This subtask's only job: The local preset uses loopback, SQLite, and gpu false. An unknown name raises ValueError.",
+        "Touch only src/context_mgmt/deploy.py and tests/test_ctx_056_1_local.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Also accept the names gpu-server and cloud so later tests can call them. Unknown names raise ValueError.",
+        "Run python -m pytest tests/test_ctx_056_1_local.py -q -k CTX_056_1."
+      ],
+      "dataExamples": [
+        {
+          "name": "local",
+          "management_host": "127.0.0.1",
+          "storage": "sqlite",
+          "gpu": false
+        }
+      ],
+      "businessRules": [
+        "DEP-03: the model and the management plane stay on loopback for D1."
+      ]
+    },
+    {
+      "id": "CTX-056.2",
+      "title": "Reject a GPU library",
+      "summary": "fastapi and httpx pass the GPU check. torch fails it.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/deploy.py",
+        "test": "tests/test_ctx_056_2_gpu.py",
+        "function": "no_gpu_dependency"
+      },
+      "scope": [
+        "fastapi and httpx true",
+        "torch false"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_056_2_gpu.py -q -k CTX_056_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_056_2.",
+        "This subtask's only job: fastapi and httpx pass the GPU check. torch fails it.",
+        "Touch only src/context_mgmt/deploy.py and tests/test_ctx_056_2_gpu.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Match the package name. Do not import the package.",
+        "Run python -m pytest tests/test_ctx_056_2_gpu.py -q -k CTX_056_2."
+      ],
+      "dataExamples": [
+        {
+          "ok": [
+            "fastapi",
+            "httpx"
+          ],
+          "bad": [
+            "torch"
+          ]
+        }
+      ],
+      "businessRules": [
+        "DEP-02: the layer has no GPU library. The model, observer, summarizer, and judge are OpenAI-compatible URLs. The GPU host is hardware the operator owns, not the developer workstation and not a cloud provider."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/deploy.py"
+    ],
+    "businessRules": [
+      "Preset names are local, gpu-server, and cloud. local is the developer workstation. gpu-server is the operator-owned GPU host. cloud is a provider."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_056_1_local.py -q -k CTX_056_1",
+      "python -m pytest tests/test_ctx_056_2_gpu.py -q -k CTX_056_2"
+    ]
+  }
+}

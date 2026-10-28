@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8">
+  <title>TDD-koodarin arvio — baseline / night-runner:latest</title>
+  <style>
+    @page { size: A4; margin: 14mm; }
+    body { font-family: Georgia, serif; margin: 2rem auto; max-width: 960px; line-height: 1.45; color: #1a1a1a; }
+    h1, h2, h3 { font-family: "Segoe UI", sans-serif; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border-bottom: 1px solid #ddd; text-align: left; padding: 0.4rem 0.6rem; vertical-align: top; }
+    th { font-family: "Segoe UI", sans-serif; font-weight: 600; }
+    .fail { background: #fdecea; }
+    .flaky { background: #fff4ce; }
+    .reliable { background: #e8f6ee; }
+    .cannot { background: #fdecea; }
+    .muted { color: #555; font-size: 0.95rem; }
+    pre { white-space: pre-wrap; background: #f6f6f6; padding: 0.75rem; overflow-x: auto; }
+    code { font-family: Consolas, monospace; }
+    section { break-inside: avoid; }
+    @media print {
+      body { margin: 0; max-width: none; }
+      pre { font-size: 9pt; }
+      a { color: inherit; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <h1>TDD-koodarin arvio</h1>
+  <p class="muted">
+    Variantti <code>baseline</code>
+    · malli <code>night-runner:latest</code>
+    · 2026-10-02T08:14:47+00:00
+    · lähde <code>evals\logs\2026-09-30T20-02-55-00-00_tdd-coder_BqLevq5muZQCHsSadqn8m6.eval</code>
+  </p>
+
+  <section>
+    <h2>Katselmoijalle</h2>
+    <p class="muted">Nämä kolme lukua kertovat, mihin tehtäviin agentin voi ohjata, mitä ajo maksaa ja liikkuiko tulos vai onko muutos kohinaa.</p>
+
+    <h3>Konsistenssi</h3>
+    <p>Kuinka monessa toistossa referenssitestit menivät läpi. Täysi onnistuminen on tehtävä, johon agentin voi ohjata. Nolla on tehtävä, jota se ei osaa.</p>
+    
+    <table>
+      <thead><tr><th>Ryhmä</th><th>Caset</th><th>Merkitys</th></tr></thead>
+      <tbody>
+        <tr class="reliable"><td>Luotettava (jokainen epoch)</td><td>11</td><td>Sama tulos joka kerralla.</td></tr>
+        <tr class="flaky"><td>Hauras (osa epocheista)</td><td>0</td><td>Onnistuu vain joskus.</td></tr>
+        <tr class="cannot"><td>Ei osaa (0)</td><td>1</td><td>Referenssitestit eivät menneet kertaakaan.</td></tr>
+      </tbody>
+    </table>
+    
+      
+      <h4>Luotettava</h4>
+      <table>
+        <thead><tr><th>Case</th><th>Otsikko</th><th>Läpi</th></tr></thead>
+        <tbody>
+          
+          <tr>
+            <td><code>GRAPH-003.1</code></td>
+            <td>Parse one test case direct keyword calls</td>
+            <td>2/2</td>
+          </tr>
+          
+          <tr>
+            <td><code>GRAPH-006.1</code></td>
+            <td>Parse one Python function call</td>
+            <td>2/2</td>
+          </tr>
+          
+          <tr>
+            <td><code>GRAPH-011.1</code></td>
+            <td>Count distinct callers</td>
+            <td>2/2</td>
+          </tr>
+          
+          <tr>
+            <td><code>GRAPH-013.1</code></td>
+            <td>True on a two-node cycle, False on a chain</td>
+            <td>2/2</td>
+          </tr>
+          
+          <tr>
+            <td><code>GRAPH-046.1</code></td>
+            <td>Resolve unique cross-file keyword names</td>
+            <td>2/2</td>
+          </tr>
+          
+          <tr>
+            <td><code>GRAPH-047.1</code></td>
+            <td>Resource callers are user_keyword</td>
+            <td>2/2</td>
+          </tr>
+          
+          <tr>
+            <td><code>GRAPH-048.1</code></td>
+            <td>Reuse nodes_from_edges in incremental_update</td>
+            <td>2/2</td>
+          </tr>
+          
+          <tr>
+            <td><code>GRAPH-049.1</code></td>
+            <td>Drop Robot builtin callees</td>
+            <td>2/2</td>
+          </tr>
+          
+          <tr>
+            <td><code>GRAPH-050.1</code></td>
+            <td>Metrics on the in-memory scan graph</td>
+            <td>1/1</td>
+          </tr>
+          
+          <tr>
+            <td><code>GRAPH-052.1</code></td>
+            <td>Zero the node z coordinate</td>
+            <td>1/1</td>
+          </tr>
+          
+          <tr>
+            <td><code>GRAPH-054.1</code></td>
+            <td>Lock polar angle to the horizon</td>
+            <td>1/1</td>
+          </tr>
+          
+        </tbody>
+      </table>
+      
+    
+      
+    
+      
+      <h4>Ei osaa</h4>
+      <table>
+        <thead><tr><th>Case</th><th>Otsikko</th><th>Läpi</th></tr></thead>
+        <tbody>
+          
+          <tr>
+            <td><code>GRAPH-031.1</code></td>
+            <td>Tag .py nodes library_keyword in nodes_from_edges</td>
+            <td>0/2</td>
+          </tr>
+          
+        </tbody>
+      </table>
+      
+    
+
+    <h3>Kustannus onnistunutta tehtävää kohti</h3>
+    <p>GPU-minuutit jaettuna caseilla, jotka läpäisivät referenssitestit jokaisella epochilla. Epäonnistuneet ajot ovat mukana osoittajassa.</p>
+    
+    <p>
+      GPU-minuutteja yhteensä <strong>63.3</strong>.
+      Täysiä onnistumisia <strong>11</strong>.
+      
+        <strong>5.75</strong> GPU-minuuttia per täysi onnistuminen.
+      
+    </p>
+
+    <h3>Trendi</h3>
+    <p>Sama settivertailu edelliseen raporttiin. Jos muutos on virhemarginaalin sisällä, se on kohinaa.</p>
+    
+    <table>
+      <thead><tr><th>Mittari</th><th>Nyt</th><th>Vs edellinen</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>reference_tests_pass</td>
+          <td>90.5%</td>
+          <td>kohinaa +0.0 pp</td>
+        </tr>
+        <tr>
+          <td>false-done-rate</td>
+          <td>9.5%</td>
+          <td>kohinaa +0.0 pp</td>
+        </tr>
+        <tr>
+          <td>Luotettavien osuus</td>
+          <td>91.7% (11/12)</td>
+          <td>kohinaa -0.0 pp</td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <table>
+      <thead>
+        <tr><th>Milloin</th><th>Variantti</th><th>Malli</th><th>Referenssitestit</th><th>False-done</th><th>Luotettavat</th></tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td>2026-09-30T19:57:06+00:00</td>
+          <td>baseline</td>
+          <td>night-runner:latest</td>
+          <td>0%</td>
+          <td>—</td>
+          <td>0</td>
+        </tr>
+        
+        <tr>
+          <td>2026-09-30T19:57:17+00:00</td>
+          <td>v2</td>
+          <td>night-runner:latest</td>
+          <td>0%</td>
+          <td>—</td>
+          <td>0</td>
+        </tr>
+        
+        <tr>
+          <td>2026-09-30T19:59:49+00:00</td>
+          <td>baseline</td>
+          <td>night-runner:latest</td>
+          <td>0%</td>
+          <td>—</td>
+          <td>0</td>
+        </tr>
+        
+        <tr>
+          <td>2026-09-30T20:00:21+00:00</td>
+          <td>baseline</td>
+          <td>night-runner:latest</td>
+          <td>0%</td>
+          <td>—</td>
+          <td>0</td>
+        </tr>
+        
+        <tr>
+          <td>2026-10-01T06:41:36+00:00</td>
+          <td>baseline</td>
+          <td>night-runner:latest</td>
+          <td>90%</td>
+          <td>10%</td>
+          <td>11</td>
+        </tr>
+        
+        <tr>
+          <td>2026-10-02T08:14:47+00:00</td>
+          <td>baseline</td>
+          <td>night-runner:latest</td>
+          <td>90%</td>
+          <td>10%</td>
+          <td>11</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    
+  </section>
+
+  <section>
+    <h2>Tekijälle</h2>
+    <p class="muted">Näillä etsitään, korjataanko promptia, työkaluja vai mallia. False-done ei ole uusi scorer: se lasketaan kahdesta nykyisestä tuloksesta.</p>
+
+    <h3>False-done-rate</h3>
+    <p>Kuinka usein agentti merkitsee tehtävän valmiiksi, mutta referenssitestit failaavat. Nimittäjä on ajot, joissa <code>subtask_done</code> meni läpi.</p>
+    
+    
+      <p><strong>9.5%</strong> (2/21), stderr ± 6.4%.</p>
+    
+
+    <h3>Läpimenoaika ja stepit</h3>
+    <p>Mediaani ja pahin tapaus. Step-määrä puuttuu vanhoista loikeista, joihin yhteenvetoa ei ehditty tallentaa.</p>
+    
+    
+    <table>
+      <thead><tr><th></th><th>Mediaani</th><th>Pahin</th><th>n</th></tr></thead>
+      <tbody>
+        <tr><td>Seinäkello (s)</td><td>128.804</td><td>471.425</td><td>21</td></tr>
+        <tr>
+          <td>Steppit</td>
+          <td>ei tallennettu</td>
+          <td>—</td>
+          <td>0</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="muted">p95 seinäkello 368.872 s · tokeneita yhteensä 0.</p>
+
+    <h3>Virhetyypit</h3>
+    <p>Yksi ensisijainen syy per epäonnistunut ajo, jotta luvut summautuvat. Järjestys: aikakatkaisu, silmukka, työkaluvirheet, step-budjetti, referenssitestit, muu.</p>
+    <table>
+      <thead><tr><th>Tyyppi</th><th>Ajot</th></tr></thead>
+      <tbody>
+        
+        <tr>
+          <td>aikakatkaisu (<code>timeout</code>)</td>
+          <td>0</td>
+        </tr>
+        
+        <tr>
+          <td>silmukka (<code>loop</code>)</td>
+          <td>0</td>
+        </tr>
+        
+        <tr>
+          <td>työkaluvirheet (<code>tool_errors</code>)</td>
+          <td>0</td>
+        </tr>
+        
+        <tr>
+          <td>step-budjetti (<code>step_budget</code>)</td>
+          <td>0</td>
+        </tr>
+        
+        <tr>
+          <td>referenssitestit (<code>reference_tests</code>)</td>
+          <td>2</td>
+        </tr>
+        
+        <tr>
+          <td>muu (<code>other</code>)</td>
+          <td>0</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    <p class="muted">Epäonnistuneita ajoja 2.</p>
+
+    <h3>Pass rate per kriteeri</h3>
+    <table>
+      <thead>
+        <tr><th>Kriteeri</th><th>Pass rate</th><th>stderr</th><th>n</th><th>Δ edellinen</th></tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td><code>process_budget</code></td>
+          <td>100.0%</td>
+          <td>± 0.0%</td>
+          <td>21</td>
+          <td>+0.0 pp</td>
+        </tr>
+        
+        <tr>
+          <td><code>reference_tests_pass</code></td>
+          <td>90.5%</td>
+          <td>± 6.4%</td>
+          <td>21</td>
+          <td>+0.0 pp</td>
+        </tr>
+        
+        <tr>
+          <td><code>subtask_done</code></td>
+          <td>100.0%</td>
+          <td>± 0.0%</td>
+          <td>21</td>
+          <td>+0.0 pp</td>
+        </tr>
+        
+      </tbody>
+    </table>
+
+    <h3>Mitä arvioidaan</h3>
+    
+      <h4><code>subtask_done</code></h4>
+      <p>The orchestrator marked the pinned subtask DONE after the independent verifier passed.</p>
+      <p class="muted">Miksi: This is the outcome that matters: the agent's own declared verification succeeded and the coordinator agreed. A fluent transcript that never reaches DONE is still a failure.</p>
+      <p class="muted">Miten (code): Code. Read the copied requirements <task_id>.state.json after the run. Pass iff the matching subtask status is DONE.</p>
+    
+      <h4><code>reference_tests_pass</code></h4>
+      <p>Tests from the historically accepted commit still pass against the code the agent just wrote.</p>
+      <p class="muted">Miksi: The agent's own tests can be too weak or accidentally rewritten. Overlaying the accepted commit's test files is a cheap substitute for hidden tests. These are regression tests, not independently authored hidden tests.</p>
+      <p class="muted">Miten (code): Code. After the agent finishes, overlay tests/ files from accepted_commit, then run pytest on those paths in the worktree.</p>
+    
+      <h4><code>process_budget</code></h4>
+      <p>The agent finished without looping, blowing the step budget, or drowning in tool errors.</p>
+      <p class="muted">Miksi: Local models often fail on process before they fail on correctness. A pass that took 80 identical read_file calls is not a prompt you want to keep.</p>
+      <p class="muted">Miten (code): Code, from run_summary.json. Fail if attempts > 10, steps > 160, any identical tool fingerprint repeats more than 5 times, or tool error rate > 40%.</p>
+    
+
+    <h3>Epäonnistumiset ensin</h3>
+    
+    
+      <article class="fail">
+        <h4>GRAPH-031.1 epoch 1 — Tag .py nodes library_keyword in nodes_from_edges</h4>
+        <p><strong>Kriteeri:</strong> <code>reference_tests_pass</code></p>
+        <p><strong>Syöte:</strong> Implement GRAPH-031.1: Tag .py nodes library_keyword in nodes_from_edges. Path suffix .py means library_keyword. Robot types stay as they are.</p>
+        <pre>Gold tests failed (exit 1).
+....F                                                                    [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+_______ test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1 ________
+tests\test_scan_python_node_type.py:89: in test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1
+    assert len(open_session) == 1, "open_session node not found in scanned graph"
+E   AssertionError: open_session node not found in scanned graph
+E   assert 2 == 1
+E    +  where 2 = len([<living_graph.model.Node object at 0x00000175753235B0>, <living_graph.model.Node object at 0x0000017575306BA0>])
+=========================== short test summary info ===========================
+FAILED tests/test_scan_python_node_type.py::test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1
+1 failed, 4 passed in 0.20s
+
+</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-031.1 epoch 2 — Tag .py nodes library_keyword in nodes_from_edges</h4>
+        <p><strong>Kriteeri:</strong> <code>reference_tests_pass</code></p>
+        <p><strong>Syöte:</strong> Implement GRAPH-031.1: Tag .py nodes library_keyword in nodes_from_edges. Path suffix .py means library_keyword. Robot types stay as they are.</p>
+        <pre>Gold tests failed (exit 1).
+....F                                                                    [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+_______ test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1 ________
+tests\test_scan_python_node_type.py:89: in test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1
+    assert len(open_session) == 1, "open_session node not found in scanned graph"
+E   AssertionError: open_session node not found in scanned graph
+E   assert 2 == 1
+E    +  where 2 = len([<living_graph.model.Node object at 0x0000020B371035B0>, <living_graph.model.Node object at 0x0000020B370E6BA0>])
+=========================== short test summary info ===========================
+FAILED tests/test_scan_python_node_type.py::test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1
+1 failed, 4 passed in 0.20s
+
+</pre>
+      </article>
+    
+
+    <h3>Haurat caset</h3>
+    <p class="muted">Sama case, eri epochit. Nämä kannattaa lukea ensin.</p>
+    
+      <p>Ei sekoittuneita tuloksia (tarvitaan vähintään 2 epochia).</p>
+    
+    <table>
+      
+    </table>
+  </section>
+</body>
+</html>

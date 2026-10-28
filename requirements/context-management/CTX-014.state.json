@@ -1,0 +1,38 @@
+{
+  "taskId": "CTX-014",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-05T20:21:57+00:00",
+  "updatedAt": "2026-10-05T20:25:16+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "CTX-014.1",
+      "title": "Serve the static page",
+      "status": "DONE",
+      "summary": "Implementing GET / route to serve static/index.html with title Context management."
+    },
+    {
+      "id": "CTX-014.2",
+      "title": "Add the four chart containers",
+      "status": "DONE",
+      "summary": "Adding four chart container divs to static/index.html"
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

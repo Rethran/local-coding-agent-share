@@ -1,0 +1,46 @@
+{
+  "taskId": "CTX-065",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-07T17:59:23+00:00",
+  "updatedAt": "2026-10-07T18:03:10+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "CTX-065.2: already_satisfied. Next: Existing implementation already satisfies the declared tests; the coordinator will mark the subtask DONE after the verifier.",
+  "completedScopeItems": [
+    "Reviewed src/context_mgmt/guard.py: exists; accept_model_output present"
+  ],
+  "remainingScopeItems": [
+    "Remaining: Return None",
+    "Remaining: Threshold 0.60"
+  ],
+  "verifiedBehaviors": [
+    "Tests passed: python -m pytest tests/test_ctx_065_1_canary.py -q -k CTX_065_1",
+    "Tests passed: python -m pytest tests/test_ctx_065_2_drop.py -q -k CTX_065_2"
+  ],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": "Existing implementation already satisfies the declared tests; the coordinator will mark the subtask DONE after the verifier.",
+  "subtasks": [
+    {
+      "id": "CTX-065.1",
+      "title": "Hold the decision and hide the canaries",
+      "status": "DONE",
+      "summary": "DUPLICATE: existing implementation already covers this subtask."
+    },
+    {
+      "id": "CTX-065.2",
+      "title": "Drop a command hidden in model output",
+      "status": "DONE",
+      "summary": "DUPLICATE: existing implementation already covers this subtask."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

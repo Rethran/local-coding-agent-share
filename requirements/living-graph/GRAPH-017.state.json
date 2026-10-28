@@ -1,0 +1,32 @@
+{
+  "taskId": "GRAPH-017",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-09-16T20:01:52+00:00",
+  "updatedAt": "2026-09-16T20:03:19+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "GRAPH-017.1",
+      "title": "Return paths whose stamps differ",
+      "status": "DONE",
+      "summary": "Tests already exist and fail (handoff GRAPH-017-0005). Implementing changed_files in src/living_graph/scan.py."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

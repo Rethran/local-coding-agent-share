@@ -1,0 +1,32 @@
+{
+  "taskId": "CTX-086",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-14T14:15:00+00:00",
+  "updatedAt": "2026-10-14T14:17:38+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "CTX-086.1",
+      "title": "Name the stdio tool",
+      "status": "DONE",
+      "summary": "Creating src/context_mgmt/mcp_stdio.py with mcp_tool_spec and mcp_admission call."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

@@ -1,0 +1,205 @@
+{
+  "id": "CTX-008",
+  "type": "task",
+  "summary": "Serve anonymized daily and trend stats",
+  "dependsOn": [
+    "CTX-007"
+  ],
+  "description": "GET /stats/daily and GET /stats/trend. FR-C3-03, FR-C3-04, FR-C3-05, and FR-C3-06. Groups under min_group_size are omitted. Responses never contain user ids or hashes.",
+  "scope": [
+    "Daily aggregates for requests, tokens, average prompt tokens, share above threshold, tokens saved, active users",
+    "Trend adds a 7-day average and a before/after baseline flag",
+    "Hide days with fewer than 5 distinct user hashes"
+  ],
+  "acceptanceCriteria": "Five users on 2026-10-05 with prompt 10 and completion 5 produce requests 5, total_tokens 75, avg_prompt_tokens 10.0, share_above_threshold 0.0, tokens_saved_est 0, active_users 5. Four users produce an empty days list, hidden_groups 1, and hidden_reason minimum group size. The response text does not contain the stored hash. Trend marks dates before the baseline as before and on or after it as after. FR-C3-03 FR-C3-04 FR-C3-05 FR-C3-06.",
+  "constraints": [
+    "Do not return user_id or user_id_hash.",
+    "Do not show a per-user breakdown.",
+    "Do not include a day with fewer than config.min_group_size distinct hashes."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_008_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_008_1_daily.py -q -k CTX_008_1",
+    "python -m pytest tests/test_ctx_008_2_trend.py -q -k CTX_008_2",
+    "python -m pytest tests/test_ctx_008_3_privacy.py -q -k CTX_008_3"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-008.1",
+      "title": "Return one visible daily bucket",
+      "summary": "GET /stats/daily returns the six aggregate numbers for a day with 5 distinct hashes.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/api.py",
+        "test": "tests/test_ctx_008_1_daily.py",
+        "function": "create_app"
+      },
+      "scope": [
+        "Seed 5 stored events through SqliteEventStore.save",
+        "GET /stats/daily?org_id=org-a&from=2026-10-05&to=2026-10-05",
+        "Assert the numbers in dataExamples"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_008_1_daily.py -q -k CTX_008_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_008_1.",
+        "This subtask's only job: GET /stats/daily returns the six aggregate numbers for a day with 5 distinct hashes.",
+        "Touch only src/context_mgmt/api.py and tests/test_ctx_008_1_daily.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Use distinct user_id_hash values hash-1 through hash-5.",
+        "context_pct 0.10 so the share above 0.60 is 0.",
+        "Send header X-Api-Key secret.",
+        "Run python -m pytest tests/test_ctx_008_1_daily.py -q -k CTX_008_1."
+      ],
+      "dataExamples": [
+        {
+          "requests": 5,
+          "total_tokens": 75,
+          "avg_prompt_tokens": 10.0,
+          "share_above_threshold": 0.0,
+          "tokens_saved_est": 0,
+          "active_users": 5,
+          "hidden_groups": 0
+        }
+      ],
+      "businessRules": [
+        "FR-C3-03: those six fields are the daily contract.",
+        "total_tokens = prompt_tokens + completion_tokens."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/api.py",
+          "purpose": "Reporting API and static dashboard route."
+        },
+        {
+          "path": "src/context_mgmt/store.py",
+          "purpose": "SQLite event store scoped by org_id."
+        }
+      ]
+    },
+    {
+      "id": "CTX-008.2",
+      "title": "Add the rolling average and baseline flag",
+      "summary": "GET /stats/trend marks 2026-10-04 as before and 2026-10-05 as after when baseline is 2026-10-05.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/api.py",
+        "test": "tests/test_ctx_008_2_trend.py",
+        "function": "create_app"
+      },
+      "scope": [
+        "Each of the two days has 5 distinct hashes so both stay visible",
+        "Query baseline=2026-10-05",
+        "A single-day window's rolling average equals that day's total_tokens"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_008_2_trend.py -q -k CTX_008_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_008_2.",
+        "This subtask's only job: GET /stats/trend marks 2026-10-04 as before and 2026-10-05 as after when baseline is 2026-10-05.",
+        "Touch only src/context_mgmt/api.py and tests/test_ctx_008_2_trend.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Seed two days. October 5 uses the same token numbers as the daily test.",
+        "October 4 can use prompt_tokens 8 and completion_tokens 2, total_tokens 50.",
+        "Assert rolling_7_day_avg_total_tokens for October 4 is 50.0 and for October 5 is 62.5.",
+        "Run python -m pytest tests/test_ctx_008_2_trend.py -q -k CTX_008_2."
+      ],
+      "dataExamples": [
+        {
+          "baseline": "2026-10-05",
+          "day_before": {
+            "date": "2026-10-04",
+            "baseline": "before",
+            "rolling_7_day_avg_total_tokens": 50.0
+          },
+          "day_after": {
+            "date": "2026-10-05",
+            "baseline": "after",
+            "rolling_7_day_avg_total_tokens": 62.5
+          }
+        }
+      ],
+      "businessRules": [
+        "FR-C3-04: rolling average of total_tokens plus a baseline comparison.",
+        "October 5 average is (50 + 75) / 2."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/api.py",
+          "purpose": "Reporting API and static dashboard route."
+        }
+      ]
+    },
+    {
+      "id": "CTX-008.3",
+      "title": "Hide small groups and user ids",
+      "summary": "Four distinct hashes hide the day. The response body contains neither the raw id nor the hash.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/api.py",
+        "test": "tests/test_ctx_008_3_privacy.py",
+        "function": "create_app"
+      },
+      "scope": [
+        "4 users on one day",
+        "days is empty, hidden_groups is 1, hidden_reason is minimum group size",
+        "Response text does not contain hash-secret"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_008_3_privacy.py -q -k CTX_008_3"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_008_3.",
+        "This subtask's only job: Four distinct hashes hide the day. The response body contains neither the raw id nor the hash.",
+        "Touch only src/context_mgmt/api.py and tests/test_ctx_008_3_privacy.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Save four stored events with user_id_hash values hash-1, hash-2, hash-3, and hash-secret.",
+        "Assert 'hash-secret' not in response.text and 'user_id' not in response.json() keys recursively.",
+        "Run python -m pytest tests/test_ctx_008_3_privacy.py -q -k CTX_008_3."
+      ],
+      "dataExamples": [
+        {
+          "users": 4,
+          "hidden_reason": "minimum group size",
+          "hidden_groups": 1,
+          "days": []
+        }
+      ],
+      "businessRules": [
+        "FR-C3-05: minimum group size defaults to 5.",
+        "FR-C3-06: no hash and no raw id in the response."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/api.py",
+          "purpose": "Reporting API and static dashboard route."
+        }
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/api.py"
+    ],
+    "businessRules": [
+      "share_above_threshold counts stored events whose context_pct is >= config.compact_threshold, divided by requests.",
+      "rolling_7_day_avg_total_tokens averages total_tokens of visible days in the 7-day window ending that day.",
+      "baseline before when date < baseline query param, otherwise after.",
+      "The same API key rules as POST /events apply. Query org_id must match the key."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_008_1_daily.py -q -k CTX_008_1",
+      "python -m pytest tests/test_ctx_008_2_trend.py -q -k CTX_008_2",
+      "python -m pytest tests/test_ctx_008_3_privacy.py -q -k CTX_008_3"
+    ]
+  }
+}

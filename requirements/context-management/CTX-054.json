@@ -1,0 +1,123 @@
+{
+  "id": "CTX-054",
+  "type": "task",
+  "summary": "Check a signed module manifest in three places",
+  "dependsOn": [
+    "CTX-032"
+  ],
+  "description": "SEC-19 and SEC-20. A mismatched file hash fails the manifest check and the license state to apply is invalid. Gateway, reporting, and MCP each call cached_license_state.",
+  "scope": [
+    "A tampered file fails verification",
+    "The three modules call cached_license_state"
+  ],
+  "acceptanceCriteria": "A matching sha256 manifest verifies. Changing one file byte fails and integrity_failure_state() returns invalid. gateway.py, api.py, and mcp_server.py each contain the text cached_license_state(. SEC-19 SEC-20.",
+  "constraints": [
+    "Do not ignore a hash mismatch.",
+    "Do not leave a component without a cached_license_state call.",
+    "Do not print file contents in the failure result."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_054_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_054_1_manifest.py -q -k CTX_054_1",
+    "python -m pytest tests/test_ctx_054_2_sites.py -q -k CTX_054_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-054.1",
+      "title": "Reject a tampered file",
+      "summary": "A one-byte change fails verify_manifest and the failure state is invalid.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/integrity.py",
+        "test": "tests/test_ctx_054_1_manifest.py",
+        "function": "verify_manifest"
+      },
+      "scope": [
+        "Matching hashes pass",
+        "One flipped byte fails",
+        "failure state invalid"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_054_1_manifest.py -q -k CTX_054_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_054_1.",
+        "This subtask's only job: A one-byte change fails verify_manifest and the failure state is invalid.",
+        "Touch only src/context_mgmt/integrity.py and tests/test_ctx_054_1_manifest.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Hash the file bytes with sha256. Do not call the network.",
+        "Run python -m pytest tests/test_ctx_054_1_manifest.py -q -k CTX_054_1."
+      ],
+      "dataExamples": [
+        {
+          "ok": true,
+          "tampered": false,
+          "state": "invalid"
+        }
+      ],
+      "businessRules": [
+        "SEC-19: a mismatch sets the license state to invalid."
+      ]
+    },
+    {
+      "id": "CTX-054.2",
+      "title": "Call the cache from three components",
+      "summary": "gateway.py, api.py, and mcp_server.py each contain cached_license_state(.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/integrity.py",
+        "test": "tests/test_ctx_054_2_sites.py",
+        "function": "license_check_sites"
+      },
+      "scope": [
+        "license_check_sites returns gateway, reporting, mcp",
+        "Each of the three files contains cached_license_state("
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_054_2_sites.py -q -k CTX_054_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_054_2.",
+        "This subtask's only job: gateway.py, api.py, and mcp_server.py each contain cached_license_state(.",
+        "Touch src/context_mgmt/integrity.py, src/context_mgmt/gateway.py, src/context_mgmt/api.py, src/context_mgmt/mcp_server.py, and tests/test_ctx_054_2_sites.py.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Add the call if a file does not already have it. Do not remove earlier license checks.",
+        "Run python -m pytest tests/test_ctx_054_2_sites.py -q -k CTX_054_2."
+      ],
+      "dataExamples": [
+        {
+          "sites": [
+            "gateway",
+            "reporting",
+            "mcp"
+          ],
+          "needle": "cached_license_state("
+        }
+      ],
+      "businessRules": [
+        "SEC-20: removing one check does not remove the others."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/integrity.py",
+      "src/context_mgmt/gateway.py",
+      "src/context_mgmt/api.py"
+    ],
+    "businessRules": [
+      "verify_manifest compares hex sha256 digests."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_054_1_manifest.py -q -k CTX_054_1",
+      "python -m pytest tests/test_ctx_054_2_sites.py -q -k CTX_054_2"
+    ]
+  }
+}

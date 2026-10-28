@@ -1,0 +1,176 @@
+{
+  "id": "CTX-023",
+  "type": "task",
+  "summary": "Decide license state without I/O",
+  "dependsOn": [
+    "CTX-001",
+    "CTX-022"
+  ],
+  "description": "FR-C7-03, FR-C7-04, FR-C7-05, and T7. license_state(claims, now, org_id) is pure. active and grace allow use. expired, revoked, and invalid block use. OD-7 default seat_enforcement is warn and is stored on config, not applied here.",
+  "scope": [
+    "Add license_state with states active, grace, expired, revoked, invalid",
+    "Boundary times: the expiry instant and the last second of grace",
+    "Add OrgConfig defaults without removing CTX-001 fields"
+  ],
+  "acceptanceCriteria": "now 2026-09-30T23:59:59Z is active. now 2026-10-01T00:00:00Z is grace. now 2026-10-07T23:59:59Z is grace. now 2026-10-08T00:00:00Z is expired. org-b is invalid org_mismatch. None is invalid missing. revoked true is revoked even before expiry. allowed is true only for active and grace. default_config seat_enforcement is warn, expiry_warning_days 30, check_interval_seconds 900, counterfactual_limit_pct 0.70, revocation_url None. FR-C7-03 FR-C7-04 FR-C7-05 T7.",
+  "constraints": [
+    "Do not read a file or open a socket inside license_state.",
+    "Do not remove compact_threshold or the other CTX-001 defaults.",
+    "Do not treat the expiry instant as active."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_023_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_023_1_state.py -q -k CTX_023_1",
+    "python -m pytest tests/test_ctx_023_2_defaults.py -q -k CTX_023_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-023.1",
+      "title": "Map dates and flags to a state",
+      "summary": "The four timestamps and the revoked and org mismatch cases return the states in dataExamples.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/license.py",
+        "test": "tests/test_ctx_023_1_state.py",
+        "function": "license_state"
+      },
+      "scope": [
+        "Pure function, no I/O",
+        "Return state, reason, and allowed",
+        "Revoked wins over a still-valid date"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_023_1_state.py -q -k CTX_023_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_023_1.",
+        "This subtask's only job: The four timestamps and the revoked and org mismatch cases return the states in dataExamples.",
+        "Touch only src/context_mgmt/license.py and tests/test_ctx_023_1_state.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Assert each row in dataExamples.",
+        "Patch open and urlopen and assert they are not called.",
+        "Run python -m pytest tests/test_ctx_023_1_state.py -q -k CTX_023_1."
+      ],
+      "dataExamples": [
+        {
+          "now": "2026-09-30T23:59:59Z",
+          "state": "active",
+          "allowed": true
+        },
+        {
+          "now": "2026-10-01T00:00:00Z",
+          "state": "grace",
+          "allowed": true
+        },
+        {
+          "now": "2026-10-07T23:59:59Z",
+          "state": "grace",
+          "allowed": true
+        },
+        {
+          "now": "2026-10-08T00:00:00Z",
+          "state": "expired",
+          "allowed": false
+        },
+        {
+          "org_id": "org-b",
+          "state": "invalid",
+          "reason": "org_mismatch"
+        },
+        {
+          "claims": null,
+          "state": "invalid",
+          "reason": "missing"
+        },
+        {
+          "revoked": true,
+          "now": "2026-09-01T00:00:00Z",
+          "state": "revoked",
+          "allowed": false
+        },
+        {
+          "license_id": "lic-1",
+          "org_id": "org-a",
+          "issued_at": "2026-01-01T00:00:00Z",
+          "expires_at": "2026-10-01T00:00:00Z",
+          "grace_days": 7,
+          "max_users": 10,
+          "features": [
+            "gateway",
+            "dashboard",
+            "observer",
+            "mcp"
+          ]
+        }
+      ],
+      "businessRules": [
+        "active: now is strictly before expires_at.",
+        "grace: now is at or after expires_at and strictly before expires_at plus grace_days.",
+        "expired: now is at or after the grace end."
+      ]
+    },
+    {
+      "id": "CTX-023.2",
+      "title": "Add the license defaults on OrgConfig",
+      "summary": "default_config exposes the license defaults and still has compact_threshold 0.60.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/config.py",
+        "test": "tests/test_ctx_023_2_defaults.py",
+        "function": "default_config"
+      },
+      "scope": [
+        "seat_enforcement warn",
+        "expiry_warning_days 30",
+        "revocation_url None",
+        "compact_threshold stays 0.60"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_023_2_defaults.py -q -k CTX_023_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_023_2.",
+        "This subtask's only job: default_config exposes the license defaults and still has compact_threshold 0.60.",
+        "Touch only src/context_mgmt/config.py and tests/test_ctx_023_2_defaults.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Do not delete existing OrgConfig fields.",
+        "Run python -m pytest tests/test_ctx_023_2_defaults.py -q -k CTX_023_2."
+      ],
+      "dataExamples": [
+        {
+          "seat_enforcement": "warn",
+          "expiry_warning_days": 30,
+          "check_interval_seconds": 900,
+          "counterfactual_limit_pct": 0.7,
+          "revocation_url": null,
+          "usage_report_enabled": false,
+          "compact_threshold": 0.6
+        }
+      ],
+      "businessRules": [
+        "OD-7: the default seat mode is warn."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/license.py",
+      "src/context_mgmt/config.py"
+    ],
+    "businessRules": [
+      "Allow use only for active and grace.",
+      "T7 boundary table lives in this task."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_023_1_state.py -q -k CTX_023_1",
+      "python -m pytest tests/test_ctx_023_2_defaults.py -q -k CTX_023_2"
+    ]
+  }
+}

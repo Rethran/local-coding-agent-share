@@ -1,0 +1,32 @@
+{
+  "taskId": "GRAPH-004",
+  "status": "DONE",
+  "attempt": 0,
+  "startedAt": "2026-09-15T20:08:08+00:00",
+  "updatedAt": "2026-09-15T20:08:08+00:00",
+  "summary": "Robot nodes carry source_path from the parsed fixture.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": "python -m pytest tests/test_robot_source_path.py -q",
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "GRAPH-004.1",
+      "title": "Set source_path on Robot nodes",
+      "status": "DONE",
+      "summary": "extract_robot_nodes tags every node with forward-slash source_path."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": null,
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

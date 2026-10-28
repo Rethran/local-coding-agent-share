@@ -1,0 +1,38 @@
+{
+  "taskId": "CTX-029",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-06T19:14:13+00:00",
+  "updatedAt": "2026-10-06T19:18:35+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "CTX-029.1",
+      "title": "Read the cache without calling the loader",
+      "status": "DONE",
+      "summary": "Implementing cached_license_state in src/context_mgmt/license.py"
+    },
+    {
+      "id": "CTX-029.2",
+      "title": "Refresh on the interval",
+      "status": "DONE",
+      "summary": "Implementing refresh_license and due in src/context_mgmt/license.py"
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

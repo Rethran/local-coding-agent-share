@@ -1,0 +1,32 @@
+{
+  "taskId": "GRAPH-033",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-09-17T11:04:22+00:00",
+  "updatedAt": "2026-09-17T11:05:41+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "GRAPH-033.1",
+      "title": "Fetch JSON and update counts",
+      "status": "DONE",
+      "summary": "Resuming from handoff GRAPH-033-0005: tests exist and fail; implementing viewer.js and script tag."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

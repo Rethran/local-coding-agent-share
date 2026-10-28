@@ -1,0 +1,44 @@
+{
+  "taskId": "CTX-008",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-05T18:35:01+00:00",
+  "updatedAt": "2026-10-05T18:47:16+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "CTX-008.1",
+      "title": "Return one visible daily bucket",
+      "status": "DONE",
+      "summary": "Starting implementation of GET /stats/daily route in create_app."
+    },
+    {
+      "id": "CTX-008.2",
+      "title": "Add the rolling average and baseline flag",
+      "status": "DONE",
+      "summary": "Starting implementation of GET /stats/trend route with rolling average and baseline flag."
+    },
+    {
+      "id": "CTX-008.3",
+      "title": "Hide small groups and user ids",
+      "status": "DONE",
+      "summary": "Starting implementation: adding hidden_reason to /stats/daily response for small group hiding."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

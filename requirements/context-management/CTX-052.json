@@ -1,0 +1,119 @@
+{
+  "id": "CTX-052",
+  "type": "task",
+  "summary": "Reject unknown fields and unsafe loaders",
+  "dependsOn": [
+    "CTX-051"
+  ],
+  "description": "SEC-24. A payload with a field outside the allow list is rejected. The validator module does not import pickle or call yaml.load.",
+  "scope": [
+    "An extra content key raises ValueError",
+    "The module source has no pickle import and no yaml.load"
+  ],
+  "acceptanceCriteria": "reject_unknown with allowed org_id and an extra content key raises ValueError. A payload with only org_id passes. The source of validate_input.py does not contain pickle or yaml.load. SEC-24.",
+  "constraints": [
+    "Do not ignore unknown fields.",
+    "Do not import pickle.",
+    "Do not call yaml.load."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_052_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_052_1_fields.py -q -k CTX_052_1",
+    "python -m pytest tests/test_ctx_052_2_loaders.py -q -k CTX_052_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-052.1",
+      "title": "Reject an unknown field",
+      "summary": "A content key raises ValueError. A payload with only org_id passes.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/validate_input.py",
+        "test": "tests/test_ctx_052_1_fields.py",
+        "function": "reject_unknown"
+      },
+      "scope": [
+        "extra content raises",
+        "org_id only passes"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_052_1_fields.py -q -k CTX_052_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_052_1.",
+        "This subtask's only job: A content key raises ValueError. A payload with only org_id passes.",
+        "Touch only src/context_mgmt/validate_input.py and tests/test_ctx_052_1_fields.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Allowed keys are an argument. Do not special-case the word content inside the function.",
+        "Run python -m pytest tests/test_ctx_052_1_fields.py -q -k CTX_052_1."
+      ],
+      "dataExamples": [
+        {
+          "allowed": [
+            "org_id"
+          ],
+          "extra": "content"
+        }
+      ],
+      "businessRules": [
+        "SEC-24: unknown fields are rejected."
+      ]
+    },
+    {
+      "id": "CTX-052.2",
+      "title": "Keep unsafe loaders out of the module",
+      "summary": "validate_input.py contains neither pickle nor yaml.load.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/validate_input.py",
+        "test": "tests/test_ctx_052_2_loaders.py",
+        "function": "reject_unknown"
+      },
+      "scope": [
+        "pickle absent",
+        "yaml.load absent"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_052_2_loaders.py -q -k CTX_052_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_052_2.",
+        "This subtask's only job: validate_input.py contains neither pickle nor yaml.load.",
+        "Touch only src/context_mgmt/validate_input.py and tests/test_ctx_052_2_loaders.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Read the module as text.",
+        "Run python -m pytest tests/test_ctx_052_2_loaders.py -q -k CTX_052_2."
+      ],
+      "dataExamples": [
+        {
+          "forbidden": [
+            "pickle",
+            "yaml.load"
+          ]
+        }
+      ],
+      "businessRules": [
+        "SEC-24: safe parsers only."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/validate_input.py"
+    ],
+    "businessRules": [
+      "reject_unknown(payload, allowed) raises ValueError on the first unknown key."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_052_1_fields.py -q -k CTX_052_1",
+      "python -m pytest tests/test_ctx_052_2_loaders.py -q -k CTX_052_2"
+    ]
+  }
+}

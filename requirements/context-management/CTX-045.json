@@ -1,0 +1,122 @@
+{
+  "id": "CTX-045",
+  "type": "task",
+  "summary": "Limit body size, rate, and concurrency",
+  "dependsOn": [
+    "CTX-044"
+  ],
+  "description": "SEC-10 and SEC-26. The limiter returns a reason when the body, the per-user rate, or the inflight count is over the cap. Failed-auth delay grows by attempt and the test does not sleep.",
+  "scope": [
+    "Oversize, rate, and concurrency return their reason codes",
+    "Auth failure delay is 0, 1, then 2 seconds"
+  ],
+  "acceptanceCriteria": "max_body 100 and length 101 returns too_large. The third user hit with cap 2 returns rate. inflight 3 with cap 2 returns concurrency. auth_failure_delay is 0, 1, and 2 for attempts 1, 2, and 3. A request inside all caps returns None. SEC-10 SEC-26.",
+  "constraints": [
+    "Do not sleep in the test or in auth_failure_delay.",
+    "Do not fail open when a limit is exceeded.",
+    "Do not share one counter across users."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_045_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_045_1_caps.py -q -k CTX_045_1",
+    "python -m pytest tests/test_ctx_045_2_backoff.py -q -k CTX_045_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-045.1",
+      "title": "Return a limit reason",
+      "summary": "The three over-cap cases return too_large, rate, and concurrency. An in-cap call returns None.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/limits.py",
+        "test": "tests/test_ctx_045_1_caps.py",
+        "function": "check_limits"
+      },
+      "scope": [
+        "101 bytes -> too_large",
+        "third hit -> rate",
+        "inflight 3 -> concurrency",
+        "in-cap -> None"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_045_1_caps.py -q -k CTX_045_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_045_1.",
+        "This subtask's only job: The three over-cap cases return too_large, rate, and concurrency. An in-cap call returns None.",
+        "Touch only src/context_mgmt/limits.py and tests/test_ctx_045_1_caps.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Pass counts in. Do not bind a socket.",
+        "Run python -m pytest tests/test_ctx_045_1_caps.py -q -k CTX_045_1."
+      ],
+      "dataExamples": [
+        {
+          "max_body": 100,
+          "user_cap": 2,
+          "concurrency_cap": 2
+        }
+      ],
+      "businessRules": [
+        "SEC-10: over-cap requests are rejected."
+      ]
+    },
+    {
+      "id": "CTX-045.2",
+      "title": "Back off failed authentication",
+      "summary": "Attempts 1, 2, and 3 return delays 0, 1, and 2.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/limits.py",
+        "test": "tests/test_ctx_045_2_backoff.py",
+        "function": "auth_failure_delay"
+      },
+      "scope": [
+        "attempt 1 -> 0",
+        "attempt 2 -> 1",
+        "attempt 3 -> 2"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_045_2_backoff.py -q -k CTX_045_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_045_2.",
+        "This subtask's only job: Attempts 1, 2, and 3 return delays 0, 1, and 2.",
+        "Touch only src/context_mgmt/limits.py and tests/test_ctx_045_2_backoff.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Assert the numbers. Do not call time.sleep.",
+        "Run python -m pytest tests/test_ctx_045_2_backoff.py -q -k CTX_045_2."
+      ],
+      "dataExamples": [
+        {
+          "delays": [
+            0,
+            1,
+            2
+          ]
+        }
+      ],
+      "businessRules": [
+        "SEC-26: failed authentication is rate-limited with backoff."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/limits.py"
+    ],
+    "businessRules": [
+      "check_limits returns None when the request is inside every cap."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_045_1_caps.py -q -k CTX_045_1",
+      "python -m pytest tests/test_ctx_045_2_backoff.py -q -k CTX_045_2"
+    ]
+  }
+}

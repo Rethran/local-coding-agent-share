@@ -1,0 +1,84 @@
+{
+  "id": "GRAPH-041",
+  "type": "task",
+  "summary": "Style ForceGraph3D as a neural-net signal graph",
+  "dependsOn": [
+    "GRAPH-037"
+  ],
+  "description": "viewer.js configures ForceGraph3D with directional particles, a layered DAG layout, and larger nodes/links. File-content tests only. No new JSON files.",
+  "scope": [
+    "Update src/living_graph/static/viewer.js after ForceGraph3D() is created",
+    "Call linkDirectionalParticles, dagMode, nodeRelSize, backgroundColor, and linkWidth",
+    "Keep fetch('graph-force.json') and graphData"
+  ],
+  "acceptanceCriteria": "viewer.js contains linkDirectionalParticles, dagMode, nodeRelSize, backgroundColor, and linkWidth.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-042.",
+    "Do not add a watcher or CLI unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not add npm or a bundler.",
+    "Do not recurse into nested scan folders."
+  ],
+  "verification": [
+    "python -m pytest tests/test_force_graph_style.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-041.1",
+      "title": "Particles, DAG layout, node and link size",
+      "summary": "String checks on viewer.js. No browser. No recursive scan.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "viewer.js",
+        "module": "src/living_graph/static/viewer.js",
+        "test": "tests/test_force_graph_style.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "src/living_graph/static/viewer.js",
+          "purpose": "GRAPH-037 ForceGraph3D mount. Add styling chain here."
+        }
+      ],
+      "scope": [
+        "Update src/living_graph/static/viewer.js after ForceGraph3D() is created",
+        "Call linkDirectionalParticles, dagMode, nodeRelSize, backgroundColor, and linkWidth",
+        "Keep fetch('graph-force.json') and graphData"
+      ],
+      "dataExamples": [
+        "linkDirectionalParticles(4) or linkDirectionalParticles(6).",
+        "dagMode('lr') or dagMode('td').",
+        "nodeRelSize(6) or similar number.",
+        "backgroundColor('#05060a') or '#000000'.",
+        "linkWidth(1) or linkWidth(2)."
+      ],
+      "businessRules": [
+        "Tests read JS as text. Do not use a browser.",
+        "Keep GRAPH-037 graphData and GRAPH-040 onNodeClick.",
+        "Do not add React or npm."
+      ],
+      "verification": [
+        "python -m pytest tests/test_force_graph_style.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_force_graph_style.py first.",
+        "Run python -m pytest tests/test_force_graph_style.py -q and confirm failure.",
+        "Add only the ForceGraph3D style calls in viewer.js.",
+        "Run python -m pytest tests/test_force_graph_style.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/static/viewer.js"
+    ],
+    "businessRules": [
+      "Tests read JS as text. Do not use a browser.",
+      "Keep GRAPH-037 graphData and GRAPH-040 onNodeClick.",
+      "Do not add React or npm."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_force_graph_style.py -q"
+    ]
+  }
+}

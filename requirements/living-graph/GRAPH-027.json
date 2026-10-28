@@ -1,0 +1,80 @@
+{
+  "id": "GRAPH-027",
+  "type": "task",
+  "summary": "Build the highlight set for a clicked node",
+  "dependsOn": [
+    "GRAPH-025",
+    "GRAPH-026"
+  ],
+  "description": "Combine ancestors, descendants, and the clicked node itself into one highlight set. Pure logic, no UI click.",
+  "scope": [
+    "Add highlight_set(edges, target_id) in src/living_graph/query.py",
+    "Result is ancestors union descendants union {target_id}",
+    "Use the A -> B -> C fixture"
+  ],
+  "acceptanceCriteria": "highlight_set(edges, 'B') for A->B->C is {A, B, C}.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-028.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not attach a DOM click handler.",
+    "Do not change ancestor or descendant helpers beyond calling them."
+  ],
+  "verification": [
+    "python -m pytest tests/test_highlight_set.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-027.1",
+      "title": "Union ancestors, target, descendants",
+      "summary": "Pure set. No DOM. Click is a node id argument.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "highlight_set",
+        "module": "src/living_graph/query.py",
+        "test": "tests/test_highlight_set.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "src/living_graph/model.py",
+          "purpose": "GRAPH-002 Node and Edge contracts."
+        }
+      ],
+      "scope": [
+        "Add highlight_set(edges, target_id) in src/living_graph/query.py",
+        "Result is ancestors union descendants union {target_id}",
+        "Use the A -> B -> C fixture"
+      ],
+      "dataExamples": [
+        "Edges: A -> B, B -> C.",
+        "highlight_set(B) is {A, B, C}."
+      ],
+      "businessRules": [
+        "Always include the target id.",
+        "Call ancestors and descendants instead of copying their loops."
+      ],
+      "verification": [
+        "python -m pytest tests/test_highlight_set.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_highlight_set.py first.",
+        "Run python -m pytest tests/test_highlight_set.py -q and confirm failure.",
+        "Implement only highlight_set in src/living_graph/query.py.",
+        "Run python -m pytest tests/test_highlight_set.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/query.py"
+    ],
+    "businessRules": [
+      "Always include the target id.",
+      "Call ancestors and descendants instead of copying their loops."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_highlight_set.py -q"
+    ]
+  }
+}

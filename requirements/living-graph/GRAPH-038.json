@@ -1,0 +1,87 @@
+{
+  "id": "GRAPH-038",
+  "type": "task",
+  "summary": "Expose static_root and a --serve CLI flag",
+  "dependsOn": [
+    "GRAPH-028",
+    "GRAPH-032"
+  ],
+  "description": "The CLI can serve src/living_graph/static so fetch() works. Tests must not start a blocking HTTP server.",
+  "scope": [
+    "Add static_root() in src/living_graph/cli.py returning the Path to src/living_graph/static",
+    "Parse --serve and --port with a helper parse_args(argv)",
+    "Do not call serve_forever from tests"
+  ],
+  "acceptanceCriteria": "static_root() is a directory containing index.html. parse_args(['--serve', '--port', '8765']) has serve True and port 8765.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-039.",
+    "Do not add UI unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not call serve_forever in tests.",
+    "Do not require --root/--output when --serve is present."
+  ],
+  "verification": [
+    "python -m pytest tests/test_cli_serve.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-038.1",
+      "title": "static_root and parse --serve",
+      "summary": "Path helper plus argparse. Tests never bind a port.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "static_root",
+        "module": "src/living_graph/cli.py",
+        "test": "tests/test_cli_serve.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "src/living_graph/static/index.html",
+          "purpose": "Must exist under static_root()."
+        },
+        {
+          "path": "src/living_graph/cli.py",
+          "purpose": "GRAPH-028 main() with --root and --output."
+        }
+      ],
+      "scope": [
+        "Add static_root() in src/living_graph/cli.py returning the Path to src/living_graph/static",
+        "Parse --serve and --port with a helper parse_args(argv)",
+        "Do not call serve_forever from tests"
+      ],
+      "dataExamples": [
+        "static_root() / 'index.html' exists.",
+        "--serve default port is 8000.",
+        "parse_args(['--serve', '--port', '8765']).port is 8765."
+      ],
+      "businessRules": [
+        "Tests call static_root() and parse_args(), not main(['--serve']).",
+        "Existing main(['--root', ..., '--output', ...]) behavior from GRAPH-028 must still work.",
+        "HTTPServer may exist in main() for --serve but tests must not invoke that branch."
+      ],
+      "verification": [
+        "python -m pytest tests/test_cli_serve.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_cli_serve.py first.",
+        "Run python -m pytest tests/test_cli_serve.py -q and confirm failure.",
+        "Implement static_root and parse_args in src/living_graph/cli.py.",
+        "Run python -m pytest tests/test_cli_serve.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/cli.py"
+    ],
+    "businessRules": [
+      "Tests call static_root() and parse_args(), not main(['--serve']).",
+      "Existing main(['--root', ..., '--output', ...]) behavior from GRAPH-028 must still work.",
+      "HTTPServer may exist in main() for --serve but tests must not invoke that branch."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_cli_serve.py -q"
+    ]
+  }
+}

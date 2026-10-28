@@ -1,0 +1,38 @@
+{
+  "taskId": "CTX-039",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-06T20:51:53+00:00",
+  "updatedAt": "2026-10-06T20:55:55+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "CTX-039.1",
+      "title": "Match the hand calculation",
+      "status": "DONE",
+      "summary": "Implementing savings_view in src/context_mgmt/savings.py"
+    },
+    {
+      "id": "CTX-039.2",
+      "title": "Label the chart as an estimate",
+      "status": "DONE",
+      "summary": "Starting implementation: adding savings-estimate element with note text to static/index.html"
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

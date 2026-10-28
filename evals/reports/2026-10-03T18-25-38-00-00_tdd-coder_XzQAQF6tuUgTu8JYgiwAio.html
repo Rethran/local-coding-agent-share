@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8">
+  <title>Arvio — baseline / night-runner:latest</title>
+  <style>
+    @page { size: A4; margin: 14mm; }
+    body { font-family: Georgia, serif; margin: 2rem auto; max-width: 960px; line-height: 1.45; color: #1a1a1a; }
+    h1, h2, h3 { font-family: "Segoe UI", sans-serif; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border-bottom: 1px solid #ddd; text-align: left; padding: 0.4rem 0.6rem; vertical-align: top; }
+    th { font-family: "Segoe UI", sans-serif; font-weight: 600; }
+    .fail { background: #fdecea; }
+    .flaky { background: #fff4ce; }
+    .reliable { background: #e8f6ee; }
+    .cannot { background: #fdecea; }
+    .muted { color: #555; font-size: 0.95rem; }
+    .notice { background: #fff4ce; border-left: 4px solid #d9a600; padding: 0.6rem 0.8rem; }
+    .answer { font-size: 1.15rem; }
+    pre { white-space: pre-wrap; background: #f6f6f6; padding: 0.75rem; overflow-x: auto; }
+    code { font-family: Consolas, monospace; }
+    section { break-inside: avoid; }
+    @media print {
+      body { margin: 0; max-width: none; }
+      pre { font-size: 9pt; }
+      a { color: inherit; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Arvio</h1>
+  <p class="muted">
+    Variantti <code>baseline</code>
+    · malli <code>night-runner:latest</code>
+    · 2026-10-03T18:25:46+00:00
+  </p>
+  
+
+  <section>
+    <h2>Katselmoijalle</h2>
+    <p class="answer"><strong>Mihin tehtäviin tämän voi ohjata.</strong> Ei yhtään arvioitua tehtävää.</p>
+    <p class="answer"><strong>Mitä yksi onnistuminen maksoi.</strong> Ei yhtään tehtävää, joka onnistui joka kerta, joten minuuttia per onnistuminen ei jaeta. Yhteensä 0 minuuttia.</p>
+    <p class="answer"><strong>Muuttuiko tulos.</strong> Ero edelliseen mahtuu satunnaiseen heittoon, älä tulkitse sitä muutokseksi.</p>
+
+    
+    <h3>Tehtävät ryhmittäin</h3>
+    <table>
+      <thead><tr><th>Ryhmä</th><th>Tehtäviä</th><th>Merkitys</th></tr></thead>
+      <tbody>
+        <tr class="reliable"><td>Luotettava</td><td>0</td><td>Onnistui joka kokeilukerta.</td></tr>
+        <tr class="flaky"><td>Hauras</td><td>0</td><td>Onnistuu vain joskus.</td></tr>
+        <tr class="cannot"><td>Ei osaa</td><td>0</td><td>Testit eivät menneet kertaakaan.</td></tr>
+      </tbody>
+    </table>
+    
+      
+    
+      
+    
+      
+    
+  </section>
+
+  <section>
+    <h2>Tekijälle</h2>
+    <p class="answer"><strong>Voiko valmis-merkintää uskoa.</strong> Yksikään ajo ei merkinnyt tehtävää valmiiksi.</p>
+    <p class="answer"><strong>Onko odotusaika käyttökelpoinen.</strong> Aikaa ei ole kirjattu. Askelmäärää ei ole tässä lokissa.</p>
+    <p class="answer"><strong>Mihin korjaus kohdistuu.</strong> Yksikään ajo ei epäonnistunut.</p>
+
+    <h3>Aika ja askeleet</h3>
+    
+    
+    <table>
+      <thead><tr><th></th><th>Tyypillinen</th><th>Hitain</th><th>Kertoja</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Minuutteja</td>
+          <td>—</td>
+          <td>—</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <td>Askeleet</td>
+          <td>ei kirjattu</td>
+          <td>—</td>
+          <td>0</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Mihin ajot kaatuivat</h3>
+    <table>
+      <thead><tr><th>Syy</th><th>Ajot</th></tr></thead>
+      <tbody>
+        
+        <tr>
+          <td>aikakatkaisu</td>
+          <td>0</td>
+        </tr>
+        
+        <tr>
+          <td>silmukka</td>
+          <td>0</td>
+        </tr>
+        
+        <tr>
+          <td>työkaluvirheet</td>
+          <td>0</td>
+        </tr>
+        
+        <tr>
+          <td>askelbudjetti</td>
+          <td>0</td>
+        </tr>
+        
+        <tr>
+          <td>testit</td>
+          <td>0</td>
+        </tr>
+        
+        <tr>
+          <td>muu</td>
+          <td>0</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    <p class="muted">Epäonnistuneita ajoja 0.</p>
+
+    <h3>Läpäisy kriteereittäin</h3>
+    <table>
+      <thead>
+        <tr><th>Kriteeri</th><th>Osuus</th><th>Heitto</th><th>Kertoja</th><th>Ero edelliseen</th></tr>
+      </thead>
+      <tbody>
+        
+      </tbody>
+    </table>
+
+    <h3>Mitä arvioidaan</h3>
+    
+      <h4>Valmis-merkintä</h4>
+      <p>Agentti merkitsi tehtävän valmiiksi ja tarkistus hyväksyi sen.</p>
+      <p class="muted">Miksi: Sujuvakaan keskustelu ei riitä, jos tehtävää ei merkitä valmiiksi.</p>
+      <p class="muted">Miten: Luetaan tehtävän tila ajon jälkeen. Läpi vain, jos tila on valmis.</p>
+    
+      <h4>Testit</h4>
+      <p>Aiemmin hyväksytyn version testit menevät läpi agentin kirjoittamalla koodilla.</p>
+      <p class="muted">Miksi: Agentin omat testit voivat olla liian heikot. Nämä ovat regressiotestejä, eivät erillisiä piilotestejä.</p>
+      <p class="muted">Miten: Ajon jälkeen ajetaan hyväksytyn version testitiedostot.</p>
+    
+      <h4>Prosessiraja</h4>
+      <p>Agentti valmistui ilman silmukkaa, askelbudjetin loppumista tai työkaluvirheiden tulvaa.</p>
+      <p class="muted">Miksi: Paikallinen malli epäonnistuu usein tapaan tehdä työtä, ei vain vastauksen oikeellisuuteen.</p>
+      <p class="muted">Miten: Luetaan ajon yhteenveto. Hylätään, jos yrityksiä on yli 10, askeleita yli 160, sama työkalukutsu toistuu yli 5 kertaa, tai työkaluvirheiden osuus on yli 40%.</p>
+    
+
+    <h3>Epäonnistumiset ensin</h3>
+    
+      <p>Ei epäonnistuneita ajoja.</p>
+    
+    
+
+    <h3>Haurat tehtävät</h3>
+    <p class="muted">Sama tehtävä, eri kerrat. Nämä kannattaa lukea ensin.</p>
+    
+      <p>Ei sekoittuneita tuloksia (tarvitaan vähintään 2 kertaa).</p>
+    
+    <table>
+      
+    </table>
+  </section>
+</body>
+</html>

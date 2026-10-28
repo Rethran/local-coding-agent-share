@@ -1,0 +1,38 @@
+{
+  "taskId": "CTX-010",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-05T19:06:10+00:00",
+  "updatedAt": "2026-10-05T19:33:25+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "CTX-010.1",
+      "title": "Copy provider usage onto the event",
+      "status": "DONE",
+      "summary": "When usage is present, emit prompt_tokens and completion_tokens from it and token_source provider."
+    },
+    {
+      "id": "CTX-010.2",
+      "title": "Estimate tokens when usage is missing",
+      "status": "DONE",
+      "summary": "Implementing estimate_tokens function and refactoring _build_usage_event to use it."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

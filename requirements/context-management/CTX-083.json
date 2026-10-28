@@ -1,0 +1,102 @@
+{
+  "id": "CTX-083",
+  "type": "task",
+  "summary": "Plan the local home layout",
+  "dependsOn": [
+    "CTX-082",
+    "CTX-076"
+  ],
+  "description": "ctx init writes a loopback layout under CTX_HOME. The pure plan is init_layout.",
+  "scope": [
+    "Loopback ports 8787 and 8788",
+    "model id and context window come from the arguments"
+  ],
+  "acceptanceCriteria": "init_layout('qwen3:8b', 4096) returns data_host 127.0.0.1, data_port 8787, management_host 127.0.0.1, management_port 8788, model_id qwen3:8b, and context_window 4096.",
+  "constraints": [
+    "Bind only to 127.0.0.1.",
+    "Do not choose a silent default for model_id or num_ctx.",
+    "A second init without --force must leave the files unchanged."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_083_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_083_1_layout.py -q -k CTX_083_1"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-083.1",
+      "title": "Return the loopback layout",
+      "summary": "init_layout returns the loopback hosts, ports, model id, and context window.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/init_cmd.py",
+        "test": "tests/test_ctx_083_1_layout.py",
+        "function": "init_layout"
+      },
+      "scope": [
+        "127.0.0.1",
+        "8787",
+        "8788",
+        "model_id",
+        "context_window"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_083_1_layout.py -q -k CTX_083_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_083_1.",
+        "This subtask's only job: init_layout returns the loopback hosts, ports, model id, and context window.",
+        "Touch src/context_mgmt/init_cmd.py, src/context_mgmt/cli.py, and tests/test_ctx_083_1_layout.py.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "init_layout(model_id, num_ctx) returns data_host 127.0.0.1, data_port 8787, management_host 127.0.0.1, management_port 8788, model_id, and context_window equal to num_ctx.",
+        "ctx init --model M --num-ctx N writes that layout under CTX_HOME, default .ctx-home. Without --force, a second run leaves every file unchanged.",
+        "Store key material only as key_digest output. Do not write the plaintext into the layout files.",
+        "The test must call init_layout.",
+        "Run python -m pytest tests/test_ctx_083_1_layout.py -q -k CTX_083_1."
+      ],
+      "dataExamples": [
+        {
+          "input": {
+            "model_id": "qwen3:8b",
+            "num_ctx": 4096
+          },
+          "output": {
+            "data_host": "127.0.0.1",
+            "data_port": 8787,
+            "management_host": "127.0.0.1",
+            "management_port": 8788,
+            "model_id": "qwen3:8b",
+            "context_window": 4096
+          }
+        }
+      ],
+      "businessRules": [
+        "The local listeners are loopback only."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/friend_keys.py",
+          "purpose": "key_digest for any key material init stores."
+        }
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/init_cmd.py",
+      "src/context_mgmt/cli.py"
+    ],
+    "businessRules": [
+      "Loopback 8787 and 8788. context_window is num_ctx."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_083_1_layout.py -q -k CTX_083_1"
+    ]
+  }
+}

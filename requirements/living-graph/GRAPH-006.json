@@ -1,0 +1,94 @@
+{
+  "id": "GRAPH-006",
+  "type": "task",
+  "summary": "Extract one Python same-file function call",
+  "dependsOn": [
+    "GRAPH-001",
+    "GRAPH-002"
+  ],
+  "description": "Parse one tiny Python fixture with AST and return a single caller/callee pair for a function that calls another function defined in the same file.",
+  "scope": [
+    "Add extract_python_edges(path) in src/living_graph/python_extractor.py",
+    "Use Python AST, not the Robot parser",
+    "Given tests/fixtures/simple_library.py, return exactly one edge",
+    "Caller is open_session and callee is connect"
+  ],
+  "acceptanceCriteria": "extract_python_edges('tests/fixtures/simple_library.py') returns exactly one edge open_session -> connect.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-007.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not ignore builtins yet.",
+    "Do not tag node types yet.",
+    "Do not parse Robot files in this task."
+  ],
+  "verification": [
+    "python -m pytest tests/test_python_extractor.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-006.1",
+      "title": "Parse one Python function call",
+      "summary": "One same-file Python call. Return exactly one edge. No builtin filtering.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "extract_python_edges",
+        "module": "src/living_graph/python_extractor.py",
+        "test": "tests/test_python_extractor.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "tests/fixtures/simple_library.py",
+          "purpose": "Tiny Python fixture with one function calling another function."
+        },
+        {
+          "path": "src/living_graph/model.py",
+          "purpose": "GRAPH-002 Node and Edge contracts."
+        },
+        {
+          "path": "src/living_graph/robot_extractor.py",
+          "name": "extract_robot_edges",
+          "purpose": "Copy Edge field construction (source_path ids). Do not parse Robot files."
+        }
+      ],
+      "scope": [
+        "Add extract_python_edges(path) in src/living_graph/python_extractor.py",
+        "Use Python AST, not the Robot parser",
+        "Given tests/fixtures/simple_library.py, return exactly one edge",
+        "Caller is open_session and callee is connect"
+      ],
+      "dataExamples": [
+        "Fixture: def open_session(): connect().",
+        "Fixture: def connect(): return True.",
+        "Expected edge: open_session -> connect."
+      ],
+      "businessRules": [
+        "Use ast.parse and walk Call nodes inside FunctionDef bodies.",
+        "Only record a call when the callee name is another function defined in the same file."
+      ],
+      "verification": [
+        "python -m pytest tests/test_python_extractor.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_python_extractor.py first.",
+        "Run python -m pytest tests/test_python_extractor.py -q and confirm failure.",
+        "Implement only extract_python_edges in src/living_graph/python_extractor.py.",
+        "Run python -m pytest tests/test_python_extractor.py -q and stop when it passes.",
+        "If simple_library.py still has placeholder names, set them to open_session and connect."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/python_extractor.py"
+    ],
+    "businessRules": [
+      "Use ast.parse and walk Call nodes inside FunctionDef bodies.",
+      "Only record a call when the callee name is another function defined in the same file."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_python_extractor.py -q"
+    ]
+  }
+}

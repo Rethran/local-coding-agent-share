@@ -1,0 +1,115 @@
+{
+  "id": "CTX-035",
+  "type": "task",
+  "summary": "Add the offline license tool",
+  "dependsOn": [
+    "CTX-024"
+  ],
+  "description": "FR-C7-17 and SEC-17. license-tool functions are keygen, issue, inspect, and verify. The private key exists only in the keygen return value, never in the module source.",
+  "scope": [
+    "keygen, issue, and verify round-trip",
+    "inspect shows the claims and the source has no private key block"
+  ],
+  "acceptanceCriteria": "issue then verify with the keygen public key returns ok true. inspect returns license_id lic-1. license_tool.py does not contain BEGIN PRIVATE KEY. The private key string returned by keygen is not a substring of the module source. FR-C7-17 SEC-17.",
+  "constraints": [
+    "Do not write the private key into a source file.",
+    "Do not add a network call to the tool.",
+    "Do not put the vendor private key in the package."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_035_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_035_1_issue.py -q -k CTX_035_1",
+    "python -m pytest tests/test_ctx_035_2_inspect.py -q -k CTX_035_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-035.1",
+      "title": "Issue and verify a license",
+      "summary": "keygen, issue, and verify round-trip a license_id of lic-1.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/license_tool.py",
+        "test": "tests/test_ctx_035_1_issue.py",
+        "function": "issue_license"
+      },
+      "scope": [
+        "verify ok true",
+        "claims license_id lic-1"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_035_1_issue.py -q -k CTX_035_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_035_1.",
+        "This subtask's only job: keygen, issue, and verify round-trip a license_id of lic-1.",
+        "Touch only src/context_mgmt/license_tool.py and tests/test_ctx_035_1_issue.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Keep the private key in the test variable only.",
+        "Run python -m pytest tests/test_ctx_035_1_issue.py -q -k CTX_035_1."
+      ],
+      "dataExamples": [
+        {
+          "license_id": "lic-1",
+          "ok": true
+        }
+      ],
+      "businessRules": [
+        "FR-C7-17 commands are keygen, issue, inspect, and verify."
+      ]
+    },
+    {
+      "id": "CTX-035.2",
+      "title": "Inspect claims and keep the private key out of source",
+      "summary": "inspect returns the claims, and the module source does not contain the private key.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/license_tool.py",
+        "test": "tests/test_ctx_035_2_inspect.py",
+        "function": "inspect_license"
+      },
+      "scope": [
+        "inspect license_id lic-1",
+        "BEGIN PRIVATE KEY absent",
+        "generated private key absent from source"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_035_2_inspect.py -q -k CTX_035_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_035_2.",
+        "This subtask's only job: inspect returns the claims, and the module source does not contain the private key.",
+        "Touch only src/context_mgmt/license_tool.py and tests/test_ctx_035_2_inspect.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Read the module as text after keygen.",
+        "Run python -m pytest tests/test_ctx_035_2_inspect.py -q -k CTX_035_2."
+      ],
+      "dataExamples": [
+        {
+          "forbidden": "BEGIN PRIVATE KEY"
+        }
+      ],
+      "businessRules": [
+        "SEC-17: only the public key belongs in a release."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/license_tool.py"
+    ],
+    "businessRules": [
+      "Signing uses the same canonical JSON bytes as verify_license."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_035_1_issue.py -q -k CTX_035_1",
+      "python -m pytest tests/test_ctx_035_2_inspect.py -q -k CTX_035_2"
+    ]
+  }
+}

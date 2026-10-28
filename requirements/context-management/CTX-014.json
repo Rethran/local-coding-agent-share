@@ -1,0 +1,137 @@
+{
+  "id": "CTX-014",
+  "type": "task",
+  "summary": "Serve a static dashboard shell",
+  "dependsOn": [
+    "CTX-008"
+  ],
+  "description": "FR-C4-01 and FR-C4-02. GET / on the reporting app returns static/index.html. The page has a title and four chart elements. There is no build step.",
+  "scope": [
+    "Serve static/index.html from GET /",
+    "Title text Context management",
+    "Four element ids for the charts"
+  ],
+  "acceptanceCriteria": "GET / returns 200, content-type text/html, and the file contents. The HTML contains the title and the four chart ids. FR-C4-01 FR-C4-02.",
+  "constraints": [
+    "Do not add React, Vue, npm, or a compile step.",
+    "Do not add a per-user chart.",
+    "Do not inline a second copy of the page in Python."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_014_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_014_1_page.py -q -k CTX_014_1",
+    "python -m pytest tests/test_ctx_014_2_charts.py -q -k CTX_014_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-014.1",
+      "title": "Serve the static page",
+      "summary": "GET / returns static/index.html with title Context management.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/api.py",
+        "test": "tests/test_ctx_014_1_page.py",
+        "function": "create_app"
+      },
+      "scope": [
+        "Create static/index.html",
+        "GET / status 200 and text/html",
+        "Body contains the title"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_014_1_page.py -q -k CTX_014_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_014_1.",
+        "This subtask's only job: GET / returns static/index.html with title Context management.",
+        "Touch only src/context_mgmt/api.py and tests/test_ctx_014_1_page.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Write the HTML file from dataExamples.",
+        "Return that file from GET /. Do not duplicate the HTML inside api.py.",
+        "Run python -m pytest tests/test_ctx_014_1_page.py -q -k CTX_014_1."
+      ],
+      "dataExamples": [
+        {
+          "html": "<!DOCTYPE html><html><head><title>Context management</title></head><body></body></html>"
+        }
+      ],
+      "businessRules": [
+        "FR-C4-01: one static page served by the reporting app."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/api.py",
+          "purpose": "Reporting API and static dashboard route."
+        }
+      ]
+    },
+    {
+      "id": "CTX-014.2",
+      "title": "Add the four chart containers",
+      "summary": "The served HTML contains the four chart element ids.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "static/index.html",
+        "test": "tests/test_ctx_014_2_charts.py"
+      },
+      "scope": [
+        "div id chart-avg-prompt-tokens",
+        "div id chart-total-tokens",
+        "div id chart-share-above-threshold",
+        "div id chart-tokens-saved"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_014_2_charts.py -q -k CTX_014_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_014_2.",
+        "This subtask's only job: The served HTML contains the four chart element ids.",
+        "Touch only static/index.html and tests/test_ctx_014_2_charts.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Add the four empty divs to static/index.html.",
+        "Assert each id is in the GET / body.",
+        "Run python -m pytest tests/test_ctx_014_2_charts.py -q -k CTX_014_2."
+      ],
+      "dataExamples": [
+        {
+          "ids": [
+            "chart-avg-prompt-tokens",
+            "chart-total-tokens",
+            "chart-share-above-threshold",
+            "chart-tokens-saved"
+          ]
+        }
+      ],
+      "businessRules": [
+        "FR-C4-02: those four charts, no others required."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/api.py",
+          "purpose": "Reporting API and static dashboard route."
+        }
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/api.py",
+      "static/index.html"
+    ],
+    "businessRules": [
+      "The route reads static/index.html from the process working directory.",
+      "Tests use TestClient and also read the file."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_014_1_page.py -q -k CTX_014_1",
+      "python -m pytest tests/test_ctx_014_2_charts.py -q -k CTX_014_2"
+    ]
+  }
+}

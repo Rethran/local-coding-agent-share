@@ -1,0 +1,32 @@
+{
+  "taskId": "GRAPH-029",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-09-17T09:33:07+00:00",
+  "updatedAt": "2026-09-17T09:35:13+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "GRAPH-029.1",
+      "title": "Keep callee-only nodes",
+      "status": "DONE",
+      "summary": "Resuming from handoff GRAPH-029-0004. Tests and fixture already written. Need to remove caller-only filter in serialize_graph."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

@@ -1,0 +1,217 @@
+{
+  "id": "GRAPH-003",
+  "type": "task",
+  "summary": "Parse one Robot file into raw call edges",
+  "dependsOn": [
+    "GRAPH-001",
+    "GRAPH-002"
+  ],
+  "description": "Implement the first Robot Framework extractor slice: parse direct keyword calls from a single .robot or .resource file into raw graph edges.",
+  "scope": [
+    "Add src/living_graph/robot_extractor.py",
+    "Add focused pytest tests under tests/test_robot_extractor.py",
+    "Use tiny fixtures from tests/fixtures",
+    "Return raw caller/callee relationships only"
+  ],
+  "acceptanceCriteria": "The extractor returns correctly attributed raw edges for tiny Robot Framework test cases and user keywords without producing edges for comments, blank lines, or metadata/settings lines.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement cross-file resolution in this task.",
+    "Do not implement Python AST parsing in this task.",
+    "Do not implement graph serialization or UI rendering in this task.",
+    "Keep fixture files tiny."
+  ],
+  "verification": [
+    "python -m pytest tests/test_robot_extractor.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-003.1",
+      "title": "Parse one test case direct keyword calls",
+      "summary": "Implement only enough Robot parsing to return two direct keyword call edges from one test case fixture.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "extract_robot_edges",
+        "module": "src/living_graph/robot_extractor.py",
+        "test": "tests/test_robot_extractor.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "tests/fixtures/simple_test.robot",
+          "purpose": "Tiny fixture with one test case calling two keywords."
+        },
+        {
+          "path": "src/living_graph/model.py",
+          "purpose": "Graph data contracts from GRAPH-002."
+        }
+      ],
+      "scope": [
+        "Add or update extract_robot_edges(path) in src/living_graph/robot_extractor.py",
+        "Given tests/fixtures/simple_test.robot, return exactly two edges in call order",
+        "Use the test case name as caller for both edges",
+        "Use the called keyword names as callee values"
+      ],
+      "dataExamples": [
+        "Fixture: *** Test Cases *** / Example Test / Keyword One / Keyword Two.",
+        "Expected edges in order: Example Test -> Keyword One, Example Test -> Keyword Two."
+      ],
+      "verification": [
+        "python -m pytest tests/test_robot_extractor.py -q"
+      ],
+      "instructions": [
+        "Write the failing test for this behavior first.",
+        "Run python -m pytest tests/test_robot_extractor.py -q and confirm failure before implementation.",
+        "Implement only the minimal parser behavior for direct test case calls.",
+        "Run python -m pytest tests/test_robot_extractor.py -q again and stop when it passes."
+      ]
+    },
+    {
+      "id": "GRAPH-003.2",
+      "title": "Parse user keyword body calls",
+      "summary": "Extend extract_robot_edges so a user keyword body call uses the keyword name as caller.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "extract_robot_edges",
+        "module": "src/living_graph/robot_extractor.py",
+        "test": "tests/test_robot_extractor.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "tests/fixtures/simple_keywords.resource",
+          "purpose": "Tiny fixture with one user keyword calling another keyword."
+        },
+        {
+          "path": "src/living_graph/model.py",
+          "purpose": "Graph data contracts from GRAPH-002."
+        }
+      ],
+      "scope": [
+        "Extend extract_robot_edges(path) for *** Keywords *** sections",
+        "Given tests/fixtures/simple_keywords.resource, return an edge from the user keyword to the called keyword",
+        "Do not change Task 1.1 behavior"
+      ],
+      "dataExamples": [
+        "Fixture: Keyword One keyword body calls Keyword Two.",
+        "Expected edge: Keyword One -> Keyword Two."
+      ],
+      "verification": [
+        "python -m pytest tests/test_robot_extractor.py -q"
+      ],
+      "instructions": [
+        "Add the failing user-keyword test first.",
+        "Run python -m pytest tests/test_robot_extractor.py -q and confirm failure.",
+        "Implement the smallest extension to make it pass.",
+        "Run python -m pytest tests/test_robot_extractor.py -q."
+      ]
+    },
+    {
+      "id": "GRAPH-003.3",
+      "title": "Handle keywords with zero calls",
+      "summary": "Ensure empty or Log-only keyword bodies do not raise and do not produce edges.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "extract_robot_edges",
+        "module": "src/living_graph/robot_extractor.py",
+        "test": "tests/test_robot_extractor.py"
+      },
+      "scope": [
+        "Add a tiny fixture or inline test data with a user keyword that has no application keyword calls",
+        "Assert extract_robot_edges returns an empty list for that caller",
+        "Do not return None"
+      ],
+      "dataExamples": [
+        "Keyword body may be empty or contain only Log    Ready.",
+        "Expected result: no edges for that keyword body."
+      ],
+      "verification": [
+        "python -m pytest tests/test_robot_extractor.py -q"
+      ],
+      "instructions": [
+        "Add a failing zero-call test first.",
+        "Run python -m pytest tests/test_robot_extractor.py -q and confirm failure.",
+        "Implement only the zero-call handling needed.",
+        "Run python -m pytest tests/test_robot_extractor.py -q."
+      ]
+    },
+    {
+      "id": "GRAPH-003.4",
+      "title": "Handle multiple test cases in one file",
+      "summary": "Ensure calls from multiple test cases are attributed to the correct caller without cross-contamination.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "extract_robot_edges",
+        "module": "src/living_graph/robot_extractor.py",
+        "test": "tests/test_robot_extractor.py"
+      },
+      "scope": [
+        "Add a fixture with two test cases, each calling a different keyword",
+        "Assert each edge caller is the correct test case name",
+        "Preserve call ordering within the file"
+      ],
+      "dataExamples": [
+        "First Case calls First Keyword.",
+        "Second Case calls Second Keyword.",
+        "Expected edges: First Case -> First Keyword, Second Case -> Second Keyword."
+      ],
+      "verification": [
+        "python -m pytest tests/test_robot_extractor.py -q"
+      ],
+      "instructions": [
+        "Add the failing multiple-test-case test first.",
+        "Run python -m pytest tests/test_robot_extractor.py -q and confirm failure.",
+        "Implement only attribution isolation between test cases.",
+        "Run python -m pytest tests/test_robot_extractor.py -q."
+      ]
+    },
+    {
+      "id": "GRAPH-003.5",
+      "title": "Ignore non-call Robot lines",
+      "summary": "Ignore comments, blanks, settings, documentation, and tags inside test cases or keyword bodies.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "extract_robot_edges",
+        "module": "src/living_graph/robot_extractor.py",
+        "test": "tests/test_robot_extractor.py"
+      },
+      "scope": [
+        "Add fixture lines for comments, blanks, [Documentation], and [Tags]",
+        "Assert no spurious edges are emitted for non-call lines",
+        "Keep valid keyword call extraction unchanged"
+      ],
+      "dataExamples": [
+        "Ignore lines starting with #.",
+        "Ignore Robot setting rows like [Documentation] and [Tags].",
+        "Keep real keyword rows such as Verify Dashboard."
+      ],
+      "verification": [
+        "python -m pytest tests/test_robot_extractor.py -q"
+      ],
+      "instructions": [
+        "Add the failing ignore-lines test first.",
+        "Run python -m pytest tests/test_robot_extractor.py -q and confirm failure.",
+        "Implement only filtering for non-call Robot rows.",
+        "Run python -m pytest tests/test_robot_extractor.py -q."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/robot_extractor.py",
+      "src/living_graph/model.py"
+    ],
+    "businessRules": [
+      "Raw edges represent direct calls only.",
+      "Caller is the containing test case or user keyword name.",
+      "Callee is the first executable Robot keyword token on a call row.",
+      "Source file metadata is defined by GRAPH-002 contracts."
+    ],
+    "edgeCases": [
+      "Empty keyword bodies produce an empty list, not None.",
+      "Multiple test cases in one file must not share caller state.",
+      "Comments, blank lines, and metadata rows are not calls."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_robot_extractor.py -q"
+    ]
+  }
+}

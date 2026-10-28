@@ -1,0 +1,80 @@
+{
+  "id": "GRAPH-016",
+  "type": "task",
+  "summary": "Write the scanned graph to one JSON path",
+  "dependsOn": [
+    "GRAPH-015",
+    "GRAPH-014"
+  ],
+  "description": "Write the graph from scan_fixtures to a caller-supplied output path as one JSON file using serialize_graph.",
+  "scope": [
+    "Add write_graph(root, output_path) in src/living_graph/scan.py",
+    "Scan tests/fixtures and write serialize_graph output to output_path",
+    "Assert the file exists and json.load has nodes and edges"
+  ],
+  "acceptanceCriteria": "write_graph('tests/fixtures', tmp_path / 'graph.json') creates that file and its parsed contents include nodes and edges keys.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-017.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not detect changed files yet.",
+    "Do not watch the filesystem."
+  ],
+  "verification": [
+    "python -m pytest tests/test_write_graph.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-016.1",
+      "title": "Write one graph JSON file",
+      "summary": "scan_fixtures plus serialize_graph to a given path. No change detection.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "write_graph",
+        "module": "src/living_graph/scan.py",
+        "test": "tests/test_write_graph.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "src/living_graph/serialize.py",
+          "purpose": "serialize_graph from GRAPH-014."
+        }
+      ],
+      "scope": [
+        "Add write_graph(root, output_path) in src/living_graph/scan.py",
+        "Scan tests/fixtures and write serialize_graph output to output_path",
+        "Assert the file exists and json.load has nodes and edges"
+      ],
+      "dataExamples": [
+        "output_path example: graph.json.",
+        "File body has keys nodes and edges."
+      ],
+      "businessRules": [
+        "Create parent directories if needed.",
+        "Overwrite the output file when it already exists."
+      ],
+      "verification": [
+        "python -m pytest tests/test_write_graph.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_write_graph.py first.",
+        "Run python -m pytest tests/test_write_graph.py -q and confirm failure.",
+        "Implement only write_graph in src/living_graph/scan.py.",
+        "Run python -m pytest tests/test_write_graph.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/scan.py"
+    ],
+    "businessRules": [
+      "Create parent directories if needed.",
+      "Overwrite the output file when it already exists."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_write_graph.py -q"
+    ]
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "taskId": "CTX-080",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-14T13:55:57+00:00",
+  "updatedAt": "2026-10-14T14:03:07+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "CTX-080.1",
+      "title": "Call authorize_bearer from the gateway",
+      "status": "DONE",
+      "summary": "Starting implementation: adding authorize_bearer call to gateway.py chat path."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

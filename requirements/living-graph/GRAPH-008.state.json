@@ -1,0 +1,32 @@
+{
+  "taskId": "GRAPH-008",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-09-16T19:32:20+00:00",
+  "updatedAt": "2026-09-16T19:34:05+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "GRAPH-008.1",
+      "title": "Set Python node type",
+      "status": "DONE",
+      "summary": "Implementing extract_python_nodes; tests already exist."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

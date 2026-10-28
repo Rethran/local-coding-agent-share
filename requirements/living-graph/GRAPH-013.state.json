@@ -1,0 +1,32 @@
+{
+  "taskId": "GRAPH-013",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-09-16T19:48:39+00:00",
+  "updatedAt": "2026-09-16T19:50:22+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "GRAPH-013.1",
+      "title": "True on a two-node cycle, False on a chain",
+      "status": "DONE",
+      "summary": "Tests already written. Implementing has_cycle in src/living_graph/metrics.py."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

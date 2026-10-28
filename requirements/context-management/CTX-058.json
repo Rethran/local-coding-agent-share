@@ -1,0 +1,118 @@
+{
+  "id": "CTX-058",
+  "type": "task",
+  "summary": "Count tokens with a per-model divisor",
+  "dependsOn": [
+    "CTX-010",
+    "CTX-057"
+  ],
+  "description": "DEP-06 and DEP-07. The fallback divisor is chosen by model id. context_pct uses that model's window, so one rule set covers a short window and a long window.",
+  "scope": [
+    "The same text yields different token counts for two models",
+    "context_pct uses the model window"
+  ],
+  "acceptanceCriteria": "Text 12345678 with divisor 4 yields 2 and with divisor 8 yields 1. context_pct(8000, 10000) is 0.8. context_pct(8000, 4096) is greater than 1. DEP-06 DEP-07.",
+  "constraints": [
+    "Do not hardcode one divisor for every model.",
+    "Do not hardcode 32768 as every model's window.",
+    "Do not call a tokenizer service."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_058_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_058_1_divisor.py -q -k CTX_058_1",
+    "python -m pytest tests/test_ctx_058_2_window.py -q -k CTX_058_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-058.1",
+      "title": "Use the model divisor",
+      "summary": "12345678 is 2 tokens for qwen and 1 token for cloud-x.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/tokenize.py",
+        "test": "tests/test_ctx_058_1_divisor.py",
+        "function": "estimate_tokens"
+      },
+      "scope": [
+        "qwen divisor 4 -> 2",
+        "cloud-x divisor 8 -> 1"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_058_1_divisor.py -q -k CTX_058_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_058_1.",
+        "This subtask's only job: 12345678 is 2 tokens for qwen and 1 token for cloud-x.",
+        "Touch only src/context_mgmt/tokenize.py and tests/test_ctx_058_1_divisor.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "estimate_tokens(text, model_id, divisors) uses max(1, len(text) // divisor).",
+        "Run python -m pytest tests/test_ctx_058_1_divisor.py -q -k CTX_058_1."
+      ],
+      "dataExamples": [
+        {
+          "text": "12345678",
+          "qwen": 2,
+          "cloud_x": 1
+        }
+      ],
+      "businessRules": [
+        "DEP-06: the fallback tokenizer is configured per model."
+      ]
+    },
+    {
+      "id": "CTX-058.2",
+      "title": "Use the model window",
+      "summary": "8000 tokens on a 10000 window is 0.8, and on a 4096 window is above 1.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/tokenize.py",
+        "test": "tests/test_ctx_058_2_window.py",
+        "function": "context_pct"
+      },
+      "scope": [
+        "10000 -> 0.8",
+        "4096 -> greater than 1"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_058_2_window.py -q -k CTX_058_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_058_2.",
+        "This subtask's only job: 8000 tokens on a 10000 window is 0.8, and on a 4096 window is above 1.",
+        "Touch only src/context_mgmt/tokenize.py and tests/test_ctx_058_2_window.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Do not cap the ratio at 1. The rule engine sees the real ratio.",
+        "Run python -m pytest tests/test_ctx_058_2_window.py -q -k CTX_058_2."
+      ],
+      "dataExamples": [
+        {
+          "prompt_tokens": 8000,
+          "wide": 10000,
+          "narrow": 4096
+        }
+      ],
+      "businessRules": [
+        "DEP-07: thresholds are percentages of each model's window."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/tokenize.py"
+    ],
+    "businessRules": [
+      "Missing model id raises KeyError. Do not invent a divisor."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_058_1_divisor.py -q -k CTX_058_1",
+      "python -m pytest tests/test_ctx_058_2_window.py -q -k CTX_058_2"
+    ]
+  }
+}

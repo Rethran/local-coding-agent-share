@@ -1,0 +1,85 @@
+{
+  "id": "GRAPH-051",
+  "type": "task",
+  "summary": "Align Robot extractor tests with Happy Path fixtures",
+  "dependsOn": [
+    "GRAPH-003",
+    "GRAPH-004"
+  ],
+  "description": "tests/fixtures/simple_test.robot is Happy Path calling Open Application and Verify Dashboard. test_robot_extractor.py and test_robot_source_path.py still expect Example Test, Keyword One, and Keyword Two. That mismatch fails pytest and is not a parser bug.",
+  "scope": [
+    "Change tests/test_robot_extractor.py to expect Happy Path -> Open Application and Happy Path -> Verify Dashboard",
+    "Change tests/test_robot_source_path.py to expect Happy Path, Open Application, and Verify Dashboard",
+    "Do not change tests/fixtures/simple_test.robot"
+  ],
+  "acceptanceCriteria": "python -m pytest tests/test_robot_extractor.py tests/test_robot_source_path.py -q passes against the current simple_test.robot contents.",
+  "constraints": [
+    "Strict TDD: the current tests already fail; run them first and confirm failure.",
+    "Do not add work beyond this task.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not rewrite extract_robot_edges to invent Example Test.",
+    "Do not rename Happy Path in the fixture."
+  ],
+  "verification": [
+    "python -m pytest tests/test_robot_extractor.py tests/test_robot_source_path.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-051.1",
+      "title": "Fix stale Example Test assertions",
+      "summary": "Tests follow the fixture. No parser rewrite.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "extract_robot_edges",
+        "module": "src/living_graph/robot_extractor.py",
+        "test": "tests/test_robot_extractor.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "tests/fixtures/simple_test.robot",
+          "purpose": "Source of truth: Happy Path calls Open Application and Verify Dashboard."
+        },
+        {
+          "path": "tests/test_robot_source_path.py",
+          "purpose": "Must expect Happy Path names, not Example Test."
+        }
+      ],
+      "scope": [
+        "Change tests/test_robot_extractor.py to expect Happy Path -> Open Application and Happy Path -> Verify Dashboard",
+        "Change tests/test_robot_source_path.py to expect Happy Path, Open Application, and Verify Dashboard",
+        "Do not change tests/fixtures/simple_test.robot"
+      ],
+      "dataExamples": [
+        "Caller name is Happy Path.",
+        "Callee names are Open Application and Verify Dashboard.",
+        "Those callees are unresolved in this same-file fixture."
+      ],
+      "businessRules": [
+        "Fixture wins over the old Example Test strings.",
+        "Do not implement GRAPH-046 cross-file resolve here."
+      ],
+      "verification": [
+        "python -m pytest tests/test_robot_extractor.py tests/test_robot_source_path.py -q"
+      ],
+      "instructions": [
+        "Run python -m pytest tests/test_robot_extractor.py tests/test_robot_source_path.py -q and confirm they fail on Example Test.",
+        "Edit only those two test files to match simple_test.robot.",
+        "Run python -m pytest tests/test_robot_extractor.py tests/test_robot_source_path.py -q and stop when they pass."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "tests/test_robot_extractor.py",
+      "tests/test_robot_source_path.py"
+    ],
+    "businessRules": [
+      "Fixture wins over the old Example Test strings.",
+      "Do not implement GRAPH-046 cross-file resolve here."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_robot_extractor.py tests/test_robot_source_path.py -q"
+    ]
+  }
+}

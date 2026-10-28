@@ -1,0 +1,32 @@
+{
+  "taskId": "GRAPH-021",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-09-16T20:11:24+00:00",
+  "updatedAt": "2026-09-16T20:12:58+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "GRAPH-021.1",
+      "title": "Load sample JSON and report counts",
+      "status": "DONE",
+      "summary": "No 3D. Count nodes and edges from sample_graph.json and reference it from HTML."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

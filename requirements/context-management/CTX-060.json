@@ -1,0 +1,121 @@
+{
+  "id": "CTX-060",
+  "type": "task",
+  "summary": "Budget the gateway work that is not the upstream call",
+  "dependsOn": [
+    "CTX-011",
+    "CTX-059"
+  ],
+  "description": "FR-C1-07. Local overhead excludes the upstream wait. The budget is 50 ms. The test uses an injected clock, not the wall clock.",
+  "scope": [
+    "A 10 ms local section and a 500 ms upstream wait record 10",
+    "51 ms is over budget and 50 ms is not"
+  ],
+  "acceptanceCriteria": "measure_local records 10 when the clock advances 10 outside the upstream callback and 500 inside it. within_budget(50) is true and within_budget(51) is false. LOCAL_BUDGET_MS is 50. FR-C1-07.",
+  "constraints": [
+    "Do not include upstream wait in the local measurement.",
+    "Do not assert a wall-clock p95 in the test.",
+    "Do not raise the budget above 50."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_060_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_060_1_clock.py -q -k CTX_060_1",
+    "python -m pytest tests/test_ctx_060_2_budget.py -q -k CTX_060_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-060.1",
+      "title": "Exclude the upstream wait",
+      "summary": "The recorded local time is 10 when the upstream callback advances the clock by 500.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/timing.py",
+        "test": "tests/test_ctx_060_1_clock.py",
+        "function": "measure_local"
+      },
+      "scope": [
+        "Local advance 10",
+        "Upstream advance 500",
+        "Recorded value 10"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_060_1_clock.py -q -k CTX_060_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_060_1.",
+        "This subtask's only job: The recorded local time is 10 when the upstream callback advances the clock by 500.",
+        "Touch only src/context_mgmt/timing.py and tests/test_ctx_060_1_clock.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Inject the clock. Do not call time.perf_counter in the test.",
+        "Run python -m pytest tests/test_ctx_060_1_clock.py -q -k CTX_060_1."
+      ],
+      "dataExamples": [
+        {
+          "local_ms": 10,
+          "upstream_ms": 500,
+          "recorded": 10
+        }
+      ],
+      "businessRules": [
+        "FR-C1-07 excludes the upstream model."
+      ]
+    },
+    {
+      "id": "CTX-060.2",
+      "title": "Apply the 50 ms budget",
+      "summary": "within_budget is true at 50 and false at 51.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/timing.py",
+        "test": "tests/test_ctx_060_2_budget.py",
+        "function": "within_budget"
+      },
+      "scope": [
+        "50 true",
+        "51 false",
+        "LOCAL_BUDGET_MS is 50"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_060_2_budget.py -q -k CTX_060_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_060_2.",
+        "This subtask's only job: within_budget is true at 50 and false at 51.",
+        "Touch only src/context_mgmt/timing.py and tests/test_ctx_060_2_budget.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Compare integers. Do not sleep.",
+        "Run python -m pytest tests/test_ctx_060_2_budget.py -q -k CTX_060_2."
+      ],
+      "dataExamples": [
+        {
+          "input": {
+            "budget_ms": 50
+          },
+          "output": true
+        }
+      ],
+      "businessRules": [
+        "The budget is 50 milliseconds."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/timing.py"
+    ],
+    "businessRules": [
+      "The gateway records the injected local measurement. It does not fail the request when the budget is missed."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_060_1_clock.py -q -k CTX_060_1",
+      "python -m pytest tests/test_ctx_060_2_budget.py -q -k CTX_060_2"
+    ]
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "taskId": "CTX-079",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-14T13:55:03+00:00",
+  "updatedAt": "2026-10-14T13:55:57+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "CTX-079.1",
+      "title": "Return the fixed tool description",
+      "status": "DONE",
+      "summary": "Implementing tool_description in src/context_mgmt/mcp_http.py"
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

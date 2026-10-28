@@ -1,0 +1,177 @@
+{
+  "id": "CTX-072",
+  "type": "task",
+  "summary": "Cap tool output by the served window",
+  "dependsOn": [
+    "CTX-003"
+  ],
+  "description": "FR-C2-03. The trim cap is the smaller of the absolute cap and 10 percent of the served context window. decide uses that cap only when usage includes context_window. Without context_window, the absolute cap from CTX-003 stays in force.",
+  "scope": [
+    "A 10000 window makes the cap 1000",
+    "A 100000 window keeps the cap 4000",
+    "decide trims a 1001-token tool on the short window"
+  ],
+  "acceptanceCriteria": "effective_tool_cap(4000, 10000) is 1000. effective_tool_cap(4000, 100000) is 4000. decide with context_window 10000 and a tool token_count 1001 returns action trim and reason tool_output_over_cap. A call with no context_window and token_count 4000 still returns none. FR-C2-03.",
+  "constraints": [
+    "Do not trim token_count 4000 when context_window is absent.",
+    "Do not change the CTX-003 marker or the head and tail lengths.",
+    "Do not apply the window share to the system message or the latest user message."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_072_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_072_1_share.py -q -k CTX_072_1",
+    "python -m pytest tests/test_ctx_072_2_absolute.py -q -k CTX_072_2",
+    "python -m pytest tests/test_ctx_072_3_decide.py -q -k CTX_072_3"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-072.1",
+      "title": "Use ten percent of a short window",
+      "summary": "Absolute cap 4000 and window 10000 produce cap 1000.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/rules.py",
+        "test": "tests/test_ctx_072_1_share.py",
+        "function": "effective_tool_cap"
+      },
+      "scope": [
+        "absolute_cap 4000",
+        "context_window 10000",
+        "result 1000"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_072_1_share.py -q -k CTX_072_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_072_1.",
+        "This subtask's only job: Absolute cap 4000 and window 10000 produce cap 1000.",
+        "Touch only src/context_mgmt/rules.py and tests/test_ctx_072_1_share.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "effective_tool_cap(absolute_cap, context_window) returns min(absolute_cap, int(context_window * 0.10)).",
+        "Run python -m pytest tests/test_ctx_072_1_share.py -q -k CTX_072_1."
+      ],
+      "dataExamples": [
+        {
+          "input": {
+            "absolute_cap": 4000,
+            "context_window": 10000
+          },
+          "output": 1000
+        }
+      ],
+      "businessRules": [
+        "FR-C2-03: the cap is the smaller of 4000 and 10 percent of the served window."
+      ]
+    },
+    {
+      "id": "CTX-072.2",
+      "title": "Keep the absolute cap on a long window",
+      "summary": "Absolute cap 4000 and window 100000 produce cap 4000.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/rules.py",
+        "test": "tests/test_ctx_072_2_absolute.py",
+        "function": "effective_tool_cap"
+      },
+      "scope": [
+        "absolute_cap 4000",
+        "context_window 100000",
+        "result 4000"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_072_2_absolute.py -q -k CTX_072_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_072_2.",
+        "This subtask's only job: Absolute cap 4000 and window 100000 produce cap 4000.",
+        "Touch only src/context_mgmt/rules.py and tests/test_ctx_072_2_absolute.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Ten percent of 100000 is 10000, so the absolute cap wins.",
+        "Run python -m pytest tests/test_ctx_072_2_absolute.py -q -k CTX_072_2."
+      ],
+      "dataExamples": [
+        {
+          "input": {
+            "absolute_cap": 4000,
+            "context_window": 100000
+          },
+          "output": 4000
+        }
+      ],
+      "businessRules": [
+        "FR-C2-03: a long window does not raise the cap above 4000."
+      ]
+    },
+    {
+      "id": "CTX-072.3",
+      "title": "Trim with the window cap",
+      "summary": "A tool of 1001 tokens on a 10000 window is trim. token_count 4000 with no window stays none.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/rules.py",
+        "test": "tests/test_ctx_072_3_decide.py",
+        "function": "decide"
+      },
+      "scope": [
+        "context_window 10000 and token_count 1001 returns trim",
+        "no context_window and token_count 4000 returns none"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_072_3_decide.py -q -k CTX_072_3"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_072_3.",
+        "This subtask's only job: A tool of 1001 tokens on a 10000 window is trim. token_count 4000 with no window stays none.",
+        "Touch only src/context_mgmt/rules.py and tests/test_ctx_072_3_decide.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Read context_window from usage only when that key is present. Keep context_pct at 0.10 so R1 does not fire.",
+        "Use one tool message. Assert the no-window call still returns none.",
+        "Run python -m pytest tests/test_ctx_072_3_decide.py -q -k CTX_072_3."
+      ],
+      "dataExamples": [
+        {
+          "input": {
+            "usage": {
+              "context_pct": 0.1,
+              "context_window": 10000,
+              "messages": [
+                {
+                  "role": "tool",
+                  "content": "abcdefghijklmnopqrst",
+                  "token_count": 1001
+                }
+              ]
+            }
+          },
+          "output": {
+            "action": "trim",
+            "reason": "tool_output_over_cap"
+          }
+        }
+      ],
+      "businessRules": [
+        "FR-C2-03: decide applies the window cap when the served window is known. CTX-003 still owns the no-window boundary."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/rules.py"
+    ],
+    "businessRules": [
+      "effective_tool_cap is min(absolute_cap, int(context_window * 0.10)). decide uses it only when usage contains context_window."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_072_1_share.py -q -k CTX_072_1",
+      "python -m pytest tests/test_ctx_072_2_absolute.py -q -k CTX_072_2",
+      "python -m pytest tests/test_ctx_072_3_decide.py -q -k CTX_072_3"
+    ]
+  }
+}

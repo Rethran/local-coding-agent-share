@@ -1,0 +1,48 @@
+{
+  "taskId": "CTX-073",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-07T19:40:02+00:00",
+  "updatedAt": "2026-10-07T19:43:08+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "CTX-073.2: already_satisfied. Next: Existing implementation already satisfies the declared tests; the coordinator will mark the subtask DONE after the verifier.",
+  "completedScopeItems": [
+    "Reviewed src/context_mgmt/gateway.py: exists; with_stream_usage present"
+  ],
+  "remainingScopeItems": [
+    "with_stream_usage not implemented in src/context_mgmt/gateway.py.",
+    "Tests still failing: Exit code: 2",
+    "Tests still failing: Exit code: 1",
+    "Implementation missing or incomplete; tests fail."
+  ],
+  "verifiedBehaviors": [
+    "Tests passed: python -m pytest tests/test_ctx_073_1_usage.py -q -k CTX_073_1",
+    "Tests passed: python -m pytest tests/test_ctx_073_2_skip.py -q -k CTX_073_2"
+  ],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": "Existing implementation already satisfies the declared tests; the coordinator will mark the subtask DONE after the verifier.",
+  "subtasks": [
+    {
+      "id": "CTX-073.1",
+      "title": "Request usage on a stream",
+      "status": "DONE",
+      "summary": "Implementing with_stream_usage in src/context_mgmt/gateway.py"
+    },
+    {
+      "id": "CTX-073.2",
+      "title": "Leave unsupported streams unchanged",
+      "status": "DONE",
+      "summary": "DUPLICATE: existing implementation already covers this subtask."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

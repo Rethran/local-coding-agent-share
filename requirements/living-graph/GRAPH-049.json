@@ -1,0 +1,85 @@
+{
+  "id": "GRAPH-049",
+  "type": "task",
+  "summary": "Ignore Robot built-in keyword calls",
+  "dependsOn": [
+    "GRAPH-005",
+    "GRAPH-007"
+  ],
+  "description": "Calls to Robot built-ins such as No Operation and Log must not become unresolved edges. Same-file user-keyword calls remain edges. Mirror GRAPH-007 for Robot.",
+  "scope": [
+    "Change extract_robot_edges in src/living_graph/robot_extractor.py",
+    "Drop calls whose callee is No Operation, Log, Comment, Sleep, or Set Variable",
+    "Update tests/test_robot_extractor.py so Keyword Two -> No Operation is absent, not an unresolved edge"
+  ],
+  "acceptanceCriteria": "extract_robot_edges on tests/fixtures/simple_keywords.resource has Keyword One -> Keyword Two and has no edge whose callee_name is No Operation.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-050.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not drop Missing Keyword; GRAPH-005 still records that unresolved edge.",
+    "Do not parse Python files."
+  ],
+  "verification": [
+    "python -m pytest tests/test_robot_builtins.py tests/test_robot_extractor.py tests/test_unresolved_calls.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-049.1",
+      "title": "Drop Robot builtin callees",
+      "summary": "No Operation and Log are not edges. Missing Keyword stays unresolved.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "extract_robot_edges",
+        "module": "src/living_graph/robot_extractor.py",
+        "test": "tests/test_robot_builtins.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "tests/fixtures/simple_keywords.resource",
+          "purpose": "Keyword Two currently calls No Operation."
+        },
+        {
+          "path": "tests/test_robot_extractor.py",
+          "purpose": "Must stop asserting an unresolved No Operation edge."
+        }
+      ],
+      "scope": [
+        "Change extract_robot_edges in src/living_graph/robot_extractor.py",
+        "Drop calls whose callee is No Operation, Log, Comment, Sleep, or Set Variable",
+        "Update tests/test_robot_extractor.py so Keyword Two -> No Operation is absent, not an unresolved edge"
+      ],
+      "dataExamples": [
+        "Kept edge: Keyword One -> Keyword Two.",
+        "Forbidden edge: Keyword Two -> No Operation.",
+        "GRAPH-005 Missing Keyword stays unresolved."
+      ],
+      "businessRules": [
+        "Match builtin names case-insensitively.",
+        "Do not emit an unresolved node for a dropped builtin."
+      ],
+      "verification": [
+        "python -m pytest tests/test_robot_builtins.py tests/test_robot_extractor.py tests/test_unresolved_calls.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_robot_builtins.py first.",
+        "Run python -m pytest tests/test_robot_builtins.py -q and confirm failure.",
+        "Drop builtin callees in extract_robot_edges and update the old No Operation assertion.",
+        "Run python -m pytest tests/test_robot_builtins.py tests/test_robot_extractor.py tests/test_unresolved_calls.py -q and stop when they pass."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/robot_extractor.py"
+    ],
+    "businessRules": [
+      "Match builtin names case-insensitively.",
+      "Do not emit an unresolved node for a dropped builtin."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_robot_builtins.py tests/test_robot_extractor.py tests/test_unresolved_calls.py -q"
+    ]
+  }
+}

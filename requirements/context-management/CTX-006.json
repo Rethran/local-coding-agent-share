@@ -1,0 +1,183 @@
+{
+  "id": "CTX-006",
+  "type": "task",
+  "summary": "Store events in SQLite by org",
+  "dependsOn": [
+    "CTX-005"
+  ],
+  "description": "Add SqliteEventStore. NFR-01 and FR-C3-08. Every read and write takes org_id. purge_raw_before deletes old raw rows and writes a daily aggregate.",
+  "scope": [
+    "Create the events table without a content column",
+    "list_events returns only the requested org",
+    "purge_raw_before keeps a daily aggregate and deletes older raw rows"
+  ],
+  "acceptanceCriteria": "save then list_events returns the stored row for that org. An org-b row is invisible to list_events('org-a'). purge_raw_before(org, cutoff) removes rows with ts lower than cutoff and list_aggregates shows requests and total_tokens. NFR-01 FR-C3-08.",
+  "constraints": [
+    "Do not query events without an org_id filter.",
+    "Do not store user_id or message content.",
+    "Do not add HTTP routes in this task."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_006_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_006_1_round_trip.py -q -k CTX_006_1",
+    "python -m pytest tests/test_ctx_006_2_org.py -q -k CTX_006_2",
+    "python -m pytest tests/test_ctx_006_3_retention.py -q -k CTX_006_3"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-006.1",
+      "title": "Save and list one org",
+      "summary": "SqliteEventStore.save persists a stored event and list_events returns it.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/store.py",
+        "test": "tests/test_ctx_006_1_round_trip.py",
+        "function": "SqliteEventStore"
+      },
+      "scope": [
+        "Constructor takes a sqlite path",
+        "save rejects a dict that still has user_id",
+        "list_events(org_id) returns the saved row"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_006_1_round_trip.py -q -k CTX_006_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_006_1.",
+        "This subtask's only job: SqliteEventStore.save persists a stored event and list_events returns it.",
+        "Touch only src/context_mgmt/store.py and tests/test_ctx_006_1_round_trip.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Build the row with to_stored_event and a temp database file.",
+        "Assert prompt_tokens survives the round trip.",
+        "Run python -m pytest tests/test_ctx_006_1_round_trip.py -q -k CTX_006_1."
+      ],
+      "dataExamples": [
+        {
+          "table": "events",
+          "org_id": "org-a",
+          "prompt_tokens": 10
+        }
+      ],
+      "businessRules": [
+        "Refuse user_id on save.",
+        "Create tables in __init__."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/events.py",
+          "purpose": "Event contract and salted user id hash."
+        }
+      ]
+    },
+    {
+      "id": "CTX-006.2",
+      "title": "Isolate rows by org",
+      "summary": "list_events('org-a') does not return an org-b event saved in the same file.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/store.py",
+        "test": "tests/test_ctx_006_2_org.py",
+        "function": "SqliteEventStore"
+      },
+      "scope": [
+        "Save one org-a event and one org-b event",
+        "Each list call returns one row"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_006_2_org.py -q -k CTX_006_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_006_2.",
+        "This subtask's only job: list_events('org-a') does not return an org-b event saved in the same file.",
+        "Touch only src/context_mgmt/store.py and tests/test_ctx_006_2_org.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Use two stored events that differ only by org_id and user hash.",
+        "Do not add an endpoint.",
+        "Run python -m pytest tests/test_ctx_006_2_org.py -q -k CTX_006_2."
+      ],
+      "dataExamples": [
+        {
+          "visible_org": "org-a",
+          "hidden_org": "org-b"
+        }
+      ],
+      "businessRules": [
+        "NFR-01: every list is scoped by org_id."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/store.py",
+          "purpose": "SQLite event store scoped by org_id."
+        }
+      ]
+    },
+    {
+      "id": "CTX-006.3",
+      "title": "Purge raw events and keep aggregates",
+      "summary": "Rows older than the cutoff are deleted. A daily aggregate remains with requests and total_tokens.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/store.py",
+        "test": "tests/test_ctx_006_3_retention.py",
+        "function": "purge_raw_before"
+      },
+      "scope": [
+        "purge_raw_before(org_id, cutoff_ts) -> int deleted count",
+        "list_aggregates(org_id) returns day, requests, total_tokens",
+        "A row newer than the cutoff stays in list_events"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_006_3_retention.py -q -k CTX_006_3"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_006_3.",
+        "This subtask's only job: Rows older than the cutoff are deleted. A daily aggregate remains with requests and total_tokens.",
+        "Touch only src/context_mgmt/store.py and tests/test_ctx_006_3_retention.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Save ts 2026-01-01T00:00:00Z with prompt 10 and completion 5, and ts 2026-10-05T00:00:00Z.",
+        "Call purge_raw_before(org-a, 2026-07-01T00:00:00Z).",
+        "Assert deleted count 1, remaining event is the October row, aggregate total_tokens is 15.",
+        "Run python -m pytest tests/test_ctx_006_3_retention.py -q -k CTX_006_3."
+      ],
+      "dataExamples": [
+        {
+          "old_ts": "2026-01-01T00:00:00Z",
+          "cutoff": "2026-07-01T00:00:00Z",
+          "new_ts": "2026-10-05T00:00:00Z",
+          "total_tokens": 15
+        }
+      ],
+      "businessRules": [
+        "FR-C3-08: raw rows go away. The aggregate row stays.",
+        "Day key is the first 10 characters of ts."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/store.py",
+          "purpose": "SQLite event store scoped by org_id."
+        }
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/store.py"
+    ],
+    "businessRules": [
+      "total_tokens on an aggregate is prompt_tokens plus completion_tokens of the deleted rows.",
+      "The database path is an argument. Tests use a temp file."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_006_1_round_trip.py -q -k CTX_006_1",
+      "python -m pytest tests/test_ctx_006_2_org.py -q -k CTX_006_2",
+      "python -m pytest tests/test_ctx_006_3_retention.py -q -k CTX_006_3"
+    ]
+  }
+}

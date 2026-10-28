@@ -1,0 +1,32 @@
+{
+  "taskId": "GRAPH-011",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-09-16T19:41:03+00:00",
+  "updatedAt": "2026-09-16T19:42:45+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "GRAPH-011.1",
+      "title": "Count distinct callers",
+      "status": "DONE",
+      "summary": "Resuming from handoff GRAPH-011-0005: tests exist and fail; implementing compute_fan_in in src/living_graph/metrics.py."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

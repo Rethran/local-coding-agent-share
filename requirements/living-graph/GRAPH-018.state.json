@@ -1,0 +1,32 @@
+{
+  "taskId": "GRAPH-018",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-09-16T20:03:19+00:00",
+  "updatedAt": "2026-09-16T20:06:36+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "GRAPH-018.1",
+      "title": "Replace one file's nodes and edges",
+      "status": "DONE",
+      "summary": "Drop old rows for changed_path. Insert new_edges. Keep other files."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

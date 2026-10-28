@@ -1,0 +1,122 @@
+{
+  "id": "CTX-037",
+  "type": "task",
+  "summary": "Estimate tokens a compaction would remove",
+  "dependsOn": [
+    "CTX-002",
+    "CTX-036"
+  ],
+  "description": "tokens_potential_est is the prompt tokens above compact_threshold for this request. annotate_potential adds it without changing decide's existing action or tokens_saved_est. The gateway copies it onto the event.",
+  "scope": [
+    "8000 tokens on a 10000 window at 0.60 yields potential 2000",
+    "The gateway event carries that potential and source gateway"
+  ],
+  "acceptanceCriteria": "annotate_potential(8000, 10000, 0.60) returns 2000. annotate_potential(6000, 10000, 0.60) returns 0. A compact_recommended gateway event has tokens_potential_est 2000, tokens_saved_est 0, and source gateway. decide's action for the CTX-002 0.60 case stays compact_recommended. ",
+  "constraints": [
+    "Do not change tokens_saved_est for a trim.",
+    "Do not add the potential into tokens_saved_est.",
+    "Do not summarize the conversation."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_037_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_037_1_potential.py -q -k CTX_037_1",
+    "python -m pytest tests/test_ctx_037_2_event.py -q -k CTX_037_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-037.1",
+      "title": "Count tokens above the threshold",
+      "summary": "8000 on a 10000 window at 0.60 returns 2000, and 6000 returns 0.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/rules.py",
+        "test": "tests/test_ctx_037_1_potential.py",
+        "function": "annotate_potential"
+      },
+      "scope": [
+        "8000 -> 2000",
+        "6000 -> 0",
+        "decide action for context_pct 0.60 stays compact_recommended"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_037_1_potential.py -q -k CTX_037_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_037_1.",
+        "This subtask's only job: 8000 on a 10000 window at 0.60 returns 2000, and 6000 returns 0.",
+        "Touch only src/context_mgmt/rules.py and tests/test_ctx_037_1_potential.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Leave the CTX-002 return keys working. Add the helper beside decide.",
+        "Run python -m pytest tests/test_ctx_037_1_potential.py -q -k CTX_037_1."
+      ],
+      "dataExamples": [
+        {
+          "prompt_tokens": 8000,
+          "window": 10000,
+          "threshold": 0.6,
+          "potential": 2000
+        }
+      ],
+      "businessRules": [
+        "Potential is this request only. It is not the session sum."
+      ]
+    },
+    {
+      "id": "CTX-037.2",
+      "title": "Put the potential on the gateway event",
+      "summary": "The emitted event has tokens_potential_est 2000, tokens_saved_est 0, and source gateway.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/gateway.py",
+        "test": "tests/test_ctx_037_2_event.py",
+        "function": "create_gateway"
+      },
+      "scope": [
+        "tokens_potential_est 2000",
+        "tokens_saved_est 0",
+        "source gateway"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_037_2_event.py -q -k CTX_037_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_037_2.",
+        "This subtask's only job: The emitted event has tokens_potential_est 2000, tokens_saved_est 0, and source gateway.",
+        "Touch only src/context_mgmt/gateway.py and tests/test_ctx_037_2_event.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Use a prompt that is 80 percent of the window so the helper returns 2000.",
+        "Run python -m pytest tests/test_ctx_037_2_event.py -q -k CTX_037_2."
+      ],
+      "dataExamples": [
+        {
+          "tokens_potential_est": 2000,
+          "tokens_saved_est": 0,
+          "source": "gateway"
+        }
+      ],
+      "businessRules": [
+        "source gateway marks a gateway measurement."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/rules.py",
+      "src/context_mgmt/gateway.py"
+    ],
+    "businessRules": [
+      "int(window * threshold) is the cap. Potential is max(0, prompt_tokens - cap)."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_037_1_potential.py -q -k CTX_037_1",
+      "python -m pytest tests/test_ctx_037_2_event.py -q -k CTX_037_2"
+    ]
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "id": "GRAPH-001",
+  "type": "task",
+  "summary": "Project scaffolding and smoke fixtures",
+  "dependsOn": [],
+  "description": "Create the minimal Living 3D Graph Python package, confirm Robot Framework is importable, and add tiny static fixtures for later parser tests.",
+  "scope": [
+    "Maintain pyproject.toml with package metadata and pytest configuration",
+    "Maintain src/living_graph/__init__.py with a version string",
+    "Maintain tests/test_package.py package import smoke test",
+    "Add tiny fixtures under tests/fixtures for Robot and Python parser tasks"
+  ],
+  "acceptanceCriteria": "The project can run pytest successfully, import living_graph.__version__, import robot.api.TestSuiteBuilder, and provide tiny static fixtures for future parser tests.",
+  "constraints": [
+    "Do not implement graph extraction logic in this task.",
+    "Keep fixtures tiny and static.",
+    "Do not add frontend rendering code in this task."
+  ],
+  "verification": [
+    "python -m pytest tests -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-001.1",
+      "title": "Confirm package skeleton imports",
+      "summary": "Skeleton only. Ensure the Living Graph package exposes __version__ and tests can import it. No parser logic.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/living_graph/__init__.py",
+        "test": "tests/test_package.py"
+      },
+      "scope": [
+        "Keep src/living_graph/__init__.py importable",
+        "Expose __version__ as a non-empty string",
+        "Keep tests/test_package.py focused on the package import smoke test"
+      ],
+      "verification": [
+        "python -m pytest tests/test_package.py -q"
+      ],
+      "instructions": [
+        "Write or run the package import smoke test first.",
+        "Do not implement any parser, graph, watcher, or renderer code.",
+        "Run python -m pytest tests/test_package.py -q."
+      ]
+    },
+    {
+      "id": "GRAPH-001.2",
+      "title": "Confirm Robot Framework API import",
+      "summary": "Dependency smoke test only. Confirm robot.api.TestSuiteBuilder is importable. No parser logic.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "test": "tests/test_robot_api.py"
+      },
+      "scope": [
+        "Add tests/test_robot_api.py",
+        "Assert robot.api.TestSuiteBuilder can be imported"
+      ],
+      "verification": [
+        "python -m pytest tests/test_robot_api.py -q"
+      ],
+      "instructions": [
+        "Write the failing dependency smoke test before touching implementation files.",
+        "Do not add parser code.",
+        "Run python -m pytest tests/test_robot_api.py -q."
+      ]
+    },
+    {
+      "id": "GRAPH-001.3",
+      "title": "Add tiny parser fixtures",
+      "summary": "Fixture data only. Add small .robot, .resource, and .py files under tests/fixtures for later extractor tasks.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "tests/fixtures",
+        "test": "tests/test_fixtures_exist.py"
+      },
+      "scope": [
+        "Create tests/fixtures/simple_test.robot with one test case calling two keywords",
+        "Create tests/fixtures/simple_keywords.resource with one keyword calling another keyword",
+        "Create tests/fixtures/simple_library.py with one function calling another function",
+        "Add tests/test_fixtures_exist.py to assert fixture files exist and contain expected names"
+      ],
+      "verification": [
+        "python -m pytest tests/test_fixtures_exist.py -q"
+      ],
+      "instructions": [
+        "Create only tiny static fixtures.",
+        "Do not implement parser behavior in this subtask.",
+        "Run python -m pytest tests/test_fixtures_exist.py -q."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/__init__.py"
+    ],
+    "businessRules": [
+      "Keep the package importable with a stable version string.",
+      "Use Robot Framework 7.x parser APIs in later tasks, confirmed here by a smoke import only.",
+      "Fixtures should stay 2-5 meaningful lines per file where practical."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests -q"
+    ]
+  }
+}

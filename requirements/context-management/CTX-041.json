@@ -1,0 +1,118 @@
+{
+  "id": "CTX-041",
+  "type": "task",
+  "summary": "Return generic errors with a correlation id",
+  "dependsOn": [
+    "CTX-040"
+  ],
+  "description": "SEC-04 and SEC-29. Developer-facing errors come from a fixed set. An unexpected exception becomes a generic 500. The body has a correlation id and no stack trace.",
+  "scope": [
+    "A raised RuntimeError becomes the generic 500 body",
+    "The correlation id is in the body and the header"
+  ],
+  "acceptanceCriteria": "A route that raises RuntimeError('secret-path') returns status 500, code server_error, and message The service could not complete this request. The body does not contain Traceback, RuntimeError, or secret-path. Header X-Correlation-Id equals the body's correlation_id. SEC-04 SEC-29.",
+  "constraints": [
+    "Do not include the exception text in the response.",
+    "Do not omit the correlation id.",
+    "Do not return a stack trace."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_041_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_041_1_hide.py -q -k CTX_041_1",
+    "python -m pytest tests/test_ctx_041_2_cid.py -q -k CTX_041_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-041.1",
+      "title": "Hide the exception",
+      "summary": "RuntimeError becomes the generic 500 body without the secret path or a traceback.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/errors.py",
+        "test": "tests/test_ctx_041_1_hide.py",
+        "function": "generic_error"
+      },
+      "scope": [
+        "Status 500",
+        "code server_error",
+        "secret-path absent",
+        "Traceback absent"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_041_1_hide.py -q -k CTX_041_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_041_1.",
+        "This subtask's only job: RuntimeError becomes the generic 500 body without the secret path or a traceback.",
+        "Touch only src/context_mgmt/errors.py and tests/test_ctx_041_1_hide.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Mount a test route that raises. Assert the forbidden substrings.",
+        "Run python -m pytest tests/test_ctx_041_1_hide.py -q -k CTX_041_1."
+      ],
+      "dataExamples": [
+        {
+          "status": 500,
+          "code": "server_error",
+          "message": "The service could not complete this request. Contact your administrator.",
+          "hidden": "secret-path"
+        }
+      ],
+      "businessRules": [
+        "SEC-29: the global handler returns only generic errors."
+      ]
+    },
+    {
+      "id": "CTX-041.2",
+      "title": "Echo a correlation id",
+      "summary": "The body correlation_id matches header X-Correlation-Id.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/errors.py",
+        "test": "tests/test_ctx_041_2_cid.py",
+        "function": "generic_error"
+      },
+      "scope": [
+        "Header and body carry the same id",
+        "Id is not empty"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_041_2_cid.py -q -k CTX_041_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_041_2.",
+        "This subtask's only job: The body correlation_id matches header X-Correlation-Id.",
+        "Touch only src/context_mgmt/errors.py and tests/test_ctx_041_2_cid.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Do not put the exception message in the id.",
+        "Run python -m pytest tests/test_ctx_041_2_cid.py -q -k CTX_041_2."
+      ],
+      "dataExamples": [
+        {
+          "header": "X-Correlation-Id"
+        }
+      ],
+      "businessRules": [
+        "SEC-04: the developer can quote the correlation id to an admin."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/errors.py"
+    ],
+    "businessRules": [
+      "Fixed messages only. Details stay in the admin log."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_041_1_hide.py -q -k CTX_041_1",
+      "python -m pytest tests/test_ctx_041_2_cid.py -q -k CTX_041_2"
+    ]
+  }
+}

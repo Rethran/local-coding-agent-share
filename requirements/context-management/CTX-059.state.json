@@ -1,0 +1,38 @@
+{
+  "taskId": "CTX-059",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-07T17:34:03+00:00",
+  "updatedAt": "2026-10-07T17:37:51+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "CTX-059.1",
+      "title": "Build the two owner payloads",
+      "status": "DONE",
+      "summary": "Starting test writing for CTX-059.1: Build the two owner payloads"
+    },
+    {
+      "id": "CTX-059.2",
+      "title": "Keep the report off and ignore owner commands",
+      "status": "DONE",
+      "summary": "Starting implementation of send_usage_report and apply_owner_response in src/context_mgmt/owner.py"
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

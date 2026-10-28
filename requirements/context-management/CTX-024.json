@@ -1,0 +1,124 @@
+{
+  "id": "CTX-024",
+  "type": "task",
+  "summary": "Verify a signed license document",
+  "dependsOn": [
+    "CTX-023"
+  ],
+  "description": "FR-C7-01 and FR-C7-02. A license is a payload plus an Ed25519 signature. Verification uses a caller-supplied public key and does not need the network. The package source must not contain a private key.",
+  "scope": [
+    "verify_license returns claims for a good signature",
+    "A flipped signature byte returns invalid bad_signature",
+    "The license module source contains no private key block"
+  ],
+  "acceptanceCriteria": "A document signed with a test Ed25519 key verifies back to the claims, including license_id lic-1 and features. One flipped signature byte yields state invalid and reason bad_signature. license.py does not contain BEGIN PRIVATE KEY. FR-C7-01 FR-C7-02.",
+  "constraints": [
+    "Do not ship a private key in source or sample config.",
+    "Do not call a network during verify.",
+    "Do not accept a document whose signature does not match the payload bytes."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_024_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_024_1_verify.py -q -k CTX_024_1",
+    "python -m pytest tests/test_ctx_024_2_badsig.py -q -k CTX_024_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-024.1",
+      "title": "Round-trip a signed payload",
+      "summary": "verify_license returns the signed claims for a key generated in the test.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/license.py",
+        "test": "tests/test_ctx_024_1_verify.py",
+        "function": "verify_license"
+      },
+      "scope": [
+        "Document is payload plus base64 signature",
+        "Signed bytes are canonical JSON with sorted keys and no spaces",
+        "Returned claims include license_id and features"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_024_1_verify.py -q -k CTX_024_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_024_1.",
+        "This subtask's only job: verify_license returns the signed claims for a key generated in the test.",
+        "Touch only src/context_mgmt/license.py, tests/test_ctx_024_1_verify.py, and pyproject.toml if cryptography is not already a dependency.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Generate the keypair in the test. Do not hardcode a private key in license.py.",
+        "Use cryptography Ed25519.",
+        "Run python -m pytest tests/test_ctx_024_1_verify.py -q -k CTX_024_1."
+      ],
+      "dataExamples": [
+        {
+          "license_id": "lic-1",
+          "features": [
+            "gateway",
+            "dashboard",
+            "observer",
+            "mcp"
+          ]
+        }
+      ],
+      "businessRules": [
+        "FR-C7-02 claims are license_id, org_id, issued_at, expires_at, grace_days, max_users, features."
+      ]
+    },
+    {
+      "id": "CTX-024.2",
+      "title": "Reject a bad signature",
+      "summary": "A flipped signature byte produces invalid and reason bad_signature, and the source has no private key block.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/license.py",
+        "test": "tests/test_ctx_024_2_badsig.py",
+        "function": "load_license_state"
+      },
+      "scope": [
+        "Flip one signature byte",
+        "state invalid, reason bad_signature",
+        "BEGIN PRIVATE KEY is absent from license.py"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_024_2_badsig.py -q -k CTX_024_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_024_2.",
+        "This subtask's only job: A flipped signature byte produces invalid and reason bad_signature, and the source has no private key block.",
+        "Touch only src/context_mgmt/license.py and tests/test_ctx_024_2_badsig.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Read license.py as text for the private-key assertion.",
+        "Run python -m pytest tests/test_ctx_024_2_badsig.py -q -k CTX_024_2."
+      ],
+      "dataExamples": [
+        {
+          "reason": "bad_signature",
+          "forbidden": "BEGIN PRIVATE KEY"
+        }
+      ],
+      "businessRules": [
+        "A bad signature is invalid, not a crash on the request path."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/license.py"
+    ],
+    "businessRules": [
+      "Canonical payload bytes are json.dumps(payload, sort_keys=True, separators=(',', ':')).encode()."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_024_1_verify.py -q -k CTX_024_1",
+      "python -m pytest tests/test_ctx_024_2_badsig.py -q -k CTX_024_2"
+    ]
+  }
+}

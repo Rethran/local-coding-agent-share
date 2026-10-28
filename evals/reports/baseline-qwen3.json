@@ -1,0 +1,1824 @@
+{
+  "schema": "eval-report/v1",
+  "createdAt": "2026-10-02T21:45:28+00:00",
+  "sourceLog": "evals\\logs\\2026-10-02T13-58-53-00-00_tdd-coder_8mG5jKYWuhSp7unA3yTbu8.eval",
+  "model": "qwen3:8b",
+  "promptVariant": "baseline",
+  "criteria": {
+    "subtask_done": {
+      "what": "The orchestrator marked the pinned subtask DONE after the independent verifier passed.",
+      "why": "This is the outcome that matters: the agent's own declared verification succeeded and the coordinator agreed. A fluent transcript that never reaches DONE is still a failure.",
+      "how": "Code. Read the copied requirements <task_id>.state.json after the run. Pass iff the matching subtask status is DONE.",
+      "grader": "code"
+    },
+    "reference_tests_pass": {
+      "what": "Tests from the historically accepted commit still pass against the code the agent just wrote.",
+      "why": "The agent's own tests can be too weak or accidentally rewritten. Overlaying the accepted commit's test files is a cheap substitute for hidden tests. These are regression tests, not independently authored hidden tests.",
+      "how": "Code. After the agent finishes, overlay tests/ files from accepted_commit, then run pytest on those paths in the worktree.",
+      "grader": "code"
+    },
+    "process_budget": {
+      "what": "The agent finished without looping, blowing the step budget, or drowning in tool errors.",
+      "why": "Local models often fail on process before they fail on correctness. A pass that took 80 identical read_file calls is not a prompt you want to keep.",
+      "how": "Code, from run_summary.json. Fail if attempts > 10, steps > 160, any identical tool fingerprint repeats more than 5 times, or tool error rate > 40%.",
+      "grader": "code",
+      "thresholds": {
+        "max_attempts": 10,
+        "max_steps": 160,
+        "max_repeat_of_one_call": 5,
+        "max_tool_error_rate": 0.4
+      }
+    }
+  },
+  "summary": {
+    "scorers": {
+      "process_budget": {
+        "passRate": 0.6842,
+        "stderr": 0.1066,
+        "n": 19,
+        "passed": 13,
+        "delta": -0.3158
+      },
+      "reference_tests_pass": {
+        "passRate": 0.2105,
+        "stderr": 0.0935,
+        "n": 19,
+        "passed": 4,
+        "delta": -0.6943
+      },
+      "subtask_done": {
+        "passRate": 0.2105,
+        "stderr": 0.0935,
+        "n": 19,
+        "passed": 4,
+        "delta": -0.7895
+      }
+    },
+    "p95WallSeconds": 2400.027,
+    "meanWallSeconds": 1394.88,
+    "totalTokens": 10161814,
+    "nTrials": 20,
+    "nSamples": 12
+  },
+  "review": {
+    "falseDone": {
+      "rate": 0.25,
+      "stderr": 0.2165,
+      "falseDone": 1,
+      "claimedDone": 4
+    },
+    "consistency": {
+      "scorer": "reference_tests_pass",
+      "reliable": [
+        {
+          "sampleId": "GRAPH-052.1",
+          "title": "Zero the node z coordinate",
+          "passed": 1,
+          "epochs": 1
+        },
+        {
+          "sampleId": "GRAPH-054.1",
+          "title": "Lock polar angle to the horizon",
+          "passed": 1,
+          "epochs": 1
+        }
+      ],
+      "fragile": [
+        {
+          "sampleId": "GRAPH-013.1",
+          "title": "True on a two-node cycle, False on a chain",
+          "passed": 1,
+          "epochs": 2
+        },
+        {
+          "sampleId": "GRAPH-047.1",
+          "title": "Resource callers are user_keyword",
+          "passed": 1,
+          "epochs": 2
+        }
+      ],
+      "cannot": [
+        {
+          "sampleId": "GRAPH-003.1",
+          "title": "Parse one test case direct keyword calls",
+          "passed": 0,
+          "epochs": 2
+        },
+        {
+          "sampleId": "GRAPH-006.1",
+          "title": "Parse one Python function call",
+          "passed": 0,
+          "epochs": 2
+        },
+        {
+          "sampleId": "GRAPH-011.1",
+          "title": "Count distinct callers",
+          "passed": 0,
+          "epochs": 2
+        },
+        {
+          "sampleId": "GRAPH-031.1",
+          "title": "Tag .py nodes library_keyword in nodes_from_edges",
+          "passed": 0,
+          "epochs": 2
+        },
+        {
+          "sampleId": "GRAPH-046.1",
+          "title": "Resolve unique cross-file keyword names",
+          "passed": 0,
+          "epochs": 2
+        },
+        {
+          "sampleId": "GRAPH-048.1",
+          "title": "Reuse nodes_from_edges in incremental_update",
+          "passed": 0,
+          "epochs": 1
+        },
+        {
+          "sampleId": "GRAPH-049.1",
+          "title": "Drop Robot builtin callees",
+          "passed": 0,
+          "epochs": 1
+        },
+        {
+          "sampleId": "GRAPH-050.1",
+          "title": "Metrics on the in-memory scan graph",
+          "passed": 0,
+          "epochs": 1
+        }
+      ]
+    },
+    "cost": {
+      "gpuMinutes": 464.96,
+      "fullSuccesses": 2,
+      "minutesPerSuccess": 232.48
+    },
+    "timing": {
+      "wallSeconds": {
+        "median": 1724.365,
+        "worst": 2400.029,
+        "n": 20
+      },
+      "steps": {
+        "median": 18.0,
+        "worst": 206.0,
+        "n": 12
+      }
+    },
+    "failureTypes": {
+      "counts": {
+        "timeout": 7,
+        "loop": 5,
+        "tool_errors": 1,
+        "step_budget": 0,
+        "reference_tests": 3,
+        "other": 0
+      },
+      "labels": {
+        "timeout": "aikakatkaisu",
+        "loop": "silmukka",
+        "tool_errors": "työkaluvirheet",
+        "step_budget": "step-budjetti",
+        "reference_tests": "referenssitestit",
+        "other": "muu"
+      },
+      "order": [
+        "timeout",
+        "loop",
+        "tool_errors",
+        "step_budget",
+        "reference_tests",
+        "other"
+      ],
+      "failedTrials": 16
+    },
+    "referenceTests": {
+      "passRate": 0.2105,
+      "stderr": 0.0935,
+      "n": 19
+    },
+    "reliableShare": 0.1667,
+    "nSamples": 12,
+    "deltas": {
+      "referenceTestsPassRate": {
+        "delta": -0.6943,
+        "combinedStderr": 0.1134,
+        "noise": false
+      },
+      "falseDoneRate": {
+        "delta": 0.1548,
+        "combinedStderr": 0.2258,
+        "noise": true
+      },
+      "reliableShare": {
+        "delta": -0.75,
+        "combinedStderr": 0.1339,
+        "noise": false
+      }
+    }
+  },
+  "failures": [
+    {
+      "sampleId": "GRAPH-003.1",
+      "epoch": 1,
+      "title": "Parse one test case direct keyword calls",
+      "input": "Implement GRAPH-003.1: Parse one test case direct keyword calls. Implement only enough Robot parsing to return two direct keyword call edges from one test case fixture.",
+      "criterion": "subtask_done",
+      "explanation": "Timed out after 2400s. Subtask GRAPH-003.1 status=BLOCKED. Assistant stopped without tool call at step 10.",
+      "stopReason": "timeout"
+    },
+    {
+      "sampleId": "GRAPH-003.1",
+      "epoch": 1,
+      "title": "Parse one test case direct keyword calls",
+      "input": "Implement GRAPH-003.1: Parse one test case direct keyword calls. Implement only enough Robot parsing to return two direct keyword call edges from one test case fixture.",
+      "criterion": "reference_tests_pass",
+      "explanation": "Gold tests failed (exit 1).\nF                                                                        [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n__________________________ test_extract_robot_edges ___________________________\ntests\\test_robot_extractor.py:5: in test_extract_robot_edges\n    assert len(edges) == 2\nE   assert 0 == 2\nE    +  where 0 = len([])\n=========================== short test summary info ===========================\nFAILED tests/test_robot_extractor.py::test_extract_robot_edges - assert 0 == 2\n1 failed in 0.12s\n\n",
+      "stopReason": "timeout"
+    },
+    {
+      "sampleId": "GRAPH-006.1",
+      "epoch": 1,
+      "title": "Parse one Python function call",
+      "input": "Implement GRAPH-006.1: Parse one Python function call. One same-file Python call. Return exactly one edge. No builtin filtering.",
+      "criterion": "subtask_done",
+      "explanation": "Subtask GRAPH-006.1 status=IN_PROGRESS. Declared verification passed during test-writer; tests do not prove new behavior.",
+      "stopReason": " \"activeSubtaskId\": \"GRAPH-006.1\",\n  \"preflightStatus\": \"READY\",\n  \"preflightBlockers\": [],\n  \"planSidecarPath\": null\n}\n"
+    },
+    {
+      "sampleId": "GRAPH-006.1",
+      "epoch": 1,
+      "title": "Parse one Python function call",
+      "input": "Implement GRAPH-006.1: Parse one Python function call. One same-file Python call. Return exactly one edge. No builtin filtering.",
+      "criterion": "reference_tests_pass",
+      "explanation": "Gold tests failed (exit 1).\n.F                                                                       [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n______________ test_extract_python_edges_nested_call_GRAPH_006_1 ______________\ntests\\test_python_extractor.py:16: in test_extract_python_edges_nested_call_GRAPH_006_1\n    assert len(edges) == 1\nE   assert 0 == 1\nE    +  where 0 = len([])\n=========================== short test summary info ===========================\nFAILED tests/test_python_extractor.py::test_extract_python_edges_nested_call_GRAPH_006_1\n1 failed, 1 passed in 0.13s\n\n",
+      "stopReason": " \"activeSubtaskId\": \"GRAPH-006.1\",\n  \"preflightStatus\": \"READY\",\n  \"preflightBlockers\": [],\n  \"planSidecarPath\": null\n}\n"
+    },
+    {
+      "sampleId": "GRAPH-011.1",
+      "epoch": 1,
+      "title": "Count distinct callers",
+      "input": "Implement GRAPH-011.1: Count distinct callers. fan_in only. Distinct caller_id values. No fan-out.",
+      "criterion": "subtask_done",
+      "explanation": "Subtask GRAPH-011.1 status=FAILED. Verification failed: python -m pytest tests/test_fan_in.py -q",
+      "stopReason": " \"activeSubtaskId\": \"GRAPH-011.1\",\n  \"preflightStatus\": \"READY\",\n  \"preflightBlockers\": [],\n  \"planSidecarPath\": null\n}\n"
+    },
+    {
+      "sampleId": "GRAPH-011.1",
+      "epoch": 1,
+      "title": "Count distinct callers",
+      "input": "Implement GRAPH-011.1: Count distinct callers. fan_in only. Distinct caller_id values. No fan-out.",
+      "criterion": "reference_tests_pass",
+      "explanation": "Gold tests failed (exit 1).\nFFF                                                                      [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n___ TestComputeFanIn.test_callee_fan_in_counts_distinct_callers_GRAPH_011_1 ___\ntests\\test_fan_in.py:41: in test_callee_fan_in_counts_distinct_callers_GRAPH_011_1\n    result = compute_fan_in(nodes, edges)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nsrc\\living_graph\\metrics.py:4: in compute_fan_in\n    node_id_to_node = {node['id']: node for node in nodes}\n                       ^^^^^^^^^^\nE   TypeError: 'Node' object is not subscriptable\n_ TestComputeFanIn.test_node_without_incoming_edges_has_fan_in_zero_GRAPH_011_1 _\ntests\\test_fan_in.py:54: in test_node_without_incoming_edges_has_fan_in_zero_GRAPH_011_1\n    result = compute_fan_in(nodes, edges)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nsrc\\living_graph\\metrics.py:4: in compute_fan_in\n    node_id_to_node = {node['id']: node for node in nodes}\n                       ^^^^^^^^^^\nE   TypeError: 'Node' object is not subscriptable\n________ TestComputeFanIn.test_duplicate_edges_count_once_GRAPH_011_1 _________\ntests\\test_fan_in.py:70: in test_duplicate_edges_count_once_GRAPH_011_1\n    result = compute_fan_in(nodes, edges)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nsrc\\living_graph\\metrics.py:4: in compute_fan_in\n    node_id_to_node = {node['id']: node for node in nodes}\n                       ^^^^^^^^^^\nE   TypeError: 'Node' object is not subscriptable\n=========================== short test summary info ===========================\nFAILED tests/test_fan_in.py::TestComputeFanIn::test_callee_fan_in_counts_distinct_callers_GRAPH_011_1\nFAILED tests/test_fan_in.py::TestComputeFanIn::test_node_without_incoming_edges_has_fan_in_zero_GRAPH_011_1\nFAILED tests/test_fan_in.py::TestComputeFanIn::test_duplicate_edges_count_once_GRAPH_011_1\n3 failed in 0.13s\n\n",
+      "stopReason": " \"activeSubtaskId\": \"GRAPH-011.1\",\n  \"preflightStatus\": \"READY\",\n  \"preflightBlockers\": [],\n  \"planSidecarPath\": null\n}\n"
+    },
+    {
+      "sampleId": "GRAPH-011.1",
+      "epoch": 1,
+      "title": "Count distinct callers",
+      "input": "Implement GRAPH-011.1: Count distinct callers. fan_in only. Distinct caller_id values. No fan-out.",
+      "criterion": "process_budget",
+      "explanation": "Process budget failed: maxRepeatOfOneCall 13 > 5",
+      "stopReason": " \"activeSubtaskId\": \"GRAPH-011.1\",\n  \"preflightStatus\": \"READY\",\n  \"preflightBlockers\": [],\n  \"planSidecarPath\": null\n}\n"
+    },
+    {
+      "sampleId": "GRAPH-013.1",
+      "epoch": 1,
+      "title": "True on a two-node cycle, False on a chain",
+      "input": "Implement GRAPH-013.1: True on a two-node cycle, False on a chain. One boolean function. Two tiny in-memory graphs. No serialization.",
+      "criterion": "subtask_done",
+      "explanation": "Timed out after 2400s. Subtask GRAPH-013.1 status=FAILED. Assistant stopped without tool call at step 15.",
+      "stopReason": "timeout"
+    },
+    {
+      "sampleId": "GRAPH-031.1",
+      "epoch": 1,
+      "title": "Tag .py nodes library_keyword in nodes_from_edges",
+      "input": "Implement GRAPH-031.1: Tag .py nodes library_keyword in nodes_from_edges. Path suffix .py means library_keyword. Robot types stay as they are.",
+      "criterion": "reference_tests_pass",
+      "explanation": "Gold tests failed (exit 1).\n...FF                                                                    [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n_____________ test_unresolved_callee_stays_unresolved_GRAPH_031_1 _____________\ntests\\test_scan_python_node_type.py:81: in test_unresolved_callee_stays_unresolved_GRAPH_031_1\n    assert unresolved.type == \"unresolved\"\nE   AssertionError: assert 'library_keyword' == 'unresolved'\nE     \nE     - unresolved\nE     + library_keyword\n_______ test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1 ________\ntests\\test_scan_python_node_type.py:89: in test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1\n    assert len(open_session) == 1, \"open_session node not found in scanned graph\"\nE   AssertionError: open_session node not found in scanned graph\nE   assert 2 == 1\nE    +  where 2 = len([<living_graph.model.Node object at 0x00000172B8B735B0>, <living_graph.model.Node object at 0x00000172B8B68100>])\n=========================== short test summary info ===========================\nFAILED tests/test_scan_python_node_type.py::test_unresolved_callee_stays_unresolved_GRAPH_031_1\nFAILED tests/test_scan_python_node_type.py::test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1\n2 failed, 3 passed in 0.20s\n\n",
+      "stopReason": "library_keyword in nodes_from_edges\nGRAPH-031: DONE\nGRAPH-031: consumed 7 handoff(s)\nAll selected GRAPH tasks are DONE.\n"
+    },
+    {
+      "sampleId": "GRAPH-046.1",
+      "epoch": 1,
+      "title": "Resolve unique cross-file keyword names",
+      "input": "Implement GRAPH-046.1: Resolve unique cross-file keyword names. One definition of Open Session in a .resource file. Missing Keyword stays unresolved.",
+      "criterion": "subtask_done",
+      "explanation": "Subtask GRAPH-046.1 status=BLOCKED. Worker exhausted tool step budget (80 steps) without marking subtask GRAPH-046.1 DONE.",
+      "stopReason": " \"activeSubtaskId\": \"GRAPH-046.1\",\n  \"preflightStatus\": \"READY\",\n  \"preflightBlockers\": [],\n  \"planSidecarPath\": null\n}\n"
+    },
+    {
+      "sampleId": "GRAPH-046.1",
+      "epoch": 1,
+      "title": "Resolve unique cross-file keyword names",
+      "input": "Implement GRAPH-046.1: Resolve unique cross-file keyword names. One definition of Open Session in a .resource file. Missing Keyword stays unresolved.",
+      "criterion": "reference_tests_pass",
+      "explanation": "Gold tests failed (exit 1).\nF.                                                                       [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n_____________ test_cross_file_unique_keyword_resolved_GRAPH_046_1 _____________\ntests\\test_cross_file_resolve.py:19: in test_cross_file_unique_keyword_resolved_GRAPH_046_1\n    assert edge.resolved is True\nE   assert False is True\nE    +  where False = <living_graph.model.Edge object at 0x0000014EB061DE80>.resolved\n=========================== short test summary info ===========================\nFAILED tests/test_cross_file_resolve.py::test_cross_file_unique_keyword_resolved_GRAPH_046_1\n1 failed, 1 passed in 0.21s\n\n",
+      "stopReason": " \"activeSubtaskId\": \"GRAPH-046.1\",\n  \"preflightStatus\": \"READY\",\n  \"preflightBlockers\": [],\n  \"planSidecarPath\": null\n}\n"
+    },
+    {
+      "sampleId": "GRAPH-046.1",
+      "epoch": 1,
+      "title": "Resolve unique cross-file keyword names",
+      "input": "Implement GRAPH-046.1: Resolve unique cross-file keyword names. One definition of Open Session in a .resource file. Missing Keyword stays unresolved.",
+      "criterion": "process_budget",
+      "explanation": "Process budget failed: steps 206 > 160; maxRepeatOfOneCall 26 > 5; toolErrorRate 0.44 > 0.4",
+      "stopReason": " \"activeSubtaskId\": \"GRAPH-046.1\",\n  \"preflightStatus\": \"READY\",\n  \"preflightBlockers\": [],\n  \"planSidecarPath\": null\n}\n"
+    },
+    {
+      "sampleId": "GRAPH-048.1",
+      "epoch": 1,
+      "title": "Reuse nodes_from_edges in incremental_update",
+      "input": "Implement GRAPH-048.1: Reuse nodes_from_edges in incremental_update. Drop _nodes_from_edge_ids or make it call nodes_from_edges. No doubled ids.",
+      "criterion": "subtask_done",
+      "explanation": "Subtask GRAPH-048.1 status=FAILED. Verification failed: python -m pytest tests/test_incremental_node_types.py tests/test_incremental_replace.py tests/test_incremental_unchanged.py -q",
+      "stopReason": " \"activeSubtaskId\": \"GRAPH-048.1\",\n  \"preflightStatus\": \"READY\",\n  \"preflightBlockers\": [],\n  \"planSidecarPath\": null\n}\n"
+    },
+    {
+      "sampleId": "GRAPH-048.1",
+      "epoch": 1,
+      "title": "Reuse nodes_from_edges in incremental_update",
+      "input": "Implement GRAPH-048.1: Reuse nodes_from_edges in incremental_update. Drop _nodes_from_edge_ids or make it call nodes_from_edges. No doubled ids.",
+      "criterion": "reference_tests_pass",
+      "explanation": "Gold tests failed (exit 1).\n..F                                                                      [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n_________ test_incremental_update_kept_nodes_same_objects_graph_048_1 _________\ntests\\test_incremental_node_types.py:77: in test_incremental_update_kept_nodes_same_objects_graph_048_1\n    assert node in updated.nodes\nE   assert <living_graph.model.Node object at 0x000002CF671CE970> in [<living_graph.model.Node object at 0x000002CF67158C50>, <living_graph.model.Node object at 0x000002CF671D5390>]\nE    +  where [<living_graph.model.Node object at 0x000002CF67158C50>, <living_graph.model.Node object at 0x000002CF671D5390>] = <living_graph.scan.Graph object at 0x000002CF671128D0>.nodes\n=========================== short test summary info ===========================\nFAILED tests/test_incremental_node_types.py::test_incremental_update_kept_nodes_same_objects_graph_048_1\n1 failed, 2 passed in 0.12s\n\n",
+      "stopReason": " \"activeSubtaskId\": \"GRAPH-048.1\",\n  \"preflightStatus\": \"READY\",\n  \"preflightBlockers\": [],\n  \"planSidecarPath\": null\n}\n"
+    },
+    {
+      "sampleId": "GRAPH-048.1",
+      "epoch": 1,
+      "title": "Reuse nodes_from_edges in incremental_update",
+      "input": "Implement GRAPH-048.1: Reuse nodes_from_edges in incremental_update. Drop _nodes_from_edge_ids or make it call nodes_from_edges. No doubled ids.",
+      "criterion": "process_budget",
+      "explanation": "Process budget failed: maxRepeatOfOneCall 16 > 5",
+      "stopReason": " \"activeSubtaskId\": \"GRAPH-048.1\",\n  \"preflightStatus\": \"READY\",\n  \"preflightBlockers\": [],\n  \"planSidecarPath\": null\n}\n"
+    },
+    {
+      "sampleId": "GRAPH-049.1",
+      "epoch": 1,
+      "title": "Drop Robot builtin callees",
+      "input": "Implement GRAPH-049.1: Drop Robot builtin callees. No Operation and Log are not edges. Missing Keyword stays unresolved.",
+      "criterion": "subtask_done",
+      "explanation": "Timed out after 2400s. Subtask GRAPH-049.1 status=BLOCKED. ERROR executing write_file: ERROR: Python syntax invalid in src/living_graph/utils/_collect.py\n  File \"src/living_graph/utils/_collect.py\", line 1\n    def _collect():\\n    \"\"\"Collect robot keywords and their calls.\"\"\"\\n    # Implementation details omitted per constraints\\n    pass\n                    ^\nSyntaxError: unexpected character after line continuation character",
+      "stopReason": "timeout"
+    },
+    {
+      "sampleId": "GRAPH-049.1",
+      "epoch": 1,
+      "title": "Drop Robot builtin callees",
+      "input": "Implement GRAPH-049.1: Drop Robot builtin callees. No Operation and Log are not edges. Missing Keyword stays unresolved.",
+      "criterion": "reference_tests_pass",
+      "explanation": "Gold tests failed (exit 2).\nRunning teardown with pytest sessionfinish...\n\n=================================== ERRORS ====================================\n________________ ERROR collecting tests/test_robot_builtins.py ________________\nImportError while importing test module 'C:\\Users\\santt\\AppData\\Local\\Temp\\eval-GRAPH-049.1-work-vr790bar\\tests\\test_robot_builtins.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n..\\..\\Python\\pythoncore-3.14-64\\Lib\\importlib\\__init__.py:88: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests\\test_robot_builtins.py:3: in <module>\n    from living_graph.robot_extractor import extract_robot_edges\nsrc\\living_graph\\robot_extractor.py:1: in <module>\n    from living_graph.models import Collector\nE   ModuleNotFoundError: No module named 'living_graph.models'\n_______________ ERROR collecting tests/test_robot_extractor.py ________________\nImportError while importing test module 'C:\\Users\\santt\\AppData\\Local\\Temp\\eval-GRAPH-049.1-work-vr790bar\\tests\\test_robot_extractor.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n..\\..\\Python\\pythoncore-3.14-64\\Lib\\importlib\\__init__.py:88: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests\\test_robot_extractor.py:2: in <module>\n    from living_graph.robot_extractor import extract_robot_edges\nsrc\\living_graph\\robot_extractor.py:1: in <module>\n    from living_graph.models import Collector\nE   ModuleNotFoundError: No module named 'living_graph.models'\n=========================== short test summary info ===========================\nERROR tests/test_robot_builtins.py\nERROR tests/test_robot_extractor.py\n!!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!!\n2 errors in 0.18s\n\n",
+      "stopReason": "timeout"
+    },
+    {
+      "sampleId": "GRAPH-050.1",
+      "epoch": 1,
+      "title": "Metrics on the in-memory scan graph",
+      "input": "Implement GRAPH-050.1: Metrics on the in-memory scan graph. Reuse compute_fan_in and compute_fan_out. No JSON write.",
+      "criterion": "subtask_done",
+      "explanation": "Timed out after 2400s. Subtask GRAPH-050.1 status=IN_PROGRESS. ERROR executing replace_in_file: ERROR: Python syntax invalid in src/living_graph/scan.py\n  File \"src/living_graph/scan.py\", line 10\n        root_path = Path(root)\n       ^\nIndentationError: unexpected indent",
+      "stopReason": "timeout"
+    },
+    {
+      "sampleId": "GRAPH-050.1",
+      "epoch": 1,
+      "title": "Metrics on the in-memory scan graph",
+      "input": "Implement GRAPH-050.1: Metrics on the in-memory scan graph. Reuse compute_fan_in and compute_fan_out. No JSON write.",
+      "criterion": "reference_tests_pass",
+      "explanation": "Gold tests failed (exit 2).\nRunning teardown with pytest sessionfinish...\n\n=================================== ERRORS ====================================\n_________________ ERROR collecting tests/test_scan_metrics.py _________________\nImportError while importing test module 'C:\\Users\\santt\\AppData\\Local\\Temp\\eval-GRAPH-050.1-work-f8dmlbdr\\tests\\test_scan_metrics.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n..\\..\\Python\\pythoncore-3.14-64\\Lib\\importlib\\__init__.py:88: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests\\test_scan_metrics.py:8: in <module>\n    from living_graph.scan import scan_fixtures\nsrc\\living_graph\\scan.py:1: in <module>\n    from living_graph.node import Node\nE   ImportError: cannot import name 'Node' from 'living_graph.node' (unknown location). Did you mean: 'node'?\n=========================== short test summary info ===========================\nERROR tests/test_scan_metrics.py\n!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n1 error in 0.16s\n\n",
+      "stopReason": "timeout"
+    },
+    {
+      "sampleId": "GRAPH-003.1",
+      "epoch": 2,
+      "title": "Parse one test case direct keyword calls",
+      "input": "Implement GRAPH-003.1: Parse one test case direct keyword calls. Implement only enough Robot parsing to return two direct keyword call edges from one test case fixture.",
+      "criterion": "subtask_done",
+      "explanation": "Subtask GRAPH-003.1 status=FAILED. Verification failed: python -m pytest tests/test_robot_extractor.py -k GRAPH_003_1 -q",
+      "stopReason": "rs\\\\santt\\\\AppData\\\\Local\\\\Temp\\\\eval-GRAPH-003.1-runtime-qz6qh_8f\\\\recovery\\\\plans\\\\GRAPH-003.GRAPH-003.1.plan.json\"\n}\n"
+    },
+    {
+      "sampleId": "GRAPH-003.1",
+      "epoch": 2,
+      "title": "Parse one test case direct keyword calls",
+      "input": "Implement GRAPH-003.1: Parse one test case direct keyword calls. Implement only enough Robot parsing to return two direct keyword call edges from one test case fixture.",
+      "criterion": "reference_tests_pass",
+      "explanation": "Gold tests failed (exit 1).\nF                                                                        [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n__________________________ test_extract_robot_edges ___________________________\ntests\\test_robot_extractor.py:5: in test_extract_robot_edges\n    assert len(edges) == 2\nE   assert 0 == 2\nE    +  where 0 = len([])\n=========================== short test summary info ===========================\nFAILED tests/test_robot_extractor.py::test_extract_robot_edges - assert 0 == 2\n1 failed in 0.12s\n\n",
+      "stopReason": "rs\\\\santt\\\\AppData\\\\Local\\\\Temp\\\\eval-GRAPH-003.1-runtime-qz6qh_8f\\\\recovery\\\\plans\\\\GRAPH-003.GRAPH-003.1.plan.json\"\n}\n"
+    },
+    {
+      "sampleId": "GRAPH-003.1",
+      "epoch": 2,
+      "title": "Parse one test case direct keyword calls",
+      "input": "Implement GRAPH-003.1: Parse one test case direct keyword calls. Implement only enough Robot parsing to return two direct keyword call edges from one test case fixture.",
+      "criterion": "process_budget",
+      "explanation": "Process budget failed: maxRepeatOfOneCall 12 > 5",
+      "stopReason": "rs\\\\santt\\\\AppData\\\\Local\\\\Temp\\\\eval-GRAPH-003.1-runtime-qz6qh_8f\\\\recovery\\\\plans\\\\GRAPH-003.GRAPH-003.1.plan.json\"\n}\n"
+    },
+    {
+      "sampleId": "GRAPH-006.1",
+      "epoch": 2,
+      "title": "Parse one Python function call",
+      "input": "Implement GRAPH-006.1: Parse one Python function call. One same-file Python call. Return exactly one edge. No builtin filtering.",
+      "criterion": "subtask_done",
+      "explanation": "Subtask GRAPH-006.1 status=IN_PROGRESS. Declared verification passed during test-writer; tests do not prove new behavior.",
+      "stopReason": " \"activeSubtaskId\": \"GRAPH-006.1\",\n  \"preflightStatus\": \"READY\",\n  \"preflightBlockers\": [],\n  \"planSidecarPath\": null\n}\n"
+    },
+    {
+      "sampleId": "GRAPH-006.1",
+      "epoch": 2,
+      "title": "Parse one Python function call",
+      "input": "Implement GRAPH-006.1: Parse one Python function call. One same-file Python call. Return exactly one edge. No builtin filtering.",
+      "criterion": "reference_tests_pass",
+      "explanation": "Gold tests failed (exit 1).\n.F                                                                       [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n______________ test_extract_python_edges_nested_call_GRAPH_006_1 ______________\ntests\\test_python_extractor.py:16: in test_extract_python_edges_nested_call_GRAPH_006_1\n    assert len(edges) == 1\nE   assert 0 == 1\nE    +  where 0 = len([])\n=========================== short test summary info ===========================\nFAILED tests/test_python_extractor.py::test_extract_python_edges_nested_call_GRAPH_006_1\n1 failed, 1 passed in 0.13s\n\n",
+      "stopReason": " \"activeSubtaskId\": \"GRAPH-006.1\",\n  \"preflightStatus\": \"READY\",\n  \"preflightBlockers\": [],\n  \"planSidecarPath\": null\n}\n"
+    },
+    {
+      "sampleId": "GRAPH-011.1",
+      "epoch": 2,
+      "title": "Count distinct callers",
+      "input": "Implement GRAPH-011.1: Count distinct callers. fan_in only. Distinct caller_id values. No fan-out.",
+      "criterion": "subtask_done",
+      "explanation": "Subtask GRAPH-011.1 status=FAILED. Assistant stopped without tool call at step 8.",
+      "stopReason": " \"activeSubtaskId\": \"GRAPH-011.1\",\n  \"preflightStatus\": \"READY\",\n  \"preflightBlockers\": [],\n  \"planSidecarPath\": null\n}\n"
+    },
+    {
+      "sampleId": "GRAPH-011.1",
+      "epoch": 2,
+      "title": "Count distinct callers",
+      "input": "Implement GRAPH-011.1: Count distinct callers. fan_in only. Distinct caller_id values. No fan-out.",
+      "criterion": "reference_tests_pass",
+      "explanation": "Gold tests failed (exit 1).\nFFF                                                                      [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n___ TestComputeFanIn.test_callee_fan_in_counts_distinct_callers_GRAPH_011_1 ___\ntests\\test_fan_in.py:41: in test_callee_fan_in_counts_distinct_callers_GRAPH_011_1\n    result = compute_fan_in(nodes, edges)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nsrc\\living_graph\\metrics.py:13: in compute_fan_in\n    caller_ids = defaultdict(set)\n                 ^^^^^^^^^^^\nE   NameError: name 'defaultdict' is not defined\n_ TestComputeFanIn.test_node_without_incoming_edges_has_fan_in_zero_GRAPH_011_1 _\ntests\\test_fan_in.py:54: in test_node_without_incoming_edges_has_fan_in_zero_GRAPH_011_1\n    result = compute_fan_in(nodes, edges)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nsrc\\living_graph\\metrics.py:13: in compute_fan_in\n    caller_ids = defaultdict(set)\n                 ^^^^^^^^^^^\nE   NameError: name 'defaultdict' is not defined\n________ TestComputeFanIn.test_duplicate_edges_count_once_GRAPH_011_1 _________\ntests\\test_fan_in.py:70: in test_duplicate_edges_count_once_GRAPH_011_1\n    result = compute_fan_in(nodes, edges)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nsrc\\living_graph\\metrics.py:13: in compute_fan_in\n    caller_ids = defaultdict(set)\n                 ^^^^^^^^^^^\nE   NameError: name 'defaultdict' is not defined\n=========================== short test summary info ===========================\nFAILED tests/test_fan_in.py::TestComputeFanIn::test_callee_fan_in_counts_distinct_callers_GRAPH_011_1\nFAILED tests/test_fan_in.py::TestComputeFanIn::test_node_without_incoming_edges_has_fan_in_zero_GRAPH_011_1\nFAILED tests/test_fan_in.py::TestComputeFanIn::test_duplicate_edges_count_once_GRAPH_011_1\n3 failed in 0.12s\n\n",
+      "stopReason": " \"activeSubtaskId\": \"GRAPH-011.1\",\n  \"preflightStatus\": \"READY\",\n  \"preflightBlockers\": [],\n  \"planSidecarPath\": null\n}\n"
+    },
+    {
+      "sampleId": "GRAPH-011.1",
+      "epoch": 2,
+      "title": "Count distinct callers",
+      "input": "Implement GRAPH-011.1: Count distinct callers. fan_in only. Distinct caller_id values. No fan-out.",
+      "criterion": "process_budget",
+      "explanation": "Process budget failed: maxRepeatOfOneCall 27 > 5",
+      "stopReason": " \"activeSubtaskId\": \"GRAPH-011.1\",\n  \"preflightStatus\": \"READY\",\n  \"preflightBlockers\": [],\n  \"planSidecarPath\": null\n}\n"
+    },
+    {
+      "sampleId": "GRAPH-013.1",
+      "epoch": 2,
+      "title": "True on a two-node cycle, False on a chain",
+      "input": "Implement GRAPH-013.1: True on a two-node cycle, False on a chain. One boolean function. Two tiny in-memory graphs. No serialization.",
+      "criterion": "subtask_done",
+      "explanation": "Subtask GRAPH-013.1 status=FAILED. ERROR executing replace_in_file: ERROR: Python syntax invalid in src/living_graph/metrics.py\n  File \"src/living_graph/metrics.py\", line 30\n        return (edge1.caller_id == 'A' and edge1.callee_id == 'B' and edge2.caller_id == 'B' and edge2.callee_id == 'A') or (edge1.caller_id == 'B' and edge1.callee_id == 'A' and edge2.caller_id == 'A' and edge2.callee_id == 'B')def has_cycle(edges):\n                                                                                                                                                                                                                                     ^^^\nSyntaxError: invalid syntax",
+      "stopReason": " \"activeSubtaskId\": \"GRAPH-013.1\",\n  \"preflightStatus\": \"READY\",\n  \"preflightBlockers\": [],\n  \"planSidecarPath\": null\n}\n"
+    },
+    {
+      "sampleId": "GRAPH-013.1",
+      "epoch": 2,
+      "title": "True on a two-node cycle, False on a chain",
+      "input": "Implement GRAPH-013.1: True on a two-node cycle, False on a chain. One boolean function. Two tiny in-memory graphs. No serialization.",
+      "criterion": "reference_tests_pass",
+      "explanation": "Gold tests failed (exit 1).\nFF                                                                       [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n__________ TestHasCycle.test_two_node_cycle_returns_true_GRAPH_013_1 __________\ntests\\test_cycles.py:20: in test_two_node_cycle_returns_true_GRAPH_013_1\n    from src.living_graph.metrics import has_cycle\nE   ImportError: cannot import name 'has_cycle' from 'src.living_graph.metrics' (C:\\Users\\santt\\AppData\\Local\\Temp\\eval-GRAPH-013.1-work-jqpbqrjw\\src\\living_graph\\metrics.py)\n_________ TestHasCycle.test_two_node_chain_returns_false_GRAPH_013_1 __________\ntests\\test_cycles.py:30: in test_two_node_chain_returns_false_GRAPH_013_1\n    from src.living_graph.metrics import has_cycle\nE   ImportError: cannot import name 'has_cycle' from 'src.living_graph.metrics' (C:\\Users\\santt\\AppData\\Local\\Temp\\eval-GRAPH-013.1-work-jqpbqrjw\\src\\living_graph\\metrics.py)\n=========================== short test summary info ===========================\nFAILED tests/test_cycles.py::TestHasCycle::test_two_node_cycle_returns_true_GRAPH_013_1\nFAILED tests/test_cycles.py::TestHasCycle::test_two_node_chain_returns_false_GRAPH_013_1\n2 failed in 0.12s\n\n",
+      "stopReason": " \"activeSubtaskId\": \"GRAPH-013.1\",\n  \"preflightStatus\": \"READY\",\n  \"preflightBlockers\": [],\n  \"planSidecarPath\": null\n}\n"
+    },
+    {
+      "sampleId": "GRAPH-013.1",
+      "epoch": 2,
+      "title": "True on a two-node cycle, False on a chain",
+      "input": "Implement GRAPH-013.1: True on a two-node cycle, False on a chain. One boolean function. Two tiny in-memory graphs. No serialization.",
+      "criterion": "process_budget",
+      "explanation": "Process budget failed: toolErrorRate 0.526 > 0.4",
+      "stopReason": " \"activeSubtaskId\": \"GRAPH-013.1\",\n  \"preflightStatus\": \"READY\",\n  \"preflightBlockers\": [],\n  \"planSidecarPath\": null\n}\n"
+    },
+    {
+      "sampleId": "GRAPH-031.1",
+      "epoch": 2,
+      "title": "Tag .py nodes library_keyword in nodes_from_edges",
+      "input": "Implement GRAPH-031.1: Tag .py nodes library_keyword in nodes_from_edges. Path suffix .py means library_keyword. Robot types stay as they are.",
+      "criterion": "subtask_done",
+      "explanation": "Timed out after 2400s. Subtask GRAPH-031.1 status=FAILED. ERROR executing write_file: ERROR: Python syntax invalid in src/living_graph/merge.py\n  File \"src/living_graph/merge.py\", line 2\n        caller_id = f\"{edge.source_path}::{edge.caller_name}\"\n       ^\nIndentationError: unexpected indent",
+      "stopReason": "timeout"
+    },
+    {
+      "sampleId": "GRAPH-031.1",
+      "epoch": 2,
+      "title": "Tag .py nodes library_keyword in nodes_from_edges",
+      "input": "Implement GRAPH-031.1: Tag .py nodes library_keyword in nodes_from_edges. Path suffix .py means library_keyword. Robot types stay as they are.",
+      "criterion": "reference_tests_pass",
+      "explanation": "Gold tests failed (exit 1).\n.F...                                                                    [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n_____________ test_py_callee_node_is_library_keyword_GRAPH_031_1 ______________\ntests\\test_scan_python_node_type.py:43: in test_py_callee_node_is_library_keyword_GRAPH_031_1\n    assert callee.type == \"library_keyword\", (\nE   AssertionError: Expected .py callee type 'library_keyword', got 'user_keyword'\nE   assert 'user_keyword' == 'library_keyword'\nE     \nE     - library_keyword\nE     + user_keyword\n=========================== short test summary info ===========================\nFAILED tests/test_scan_python_node_type.py::test_py_callee_node_is_library_keyword_GRAPH_031_1\n1 failed, 4 passed in 0.20s\n\n",
+      "stopReason": "timeout"
+    },
+    {
+      "sampleId": "GRAPH-046.1",
+      "epoch": 2,
+      "title": "Resolve unique cross-file keyword names",
+      "input": "Implement GRAPH-046.1: Resolve unique cross-file keyword names. One definition of Open Session in a .resource file. Missing Keyword stays unresolved.",
+      "criterion": "subtask_done",
+      "explanation": "Timed out after 2400s. Subtask GRAPH-046.1 status=FAILED. Verification failed: python -m pytest tests/test_cross_file_resolve.py tests/test_unresolved_calls.py -q",
+      "stopReason": "timeout"
+    },
+    {
+      "sampleId": "GRAPH-046.1",
+      "epoch": 2,
+      "title": "Resolve unique cross-file keyword names",
+      "input": "Implement GRAPH-046.1: Resolve unique cross-file keyword names. One definition of Open Session in a .resource file. Missing Keyword stays unresolved.",
+      "criterion": "reference_tests_pass",
+      "explanation": "Gold tests failed (exit 2).\nRunning teardown with pytest sessionfinish...\n\n=================================== ERRORS ====================================\n______________ ERROR collecting tests/test_cross_file_resolve.py ______________\nImportError while importing test module 'C:\\Users\\santt\\AppData\\Local\\Temp\\eval-GRAPH-046.1-work-e2n7b1u8\\tests\\test_cross_file_resolve.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n..\\..\\Python\\pythoncore-3.14-64\\Lib\\importlib\\__init__.py:88: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests\\test_cross_file_resolve.py:7: in <module>\n    from living_graph.scan import scan_fixtures\nsrc\\living_graph\\scan.py:1: in <module>\n    from living_graph.fixtures import Keyword, Node\nE   ImportError: cannot import name 'Keyword' from 'living_graph.fixtures' (unknown location)\n=========================== short test summary info ===========================\nERROR tests/test_cross_file_resolve.py\n!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n1 error in 0.16s\n\n",
+      "stopReason": "timeout"
+    },
+    {
+      "sampleId": "GRAPH-047.1",
+      "epoch": 2,
+      "title": "Resource callers are user_keyword",
+      "input": "Implement GRAPH-047.1: Resource callers are user_keyword. Suffix .resource means caller user_keyword. .robot callers stay test_case.",
+      "criterion": "subtask_done",
+      "explanation": "Timed out after 2400s. Subtask GRAPH-047.1 status=IN_PROGRESS. ERROR executing replace_in_file: ERROR: Python syntax invalid in src/living_graph/merge.py\n  File \"src/living_graph/merge.py\", line 16\n    def get_caller_type(file_path):\nIndentationError: expected an indented block after 'for' statement on line 15",
+      "stopReason": "timeout"
+    },
+    {
+      "sampleId": "GRAPH-047.1",
+      "epoch": 2,
+      "title": "Resource callers are user_keyword",
+      "input": "Implement GRAPH-047.1: Resource callers are user_keyword. Suffix .resource means caller user_keyword. .robot callers stay test_case.",
+      "criterion": "reference_tests_pass",
+      "explanation": "^^\ntests\\test_resource_caller_type.py:18: in _node_by_id\n    return [n for n in nodes if n.id == node_id]\n                       ^^^^^\nE   TypeError: 'NoneType' object is not iterable\n________________ test_robot_caller_stays_test_case_GRAPH_047_1 ________________\ntests\\test_resource_caller_type.py:54: in test_robot_caller_stays_test_case_GRAPH_047_1\n    caller = _node_by_id(nodes, f\"{source}::Happy Path\")\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests\\test_resource_caller_type.py:18: in _node_by_id\n    return [n for n in nodes if n.id == node_id]\n                       ^^^^^\nE   TypeError: 'NoneType' object is not iterable\n____________ test_python_caller_stays_library_keyword_GRAPH_047_1 _____________\ntests\\test_resource_caller_type.py:73: in test_python_caller_stays_library_keyword_GRAPH_047_1\n    caller = _node_by_id(nodes, f\"{source}::open_session\")\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests\\test_resource_caller_type.py:18: in _node_by_id\n    return [n for n in nodes if n.id == node_id]\n                       ^^^^^\nE   TypeError: 'NoneType' object is not iterable\n_______ test_scan_fixtures_resource_caller_is_user_keyword_GRAPH_047_1 ________\ntests\\test_resource_caller_type.py:82: in test_scan_fixtures_resource_caller_is_user_keyword_GRAPH_047_1\n    keyword_one = _node_by_id(\ntests\\test_resource_caller_type.py:18: in _node_by_id\n    return [n for n in nodes if n.id == node_id]\n                       ^^^^^\nE   TypeError: 'NoneType' object is not iterable\n=========================== short test summary info ===========================\nFAILED tests/test_resource_caller_type.py::test_resource_caller_is_user_keyword_GRAPH_047_1\nFAILED tests/test_resource_caller_type.py::test_robot_caller_stays_test_case_GRAPH_047_1\nFAILED tests/test_resource_caller_type.py::test_python_caller_stays_library_keyword_GRAPH_047_1\nFAILED tests/test_resource_caller_type.py::test_scan_fixtures_resource_caller_is_user_keyword_GRAPH_047_1\n4 failed in 0.21s\n\n",
+      "stopReason": "timeout"
+    }
+  ],
+  "flaky": [
+    {
+      "sampleId": "GRAPH-031.1",
+      "scorer": "subtask_done",
+      "passed": 1,
+      "epochs": 2
+    },
+    {
+      "sampleId": "GRAPH-047.1",
+      "scorer": "subtask_done",
+      "passed": 1,
+      "epochs": 2
+    }
+  ],
+  "trend": [
+    {
+      "createdAt": "2026-09-30T19:57:06+00:00",
+      "promptVariant": "baseline",
+      "model": "night-runner:latest",
+      "scorers": {
+        "process_budget": 1.0,
+        "reference_tests_pass": 0.0,
+        "subtask_done": 0.0
+      },
+      "referenceTestsPassRate": 0.0,
+      "falseDoneRate": null,
+      "reliableCases": 0
+    },
+    {
+      "createdAt": "2026-09-30T19:57:17+00:00",
+      "promptVariant": "v2",
+      "model": "night-runner:latest",
+      "scorers": {
+        "process_budget": 1.0,
+        "reference_tests_pass": 0.0,
+        "subtask_done": 0.0
+      },
+      "referenceTestsPassRate": 0.0,
+      "falseDoneRate": null,
+      "reliableCases": 0
+    },
+    {
+      "createdAt": "2026-09-30T19:59:49+00:00",
+      "promptVariant": "baseline",
+      "model": "night-runner:latest",
+      "scorers": {
+        "process_budget": 1.0,
+        "reference_tests_pass": 0.0,
+        "subtask_done": 0.0
+      },
+      "referenceTestsPassRate": 0.0,
+      "falseDoneRate": null,
+      "reliableCases": 0
+    },
+    {
+      "createdAt": "2026-09-30T20:00:21+00:00",
+      "promptVariant": "baseline",
+      "model": "night-runner:latest",
+      "scorers": {
+        "process_budget": 1.0,
+        "reference_tests_pass": 0.0,
+        "subtask_done": 0.0
+      },
+      "referenceTestsPassRate": 0.0,
+      "falseDoneRate": null,
+      "reliableCases": 0
+    },
+    {
+      "createdAt": "2026-10-02T08:14:47+00:00",
+      "promptVariant": "baseline",
+      "model": "night-runner:latest",
+      "scorers": {
+        "process_budget": 1.0,
+        "reference_tests_pass": 0.9048,
+        "subtask_done": 1.0
+      },
+      "referenceTestsPassRate": 0.9048,
+      "falseDoneRate": 0.0952,
+      "reliableCases": 11
+    },
+    {
+      "createdAt": "2026-10-02T21:45:28+00:00",
+      "promptVariant": "baseline",
+      "model": "qwen3:8b",
+      "scorers": {
+        "process_budget": 0.6842,
+        "reference_tests_pass": 0.2105,
+        "subtask_done": 0.2105
+      },
+      "referenceTestsPassRate": 0.2105,
+      "falseDoneRate": 0.25,
+      "reliableCases": 2
+    }
+  ],
+  "trials": [
+    {
+      "sampleId": "GRAPH-003.1",
+      "epoch": 1,
+      "input": "Implement GRAPH-003.1: Parse one test case direct keyword calls. Implement only enough Robot parsing to return two direct keyword call edges from one test case fixture.",
+      "title": "Parse one test case direct keyword calls",
+      "scores": {
+        "subtask_done": {
+          "ok": false,
+          "explanation": "Timed out after 2400s. Subtask GRAPH-003.1 status=BLOCKED. Assistant stopped without tool call at step 10.",
+          "value": "I"
+        },
+        "reference_tests_pass": {
+          "ok": false,
+          "explanation": "Gold tests failed (exit 1).\nF                                                                        [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n__________________________ test_extract_robot_edges ___________________________\ntests\\test_robot_extractor.py:5: in test_extract_robot_edges\n    assert len(edges) == 2\nE   assert 0 == 2\nE    +  where 0 = len([])\n=========================== short test summary info ===========================\nFAILED tests/test_robot_extractor.py::test_extract_robot_edges - assert 0 == 2\n1 failed in 0.12s\n\n",
+          "value": "I"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=0/10, steps=0/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.0/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 0,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 0,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 1,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.0,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 2400.013,
+      "tokens": 0,
+      "steps": null,
+      "totals": {},
+      "stopReasons": [],
+      "timedOut": true,
+      "stopReason": "timeout",
+      "exitCode": null
+    },
+    {
+      "sampleId": "GRAPH-006.1",
+      "epoch": 1,
+      "input": "Implement GRAPH-006.1: Parse one Python function call. One same-file Python call. Return exactly one edge. No builtin filtering.",
+      "title": "Parse one Python function call",
+      "scores": {
+        "subtask_done": {
+          "ok": false,
+          "explanation": "Subtask GRAPH-006.1 status=IN_PROGRESS. Declared verification passed during test-writer; tests do not prove new behavior.",
+          "value": "I"
+        },
+        "reference_tests_pass": {
+          "ok": false,
+          "explanation": "Gold tests failed (exit 1).\n.F                                                                       [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n______________ test_extract_python_edges_nested_call_GRAPH_006_1 ______________\ntests\\test_python_extractor.py:16: in test_extract_python_edges_nested_call_GRAPH_006_1\n    assert len(edges) == 1\nE   assert 0 == 1\nE    +  where 0 = len([])\n=========================== short test summary info ===========================\nFAILED tests/test_python_extractor.py::test_extract_python_edges_nested_call_GRAPH_006_1\n1 failed, 1 passed in 0.13s\n\n",
+          "value": "I"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=5/10, steps=6/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.0/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 5,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 6,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 1,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.0,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 261.449,
+      "tokens": 87563,
+      "steps": 6,
+      "totals": {
+        "steps": 6,
+        "toolCalls": 4,
+        "toolErrors": 0,
+        "attempts": 5,
+        "repeatedIdenticalCalls": 0,
+        "promptTokens": 64050,
+        "completionTokens": 23513
+      },
+      "stopReasons": [
+        "Declared verification passed during test-writer; tests do not prove new behavior.",
+        "Declared verification passed during test-writer; tests do not prove new behavior.",
+        "Assistant stopped without tool call at step 2.",
+        "Declared verification passed during test-writer; tests do not prove new behavior.",
+        "Declared verification passed during test-writer; tests do not prove new behavior."
+      ],
+      "timedOut": false,
+      "stopReason": " \"activeSubtaskId\": \"GRAPH-006.1\",\n  \"preflightStatus\": \"READY\",\n  \"preflightBlockers\": [],\n  \"planSidecarPath\": null\n}\n",
+      "exitCode": 1
+    },
+    {
+      "sampleId": "GRAPH-011.1",
+      "epoch": 1,
+      "input": "Implement GRAPH-011.1: Count distinct callers. fan_in only. Distinct caller_id values. No fan-out.",
+      "title": "Count distinct callers",
+      "scores": {
+        "subtask_done": {
+          "ok": false,
+          "explanation": "Subtask GRAPH-011.1 status=FAILED. Verification failed: python -m pytest tests/test_fan_in.py -q",
+          "value": "I"
+        },
+        "reference_tests_pass": {
+          "ok": false,
+          "explanation": "Gold tests failed (exit 1).\nFFF                                                                      [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n___ TestComputeFanIn.test_callee_fan_in_counts_distinct_callers_GRAPH_011_1 ___\ntests\\test_fan_in.py:41: in test_callee_fan_in_counts_distinct_callers_GRAPH_011_1\n    result = compute_fan_in(nodes, edges)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nsrc\\living_graph\\metrics.py:4: in compute_fan_in\n    node_id_to_node = {node['id']: node for node in nodes}\n                       ^^^^^^^^^^\nE   TypeError: 'Node' object is not subscriptable\n_ TestComputeFanIn.test_node_without_incoming_edges_has_fan_in_zero_GRAPH_011_1 _\ntests\\test_fan_in.py:54: in test_node_without_incoming_edges_has_fan_in_zero_GRAPH_011_1\n    result = compute_fan_in(nodes, edges)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nsrc\\living_graph\\metrics.py:4: in compute_fan_in\n    node_id_to_node = {node['id']: node for node in nodes}\n                       ^^^^^^^^^^\nE   TypeError: 'Node' object is not subscriptable\n________ TestComputeFanIn.test_duplicate_edges_count_once_GRAPH_011_1 _________\ntests\\test_fan_in.py:70: in test_duplicate_edges_count_once_GRAPH_011_1\n    result = compute_fan_in(nodes, edges)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nsrc\\living_graph\\metrics.py:4: in compute_fan_in\n    node_id_to_node = {node['id']: node for node in nodes}\n                       ^^^^^^^^^^\nE   TypeError: 'Node' object is not subscriptable\n=========================== short test summary info ===========================\nFAILED tests/test_fan_in.py::TestComputeFanIn::test_callee_fan_in_counts_distinct_callers_GRAPH_011_1\nFAILED tests/test_fan_in.py::TestComputeFanIn::test_node_without_incoming_edges_has_fan_in_zero_GRAPH_011_1\nFAILED tests/test_fan_in.py::TestComputeFanIn::test_duplicate_edges_count_once_GRAPH_011_1\n3 failed in 0.13s\n\n",
+          "value": "I"
+        },
+        "process_budget": {
+          "ok": false,
+          "explanation": "Process budget failed: maxRepeatOfOneCall 13 > 5",
+          "value": "I",
+          "checks": {
+            "attempts": {
+              "value": 6,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 98,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 13,
+              "limit": 5,
+              "ok": false
+            },
+            "toolErrorRate": {
+              "value": 0.287,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 1887.81,
+      "tokens": 1590491,
+      "steps": 98,
+      "totals": {
+        "steps": 98,
+        "toolCalls": 94,
+        "toolErrors": 27,
+        "attempts": 6,
+        "repeatedIdenticalCalls": 51,
+        "promptTokens": 1426972,
+        "completionTokens": 163519
+      },
+      "stopReasons": [
+        "ok",
+        "ok",
+        "ok",
+        "ok",
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": " \"activeSubtaskId\": \"GRAPH-011.1\",\n  \"preflightStatus\": \"READY\",\n  \"preflightBlockers\": [],\n  \"planSidecarPath\": null\n}\n",
+      "exitCode": 1
+    },
+    {
+      "sampleId": "GRAPH-013.1",
+      "epoch": 1,
+      "input": "Implement GRAPH-013.1: True on a two-node cycle, False on a chain. One boolean function. Two tiny in-memory graphs. No serialization.",
+      "title": "True on a two-node cycle, False on a chain",
+      "scores": {
+        "subtask_done": {
+          "ok": false,
+          "explanation": "Timed out after 2400s. Subtask GRAPH-013.1 status=FAILED. Assistant stopped without tool call at step 15.",
+          "value": "I"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (1 files).\n..                                                                       [100%]Running teardown with pytest sessionfinish...\n\n2 passed in 0.01s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=0/10, steps=0/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.0/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 0,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 0,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 1,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.0,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 2400.025,
+      "tokens": 0,
+      "steps": null,
+      "totals": {},
+      "stopReasons": [],
+      "timedOut": true,
+      "stopReason": "timeout",
+      "exitCode": null
+    },
+    {
+      "sampleId": "GRAPH-031.1",
+      "epoch": 1,
+      "input": "Implement GRAPH-031.1: Tag .py nodes library_keyword in nodes_from_edges. Path suffix .py means library_keyword. Robot types stay as they are.",
+      "title": "Tag .py nodes library_keyword in nodes_from_edges",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-031.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": false,
+          "explanation": "Gold tests failed (exit 1).\n...FF                                                                    [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n_____________ test_unresolved_callee_stays_unresolved_GRAPH_031_1 _____________\ntests\\test_scan_python_node_type.py:81: in test_unresolved_callee_stays_unresolved_GRAPH_031_1\n    assert unresolved.type == \"unresolved\"\nE   AssertionError: assert 'library_keyword' == 'unresolved'\nE     \nE     - unresolved\nE     + library_keyword\n_______ test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1 ________\ntests\\test_scan_python_node_type.py:89: in test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1\n    assert len(open_session) == 1, \"open_session node not found in scanned graph\"\nE   AssertionError: open_session node not found in scanned graph\nE   assert 2 == 1\nE    +  where 2 = len([<living_graph.model.Node object at 0x00000172B8B735B0>, <living_graph.model.Node object at 0x00000172B8B68100>])\n=========================== short test summary info ===========================\nFAILED tests/test_scan_python_node_type.py::test_unresolved_callee_stays_unresolved_GRAPH_031_1\nFAILED tests/test_scan_python_node_type.py::test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1\n2 failed, 3 passed in 0.20s\n\n",
+          "value": "I"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=6/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.143/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 6,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 1,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.143,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 162.5,
+      "tokens": 77731,
+      "steps": 6,
+      "totals": {
+        "steps": 6,
+        "toolCalls": 7,
+        "toolErrors": 1,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 0,
+        "promptTokens": 63761,
+        "completionTokens": 13970
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": "library_keyword in nodes_from_edges\nGRAPH-031: DONE\nGRAPH-031: consumed 7 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-046.1",
+      "epoch": 1,
+      "input": "Implement GRAPH-046.1: Resolve unique cross-file keyword names. One definition of Open Session in a .resource file. Missing Keyword stays unresolved.",
+      "title": "Resolve unique cross-file keyword names",
+      "scores": {
+        "subtask_done": {
+          "ok": false,
+          "explanation": "Subtask GRAPH-046.1 status=BLOCKED. Worker exhausted tool step budget (80 steps) without marking subtask GRAPH-046.1 DONE.",
+          "value": "I"
+        },
+        "reference_tests_pass": {
+          "ok": false,
+          "explanation": "Gold tests failed (exit 1).\nF.                                                                       [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n_____________ test_cross_file_unique_keyword_resolved_GRAPH_046_1 _____________\ntests\\test_cross_file_resolve.py:19: in test_cross_file_unique_keyword_resolved_GRAPH_046_1\n    assert edge.resolved is True\nE   assert False is True\nE    +  where False = <living_graph.model.Edge object at 0x0000014EB061DE80>.resolved\n=========================== short test summary info ===========================\nFAILED tests/test_cross_file_resolve.py::test_cross_file_unique_keyword_resolved_GRAPH_046_1\n1 failed, 1 passed in 0.21s\n\n",
+          "value": "I"
+        },
+        "process_budget": {
+          "ok": false,
+          "explanation": "Process budget failed: steps 206 > 160; maxRepeatOfOneCall 26 > 5; toolErrorRate 0.44 > 0.4",
+          "value": "I",
+          "checks": {
+            "attempts": {
+              "value": 6,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 206,
+              "limit": 160,
+              "ok": false
+            },
+            "maxRepeatOfOneCall": {
+              "value": 26,
+              "limit": 5,
+              "ok": false
+            },
+            "toolErrorRate": {
+              "value": 0.44,
+              "limit": 0.4,
+              "ok": false
+            }
+          }
+        }
+      },
+      "wallSeconds": 2328.388,
+      "tokens": 3205074,
+      "steps": 206,
+      "totals": {
+        "steps": 206,
+        "toolCalls": 209,
+        "toolErrors": 92,
+        "attempts": 6,
+        "repeatedIdenticalCalls": 85,
+        "promptTokens": 3006645,
+        "completionTokens": 198429
+      },
+      "stopReasons": [
+        "ok",
+        "ERROR executing replace_in_file: ERROR: Python syntax invalid in src/living_graph/scan.py\n  File \"src/living_graph/scan.py\", line 157\n        \"\"\"\n        ^\nSyntaxError: unterminated triple-quoted string literal (detected at line 172)",
+        "ERROR executing write_file: ERROR: Python syntax invalid in src/living_graph/scan.py\n  File \"src/living_graph/scan.py\", line 10\n            if path.suffix in (\".robot\", \".resource\"):\n                                                      ^\nIndentationError: expected an indented block after 'if' statement on line 10",
+        "Worker exhausted tool step budget (80 steps) without marking subtask GRAPH-046.1 DONE.",
+        "ERROR executing replace_in_file: ERROR: Python syntax invalid in src/living_graph/scan.py\n  File \"src/living_graph/scan.py\", line 74\n            \"\"\"Deduplicate nodes using each edge's caller/callee ids.\n                                                ^\nSyntaxError: unterminated string literal (detected at line 74)",
+        "Worker exhausted tool step budget (80 steps) without marking subtask GRAPH-046.1 DONE."
+      ],
+      "timedOut": false,
+      "stopReason": " \"activeSubtaskId\": \"GRAPH-046.1\",\n  \"preflightStatus\": \"READY\",\n  \"preflightBlockers\": [],\n  \"planSidecarPath\": null\n}\n",
+      "exitCode": 1
+    },
+    {
+      "sampleId": "GRAPH-047.1",
+      "epoch": 1,
+      "input": "Implement GRAPH-047.1: Resource callers are user_keyword. Suffix .resource means caller user_keyword. .robot callers stay test_case.",
+      "title": "Resource callers are user_keyword",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-047.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (1 files).\n....                                                                     [100%]Running teardown with pytest sessionfinish...\n\n4 passed in 0.08s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=12/160, maxRepeatOfOneCall=3/5, toolErrorRate=0.091/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 12,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 3,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.091,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 234.853,
+      "tokens": 147332,
+      "steps": 12,
+      "totals": {
+        "steps": 12,
+        "toolCalls": 11,
+        "toolErrors": 1,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 2,
+        "promptTokens": 125882,
+        "completionTokens": 21450
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": " Resource callers are user_keyword\nGRAPH-047: DONE\nGRAPH-047: consumed 11 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-048.1",
+      "epoch": 1,
+      "input": "Implement GRAPH-048.1: Reuse nodes_from_edges in incremental_update. Drop _nodes_from_edge_ids or make it call nodes_from_edges. No doubled ids.",
+      "title": "Reuse nodes_from_edges in incremental_update",
+      "scores": {
+        "subtask_done": {
+          "ok": false,
+          "explanation": "Subtask GRAPH-048.1 status=FAILED. Verification failed: python -m pytest tests/test_incremental_node_types.py tests/test_incremental_replace.py tests/test_incremental_unchanged.py -q",
+          "value": "I"
+        },
+        "reference_tests_pass": {
+          "ok": false,
+          "explanation": "Gold tests failed (exit 1).\n..F                                                                      [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n_________ test_incremental_update_kept_nodes_same_objects_graph_048_1 _________\ntests\\test_incremental_node_types.py:77: in test_incremental_update_kept_nodes_same_objects_graph_048_1\n    assert node in updated.nodes\nE   assert <living_graph.model.Node object at 0x000002CF671CE970> in [<living_graph.model.Node object at 0x000002CF67158C50>, <living_graph.model.Node object at 0x000002CF671D5390>]\nE    +  where [<living_graph.model.Node object at 0x000002CF67158C50>, <living_graph.model.Node object at 0x000002CF671D5390>] = <living_graph.scan.Graph object at 0x000002CF671128D0>.nodes\n=========================== short test summary info ===========================\nFAILED tests/test_incremental_node_types.py::test_incremental_update_kept_nodes_same_objects_graph_048_1\n1 failed, 2 passed in 0.12s\n\n",
+          "value": "I"
+        },
+        "process_budget": {
+          "ok": false,
+          "explanation": "Process budget failed: maxRepeatOfOneCall 16 > 5",
+          "value": "I",
+          "checks": {
+            "attempts": {
+              "value": 6,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 100,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 16,
+              "limit": 5,
+              "ok": false
+            },
+            "toolErrorRate": {
+              "value": 0.368,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 1560.921,
+      "tokens": 1663622,
+      "steps": 100,
+      "totals": {
+        "steps": 100,
+        "toolCalls": 95,
+        "toolErrors": 35,
+        "attempts": 6,
+        "repeatedIdenticalCalls": 47,
+        "promptTokens": 1532153,
+        "completionTokens": 131469
+      },
+      "stopReasons": [
+        "ok",
+        "Assistant stopped without tool call at step 5.",
+        "Assistant stopped without tool call at step 6.",
+        "ok",
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": " \"activeSubtaskId\": \"GRAPH-048.1\",\n  \"preflightStatus\": \"READY\",\n  \"preflightBlockers\": [],\n  \"planSidecarPath\": null\n}\n",
+      "exitCode": 1
+    },
+    {
+      "sampleId": "GRAPH-049.1",
+      "epoch": 1,
+      "input": "Implement GRAPH-049.1: Drop Robot builtin callees. No Operation and Log are not edges. Missing Keyword stays unresolved.",
+      "title": "Drop Robot builtin callees",
+      "scores": {
+        "subtask_done": {
+          "ok": false,
+          "explanation": "Timed out after 2400s. Subtask GRAPH-049.1 status=BLOCKED. ERROR executing write_file: ERROR: Python syntax invalid in src/living_graph/utils/_collect.py\n  File \"src/living_graph/utils/_collect.py\", line 1\n    def _collect():\\n    \"\"\"Collect robot keywords and their calls.\"\"\"\\n    # Implementation details omitted per constraints\\n    pass\n                    ^\nSyntaxError: unexpected character after line continuation character",
+          "value": "I"
+        },
+        "reference_tests_pass": {
+          "ok": false,
+          "explanation": "Gold tests failed (exit 2).\nRunning teardown with pytest sessionfinish...\n\n=================================== ERRORS ====================================\n________________ ERROR collecting tests/test_robot_builtins.py ________________\nImportError while importing test module 'C:\\Users\\santt\\AppData\\Local\\Temp\\eval-GRAPH-049.1-work-vr790bar\\tests\\test_robot_builtins.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n..\\..\\Python\\pythoncore-3.14-64\\Lib\\importlib\\__init__.py:88: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests\\test_robot_builtins.py:3: in <module>\n    from living_graph.robot_extractor import extract_robot_edges\nsrc\\living_graph\\robot_extractor.py:1: in <module>\n    from living_graph.models import Collector\nE   ModuleNotFoundError: No module named 'living_graph.models'\n_______________ ERROR collecting tests/test_robot_extractor.py ________________\nImportError while importing test module 'C:\\Users\\santt\\AppData\\Local\\Temp\\eval-GRAPH-049.1-work-vr790bar\\tests\\test_robot_extractor.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n..\\..\\Python\\pythoncore-3.14-64\\Lib\\importlib\\__init__.py:88: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests\\test_robot_extractor.py:2: in <module>\n    from living_graph.robot_extractor import extract_robot_edges\nsrc\\living_graph\\robot_extractor.py:1: in <module>\n    from living_graph.models import Collector\nE   ModuleNotFoundError: No module named 'living_graph.models'\n=========================== short test summary info ===========================\nERROR tests/test_robot_builtins.py\nERROR tests/test_robot_extractor.py\n!!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!!\n2 errors in 0.18s\n\n",
+          "value": "I"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=0/10, steps=0/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.0/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 0,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 0,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 1,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.0,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 2400.015,
+      "tokens": 0,
+      "steps": null,
+      "totals": {},
+      "stopReasons": [],
+      "timedOut": true,
+      "stopReason": "timeout",
+      "exitCode": null
+    },
+    {
+      "sampleId": "GRAPH-050.1",
+      "epoch": 1,
+      "input": "Implement GRAPH-050.1: Metrics on the in-memory scan graph. Reuse compute_fan_in and compute_fan_out. No JSON write.",
+      "title": "Metrics on the in-memory scan graph",
+      "scores": {
+        "subtask_done": {
+          "ok": false,
+          "explanation": "Timed out after 2400s. Subtask GRAPH-050.1 status=IN_PROGRESS. ERROR executing replace_in_file: ERROR: Python syntax invalid in src/living_graph/scan.py\n  File \"src/living_graph/scan.py\", line 10\n        root_path = Path(root)\n       ^\nIndentationError: unexpected indent",
+          "value": "I"
+        },
+        "reference_tests_pass": {
+          "ok": false,
+          "explanation": "Gold tests failed (exit 2).\nRunning teardown with pytest sessionfinish...\n\n=================================== ERRORS ====================================\n_________________ ERROR collecting tests/test_scan_metrics.py _________________\nImportError while importing test module 'C:\\Users\\santt\\AppData\\Local\\Temp\\eval-GRAPH-050.1-work-f8dmlbdr\\tests\\test_scan_metrics.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n..\\..\\Python\\pythoncore-3.14-64\\Lib\\importlib\\__init__.py:88: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests\\test_scan_metrics.py:8: in <module>\n    from living_graph.scan import scan_fixtures\nsrc\\living_graph\\scan.py:1: in <module>\n    from living_graph.node import Node\nE   ImportError: cannot import name 'Node' from 'living_graph.node' (unknown location). Did you mean: 'node'?\n=========================== short test summary info ===========================\nERROR tests/test_scan_metrics.py\n!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n1 error in 0.16s\n\n",
+          "value": "I"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=0/10, steps=0/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.0/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 0,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 0,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 1,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.0,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 2400.024,
+      "tokens": 0,
+      "steps": null,
+      "totals": {},
+      "stopReasons": [],
+      "timedOut": true,
+      "stopReason": "timeout",
+      "exitCode": null
+    },
+    {
+      "sampleId": "GRAPH-052.1",
+      "epoch": 1,
+      "input": "Implement GRAPH-052.1: Zero the node z coordinate. File-content tests. No browser. z is 0. Problem is the depth tunnel from rotating z.",
+      "title": "Zero the node z coordinate",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-052.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (1 files).\n...                                                                      [100%]Running teardown with pytest sessionfinish...\n\n3 passed in 0.01s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=4/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.0/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 4,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 1,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.0,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 35.427,
+      "tokens": 36231,
+      "steps": 4,
+      "totals": {
+        "steps": 4,
+        "toolCalls": 4,
+        "toolErrors": 0,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 0,
+        "promptTokens": 33532,
+        "completionTokens": 2699
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": "H-052.1: Zero the node z coordinate\nGRAPH-052: DONE\nGRAPH-052: consumed 4 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-054.1",
+      "epoch": 1,
+      "input": "Implement GRAPH-054.1: Lock polar angle to the horizon. Face-on camera. No pitch. File-content tests. Problem is orbit pitching into depth.",
+      "title": "Lock polar angle to the horizon",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-054.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (1 files).\n........                                                                 [100%]Running teardown with pytest sessionfinish...\n\n8 passed in 0.02s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=14/160, maxRepeatOfOneCall=4/5, toolErrorRate=0.0/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 14,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 4,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.0,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 220.593,
+      "tokens": 168398,
+      "steps": 14,
+      "totals": {
+        "steps": 14,
+        "toolCalls": 14,
+        "toolErrors": 0,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 6,
+        "promptTokens": 148032,
+        "completionTokens": 20366
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": "1: Lock polar angle to the horizon\nGRAPH-054: DONE\nGRAPH-054: consumed 14 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-003.1",
+      "epoch": 2,
+      "input": "Implement GRAPH-003.1: Parse one test case direct keyword calls. Implement only enough Robot parsing to return two direct keyword call edges from one test case fixture.",
+      "title": "Parse one test case direct keyword calls",
+      "scores": {
+        "subtask_done": {
+          "ok": false,
+          "explanation": "Subtask GRAPH-003.1 status=FAILED. Verification failed: python -m pytest tests/test_robot_extractor.py -k GRAPH_003_1 -q",
+          "value": "I"
+        },
+        "reference_tests_pass": {
+          "ok": false,
+          "explanation": "Gold tests failed (exit 1).\nF                                                                        [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n__________________________ test_extract_robot_edges ___________________________\ntests\\test_robot_extractor.py:5: in test_extract_robot_edges\n    assert len(edges) == 2\nE   assert 0 == 2\nE    +  where 0 = len([])\n=========================== short test summary info ===========================\nFAILED tests/test_robot_extractor.py::test_extract_robot_edges - assert 0 == 2\n1 failed in 0.12s\n\n",
+          "value": "I"
+        },
+        "process_budget": {
+          "ok": false,
+          "explanation": "Process budget failed: maxRepeatOfOneCall 12 > 5",
+          "value": "I",
+          "checks": {
+            "attempts": {
+              "value": 6,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 69,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 12,
+              "limit": 5,
+              "ok": false
+            },
+            "toolErrorRate": {
+              "value": 0.133,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 1536.521,
+      "tokens": 1041047,
+      "steps": 69,
+      "totals": {
+        "steps": 69,
+        "toolCalls": 60,
+        "toolErrors": 8,
+        "attempts": 6,
+        "repeatedIdenticalCalls": 25,
+        "promptTokens": 904499,
+        "completionTokens": 136548
+      },
+      "stopReasons": [
+        "ok",
+        "Assistant stopped without tool call at step 8.",
+        "Assistant stopped without tool call at step 8.",
+        "ok",
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": "rs\\\\santt\\\\AppData\\\\Local\\\\Temp\\\\eval-GRAPH-003.1-runtime-qz6qh_8f\\\\recovery\\\\plans\\\\GRAPH-003.GRAPH-003.1.plan.json\"\n}\n",
+      "exitCode": 1
+    },
+    {
+      "sampleId": "GRAPH-006.1",
+      "epoch": 2,
+      "input": "Implement GRAPH-006.1: Parse one Python function call. One same-file Python call. Return exactly one edge. No builtin filtering.",
+      "title": "Parse one Python function call",
+      "scores": {
+        "subtask_done": {
+          "ok": false,
+          "explanation": "Subtask GRAPH-006.1 status=IN_PROGRESS. Declared verification passed during test-writer; tests do not prove new behavior.",
+          "value": "I"
+        },
+        "reference_tests_pass": {
+          "ok": false,
+          "explanation": "Gold tests failed (exit 1).\n.F                                                                       [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n______________ test_extract_python_edges_nested_call_GRAPH_006_1 ______________\ntests\\test_python_extractor.py:16: in test_extract_python_edges_nested_call_GRAPH_006_1\n    assert len(edges) == 1\nE   assert 0 == 1\nE    +  where 0 = len([])\n=========================== short test summary info ===========================\nFAILED tests/test_python_extractor.py::test_extract_python_edges_nested_call_GRAPH_006_1\n1 failed, 1 passed in 0.13s\n\n",
+          "value": "I"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=5/10, steps=7/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.0/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 5,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 7,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 1,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.0,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 282.338,
+      "tokens": 101216,
+      "steps": 7,
+      "totals": {
+        "steps": 7,
+        "toolCalls": 5,
+        "toolErrors": 0,
+        "attempts": 5,
+        "repeatedIdenticalCalls": 0,
+        "promptTokens": 75663,
+        "completionTokens": 25553
+      },
+      "stopReasons": [
+        "Declared verification passed during test-writer; tests do not prove new behavior.",
+        "Declared verification passed during test-writer; tests do not prove new behavior.",
+        "Declared verification passed during test-writer; tests do not prove new behavior.",
+        "Assistant stopped without tool call at step 2.",
+        "Declared verification passed during test-writer; tests do not prove new behavior."
+      ],
+      "timedOut": false,
+      "stopReason": " \"activeSubtaskId\": \"GRAPH-006.1\",\n  \"preflightStatus\": \"READY\",\n  \"preflightBlockers\": [],\n  \"planSidecarPath\": null\n}\n",
+      "exitCode": 1
+    },
+    {
+      "sampleId": "GRAPH-011.1",
+      "epoch": 2,
+      "input": "Implement GRAPH-011.1: Count distinct callers. fan_in only. Distinct caller_id values. No fan-out.",
+      "title": "Count distinct callers",
+      "scores": {
+        "subtask_done": {
+          "ok": false,
+          "explanation": "Subtask GRAPH-011.1 status=FAILED. Assistant stopped without tool call at step 8.",
+          "value": "I"
+        },
+        "reference_tests_pass": {
+          "ok": false,
+          "explanation": "Gold tests failed (exit 1).\nFFF                                                                      [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n___ TestComputeFanIn.test_callee_fan_in_counts_distinct_callers_GRAPH_011_1 ___\ntests\\test_fan_in.py:41: in test_callee_fan_in_counts_distinct_callers_GRAPH_011_1\n    result = compute_fan_in(nodes, edges)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nsrc\\living_graph\\metrics.py:13: in compute_fan_in\n    caller_ids = defaultdict(set)\n                 ^^^^^^^^^^^\nE   NameError: name 'defaultdict' is not defined\n_ TestComputeFanIn.test_node_without_incoming_edges_has_fan_in_zero_GRAPH_011_1 _\ntests\\test_fan_in.py:54: in test_node_without_incoming_edges_has_fan_in_zero_GRAPH_011_1\n    result = compute_fan_in(nodes, edges)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nsrc\\living_graph\\metrics.py:13: in compute_fan_in\n    caller_ids = defaultdict(set)\n                 ^^^^^^^^^^^\nE   NameError: name 'defaultdict' is not defined\n________ TestComputeFanIn.test_duplicate_edges_count_once_GRAPH_011_1 _________\ntests\\test_fan_in.py:70: in test_duplicate_edges_count_once_GRAPH_011_1\n    result = compute_fan_in(nodes, edges)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nsrc\\living_graph\\metrics.py:13: in compute_fan_in\n    caller_ids = defaultdict(set)\n                 ^^^^^^^^^^^\nE   NameError: name 'defaultdict' is not defined\n=========================== short test summary info ===========================\nFAILED tests/test_fan_in.py::TestComputeFanIn::test_callee_fan_in_counts_distinct_callers_GRAPH_011_1\nFAILED tests/test_fan_in.py::TestComputeFanIn::test_node_without_incoming_edges_has_fan_in_zero_GRAPH_011_1\nFAILED tests/test_fan_in.py::TestComputeFanIn::test_duplicate_edges_count_once_GRAPH_011_1\n3 failed in 0.12s\n\n",
+          "value": "I"
+        },
+        "process_budget": {
+          "ok": false,
+          "explanation": "Process budget failed: maxRepeatOfOneCall 27 > 5",
+          "value": "I",
+          "checks": {
+            "attempts": {
+              "value": 6,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 108,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 27,
+              "limit": 5,
+              "ok": false
+            },
+            "toolErrorRate": {
+              "value": 0.218,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 2093.175,
+      "tokens": 1725583,
+      "steps": 108,
+      "totals": {
+        "steps": 108,
+        "toolCalls": 101,
+        "toolErrors": 22,
+        "attempts": 6,
+        "repeatedIdenticalCalls": 55,
+        "promptTokens": 1544639,
+        "completionTokens": 180944
+      },
+      "stopReasons": [
+        "ok",
+        "ok",
+        "ok",
+        "ok",
+        "ok",
+        "Assistant stopped without tool call at step 8."
+      ],
+      "timedOut": false,
+      "stopReason": " \"activeSubtaskId\": \"GRAPH-011.1\",\n  \"preflightStatus\": \"READY\",\n  \"preflightBlockers\": [],\n  \"planSidecarPath\": null\n}\n",
+      "exitCode": 1
+    },
+    {
+      "sampleId": "GRAPH-013.1",
+      "epoch": 2,
+      "input": "Implement GRAPH-013.1: True on a two-node cycle, False on a chain. One boolean function. Two tiny in-memory graphs. No serialization.",
+      "title": "True on a two-node cycle, False on a chain",
+      "scores": {
+        "subtask_done": {
+          "ok": false,
+          "explanation": "Subtask GRAPH-013.1 status=FAILED. ERROR executing replace_in_file: ERROR: Python syntax invalid in src/living_graph/metrics.py\n  File \"src/living_graph/metrics.py\", line 30\n        return (edge1.caller_id == 'A' and edge1.callee_id == 'B' and edge2.caller_id == 'B' and edge2.callee_id == 'A') or (edge1.caller_id == 'B' and edge1.callee_id == 'A' and edge2.caller_id == 'A' and edge2.callee_id == 'B')def has_cycle(edges):\n                                                                                                                                                                                                                                     ^^^\nSyntaxError: invalid syntax",
+          "value": "I"
+        },
+        "reference_tests_pass": {
+          "ok": false,
+          "explanation": "Gold tests failed (exit 1).\nFF                                                                       [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n__________ TestHasCycle.test_two_node_cycle_returns_true_GRAPH_013_1 __________\ntests\\test_cycles.py:20: in test_two_node_cycle_returns_true_GRAPH_013_1\n    from src.living_graph.metrics import has_cycle\nE   ImportError: cannot import name 'has_cycle' from 'src.living_graph.metrics' (C:\\Users\\santt\\AppData\\Local\\Temp\\eval-GRAPH-013.1-work-jqpbqrjw\\src\\living_graph\\metrics.py)\n_________ TestHasCycle.test_two_node_chain_returns_false_GRAPH_013_1 __________\ntests\\test_cycles.py:30: in test_two_node_chain_returns_false_GRAPH_013_1\n    from src.living_graph.metrics import has_cycle\nE   ImportError: cannot import name 'has_cycle' from 'src.living_graph.metrics' (C:\\Users\\santt\\AppData\\Local\\Temp\\eval-GRAPH-013.1-work-jqpbqrjw\\src\\living_graph\\metrics.py)\n=========================== short test summary info ===========================\nFAILED tests/test_cycles.py::TestHasCycle::test_two_node_cycle_returns_true_GRAPH_013_1\nFAILED tests/test_cycles.py::TestHasCycle::test_two_node_chain_returns_false_GRAPH_013_1\n2 failed in 0.12s\n\n",
+          "value": "I"
+        },
+        "process_budget": {
+          "ok": false,
+          "explanation": "Process budget failed: toolErrorRate 0.526 > 0.4",
+          "value": "I",
+          "checks": {
+            "attempts": {
+              "value": 4,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 22,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 2,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.526,
+              "limit": 0.4,
+              "ok": false
+            }
+          }
+        }
+      },
+      "wallSeconds": 492.591,
+      "tokens": 317526,
+      "steps": 22,
+      "totals": {
+        "steps": 22,
+        "toolCalls": 19,
+        "toolErrors": 10,
+        "attempts": 4,
+        "repeatedIdenticalCalls": 4,
+        "promptTokens": 271814,
+        "completionTokens": 45712
+      },
+      "stopReasons": [
+        "ok",
+        "Assistant stopped without tool call at step 2.",
+        "ERROR executing replace_in_file: ERROR: Python syntax invalid in src/living_graph/metrics.py\n  File \"src/living_graph/metrics.py\", line 30\n        return (edge1.caller_id == 'A' and edge1.callee_id == 'B' and edge2.caller_id == 'B' and edge2.callee_id == 'A') or (edge1.caller_id == 'B' and edge1.callee_id == 'A' and edge2.caller_id == 'A' and edge2.callee_id == 'B')def has_cycle(edges):\n                                                                                                                                                                                                                                     ^^^\nSyntaxError: invalid syntax",
+        "ERROR executing replace_in_file: ERROR: Python syntax invalid in src/living_graph/metrics.py\n  File \"src/living_graph/metrics.py\", line 30\n        return (edge1.caller_id == 'A' and edge1.callee_id == 'B' and edge2.caller_id == 'B' and edge2.callee_id == 'A') or (edge1.caller_id == 'B' and edge1.callee_id == 'A' and edge2.caller_id == 'A' and edge2.callee_id == 'B')def has_cycle(edges):\n                                                                                                                                                                                                                                     ^^^\nSyntaxError: invalid syntax"
+      ],
+      "timedOut": false,
+      "stopReason": " \"activeSubtaskId\": \"GRAPH-013.1\",\n  \"preflightStatus\": \"READY\",\n  \"preflightBlockers\": [],\n  \"planSidecarPath\": null\n}\n",
+      "exitCode": 1
+    },
+    {
+      "sampleId": "GRAPH-031.1",
+      "epoch": 2,
+      "input": "Implement GRAPH-031.1: Tag .py nodes library_keyword in nodes_from_edges. Path suffix .py means library_keyword. Robot types stay as they are.",
+      "title": "Tag .py nodes library_keyword in nodes_from_edges",
+      "scores": {
+        "subtask_done": {
+          "ok": false,
+          "explanation": "Timed out after 2400s. Subtask GRAPH-031.1 status=FAILED. ERROR executing write_file: ERROR: Python syntax invalid in src/living_graph/merge.py\n  File \"src/living_graph/merge.py\", line 2\n        caller_id = f\"{edge.source_path}::{edge.caller_name}\"\n       ^\nIndentationError: unexpected indent",
+          "value": "I"
+        },
+        "reference_tests_pass": {
+          "ok": false,
+          "explanation": "Gold tests failed (exit 1).\n.F...                                                                    [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n_____________ test_py_callee_node_is_library_keyword_GRAPH_031_1 ______________\ntests\\test_scan_python_node_type.py:43: in test_py_callee_node_is_library_keyword_GRAPH_031_1\n    assert callee.type == \"library_keyword\", (\nE   AssertionError: Expected .py callee type 'library_keyword', got 'user_keyword'\nE   assert 'user_keyword' == 'library_keyword'\nE     \nE     - library_keyword\nE     + user_keyword\n=========================== short test summary info ===========================\nFAILED tests/test_scan_python_node_type.py::test_py_callee_node_is_library_keyword_GRAPH_031_1\n1 failed, 4 passed in 0.20s\n\n",
+          "value": "I"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=0/10, steps=0/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.0/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 0,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 0,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 1,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.0,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 2400.029,
+      "tokens": 0,
+      "steps": null,
+      "totals": {},
+      "stopReasons": [],
+      "timedOut": true,
+      "stopReason": "timeout",
+      "exitCode": null
+    },
+    {
+      "sampleId": "GRAPH-046.1",
+      "epoch": 2,
+      "input": "Implement GRAPH-046.1: Resolve unique cross-file keyword names. One definition of Open Session in a .resource file. Missing Keyword stays unresolved.",
+      "title": "Resolve unique cross-file keyword names",
+      "scores": {
+        "subtask_done": {
+          "ok": false,
+          "explanation": "Timed out after 2400s. Subtask GRAPH-046.1 status=FAILED. Verification failed: python -m pytest tests/test_cross_file_resolve.py tests/test_unresolved_calls.py -q",
+          "value": "I"
+        },
+        "reference_tests_pass": {
+          "ok": false,
+          "explanation": "Gold tests failed (exit 2).\nRunning teardown with pytest sessionfinish...\n\n=================================== ERRORS ====================================\n______________ ERROR collecting tests/test_cross_file_resolve.py ______________\nImportError while importing test module 'C:\\Users\\santt\\AppData\\Local\\Temp\\eval-GRAPH-046.1-work-e2n7b1u8\\tests\\test_cross_file_resolve.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n..\\..\\Python\\pythoncore-3.14-64\\Lib\\importlib\\__init__.py:88: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests\\test_cross_file_resolve.py:7: in <module>\n    from living_graph.scan import scan_fixtures\nsrc\\living_graph\\scan.py:1: in <module>\n    from living_graph.fixtures import Keyword, Node\nE   ImportError: cannot import name 'Keyword' from 'living_graph.fixtures' (unknown location)\n=========================== short test summary info ===========================\nERROR tests/test_cross_file_resolve.py\n!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n1 error in 0.16s\n\n",
+          "value": "I"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=0/10, steps=0/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.0/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 0,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 0,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 1,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.0,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 2400.02,
+      "tokens": 0,
+      "steps": null,
+      "totals": {},
+      "stopReasons": [],
+      "timedOut": true,
+      "stopReason": "timeout",
+      "exitCode": null
+    },
+    {
+      "sampleId": "GRAPH-047.1",
+      "epoch": 2,
+      "input": "Implement GRAPH-047.1: Resource callers are user_keyword. Suffix .resource means caller user_keyword. .robot callers stay test_case.",
+      "title": "Resource callers are user_keyword",
+      "scores": {
+        "subtask_done": {
+          "ok": false,
+          "explanation": "Timed out after 2400s. Subtask GRAPH-047.1 status=IN_PROGRESS. ERROR executing replace_in_file: ERROR: Python syntax invalid in src/living_graph/merge.py\n  File \"src/living_graph/merge.py\", line 16\n    def get_caller_type(file_path):\nIndentationError: expected an indented block after 'for' statement on line 15",
+          "value": "I"
+        },
+        "reference_tests_pass": {
+          "ok": false,
+          "explanation": "^^\ntests\\test_resource_caller_type.py:18: in _node_by_id\n    return [n for n in nodes if n.id == node_id]\n                       ^^^^^\nE   TypeError: 'NoneType' object is not iterable\n________________ test_robot_caller_stays_test_case_GRAPH_047_1 ________________\ntests\\test_resource_caller_type.py:54: in test_robot_caller_stays_test_case_GRAPH_047_1\n    caller = _node_by_id(nodes, f\"{source}::Happy Path\")\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests\\test_resource_caller_type.py:18: in _node_by_id\n    return [n for n in nodes if n.id == node_id]\n                       ^^^^^\nE   TypeError: 'NoneType' object is not iterable\n____________ test_python_caller_stays_library_keyword_GRAPH_047_1 _____________\ntests\\test_resource_caller_type.py:73: in test_python_caller_stays_library_keyword_GRAPH_047_1\n    caller = _node_by_id(nodes, f\"{source}::open_session\")\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests\\test_resource_caller_type.py:18: in _node_by_id\n    return [n for n in nodes if n.id == node_id]\n                       ^^^^^\nE   TypeError: 'NoneType' object is not iterable\n_______ test_scan_fixtures_resource_caller_is_user_keyword_GRAPH_047_1 ________\ntests\\test_resource_caller_type.py:82: in test_scan_fixtures_resource_caller_is_user_keyword_GRAPH_047_1\n    keyword_one = _node_by_id(\ntests\\test_resource_caller_type.py:18: in _node_by_id\n    return [n for n in nodes if n.id == node_id]\n                       ^^^^^\nE   TypeError: 'NoneType' object is not iterable\n=========================== short test summary info ===========================\nFAILED tests/test_resource_caller_type.py::test_resource_caller_is_user_keyword_GRAPH_047_1\nFAILED tests/test_resource_caller_type.py::test_robot_caller_stays_test_case_GRAPH_047_1\nFAILED tests/test_resource_caller_type.py::test_python_caller_stays_library_keyword_GRAPH_047_1\nFAILED tests/test_resource_caller_type.py::test_scan_fixtures_resource_caller_is_user_keyword_GRAPH_047_1\n4 failed in 0.21s\n\n",
+          "value": "I"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=0/10, steps=0/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.0/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 0,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 0,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 1,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.0,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 2400.027,
+      "tokens": 0,
+      "steps": null,
+      "totals": {},
+      "stopReasons": [],
+      "timedOut": true,
+      "stopReason": "timeout",
+      "exitCode": null
+    },
+    {
+      "sampleId": "GRAPH-048.1",
+      "epoch": 2,
+      "input": "Implement GRAPH-048.1: Reuse nodes_from_edges in incremental_update. Drop _nodes_from_edge_ids or make it call nodes_from_edges. No doubled ids.",
+      "title": "Reuse nodes_from_edges in incremental_update",
+      "scores": {},
+      "wallSeconds": 0.885,
+      "tokens": 0,
+      "steps": null,
+      "totals": {},
+      "stopReasons": [],
+      "timedOut": false,
+      "stopReason": "",
+      "exitCode": null
+    }
+  ]
+}

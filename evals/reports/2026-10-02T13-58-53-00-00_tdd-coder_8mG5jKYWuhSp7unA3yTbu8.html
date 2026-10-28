@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8">
+  <title>Arvio — baseline / qwen3:8b</title>
+  <style>
+    @page { size: A4; margin: 14mm; }
+    body { font-family: Georgia, serif; margin: 2rem auto; max-width: 960px; line-height: 1.45; color: #1a1a1a; }
+    h1, h2, h3 { font-family: "Segoe UI", sans-serif; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border-bottom: 1px solid #ddd; text-align: left; padding: 0.4rem 0.6rem; vertical-align: top; }
+    th { font-family: "Segoe UI", sans-serif; font-weight: 600; }
+    .fail { background: #fdecea; }
+    .flaky { background: #fff4ce; }
+    .reliable { background: #e8f6ee; }
+    .cannot { background: #fdecea; }
+    .muted { color: #555; font-size: 0.95rem; }
+    .notice { background: #fff4ce; border-left: 4px solid #d9a600; padding: 0.6rem 0.8rem; }
+    .answer { font-size: 1.15rem; }
+    pre { white-space: pre-wrap; background: #f6f6f6; padding: 0.75rem; overflow-x: auto; }
+    code { font-family: Consolas, monospace; }
+    section { break-inside: avoid; }
+    @media print {
+      body { margin: 0; max-width: none; }
+      pre { font-size: 9pt; }
+      a { color: inherit; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Arvio</h1>
+  <p class="muted">
+    Variantti <code>baseline</code>
+    · malli <code>qwen3:8b</code>
+    · 2026-10-03T18:20:56+00:00
+  </p>
+  
+  <p class="notice">
+    Ajo ei valmistunut.
+    Luvut kattavat 19/36 valmistunutta ajoa.
+    Luokittelu ja kustannus eivät ole vertailukelpoisia täyden ajon kanssa.
+  </p>
+  
+
+  <section>
+    <h2>Katselmoijalle</h2>
+    <p class="answer"><strong>Mihin tehtäviin tämän voi ohjata.</strong> 2 tehtävää onnistui joka kokeilukerta: Zero the node z coordinate (1/1), Lock polar angle to the horizon (1/1). 2 onnistui vain joskus: True on a two-node cycle, False on a chain (1/2), Resource callers are user_keyword (1/2). 8 tehtävää agentti ei osaa: Parse one test case direct keyword calls (0/2), Parse one Python function call (0/2), Count distinct callers (0/2), Tag .py nodes library_keyword in nodes_from_edges (0/2), Resolve unique cross-file keyword names (0/2), Reuse nodes_from_edges in incremental_update (0/1), Drop Robot builtin callees (0/1), Metrics on the in-memory scan graph (0/1). Tässä lokissa kokeilukertoja ei ole kolmea jokaisessa tehtävässä, joten onnistuminen joka kerta ei vielä ole 3/3.</p>
+    <p class="answer"><strong>Mitä yksi onnistuminen maksoi.</strong> 232,5 minuuttia per tehtävä, joka onnistui joka kerta. Epäonnistuneet ajot ovat mukana: 464,9 minuuttia yhteensä, 2 täysin onnistunutta tehtävää.</p>
+    <p class="answer"><strong>Muuttuiko tulos.</strong> Ero edelliseen on suurempi kuin satunnainen heitto, tämä on oikea muutos.</p>
+
+    
+    <h3>Tehtävät ryhmittäin</h3>
+    <table>
+      <thead><tr><th>Ryhmä</th><th>Tehtäviä</th><th>Merkitys</th></tr></thead>
+      <tbody>
+        <tr class="reliable"><td>Luotettava</td><td>2</td><td>Onnistui joka kokeilukerta.</td></tr>
+        <tr class="flaky"><td>Hauras</td><td>2</td><td>Onnistuu vain joskus.</td></tr>
+        <tr class="cannot"><td>Ei osaa</td><td>8</td><td>Testit eivät menneet kertaakaan.</td></tr>
+      </tbody>
+    </table>
+    
+      
+      <h4>Luotettava</h4>
+      <table>
+        <thead><tr><th>Tunnus</th><th>Otsikko</th><th>Onnistui</th></tr></thead>
+        <tbody>
+          
+          <tr>
+            <td><code>GRAPH-052.1</code></td>
+            <td>Zero the node z coordinate</td>
+            <td>1/1</td>
+          </tr>
+          
+          <tr>
+            <td><code>GRAPH-054.1</code></td>
+            <td>Lock polar angle to the horizon</td>
+            <td>1/1</td>
+          </tr>
+          
+        </tbody>
+      </table>
+      
+    
+      
+      <h4>Hauras</h4>
+      <table>
+        <thead><tr><th>Tunnus</th><th>Otsikko</th><th>Onnistui</th></tr></thead>
+        <tbody>
+          
+          <tr>
+            <td><code>GRAPH-013.1</code></td>
+            <td>True on a two-node cycle, False on a chain</td>
+            <td>1/2</td>
+          </tr>
+          
+          <tr>
+            <td><code>GRAPH-047.1</code></td>
+            <td>Resource callers are user_keyword</td>
+            <td>1/2</td>
+          </tr>
+          
+        </tbody>
+      </table>
+      
+    
+      
+      <h4>Ei osaa</h4>
+      <table>
+        <thead><tr><th>Tunnus</th><th>Otsikko</th><th>Onnistui</th></tr></thead>
+        <tbody>
+          
+          <tr>
+            <td><code>GRAPH-003.1</code></td>
+            <td>Parse one test case direct keyword calls</td>
+            <td>0/2</td>
+          </tr>
+          
+          <tr>
+            <td><code>GRAPH-006.1</code></td>
+            <td>Parse one Python function call</td>
+            <td>0/2</td>
+          </tr>
+          
+          <tr>
+            <td><code>GRAPH-011.1</code></td>
+            <td>Count distinct callers</td>
+            <td>0/2</td>
+          </tr>
+          
+          <tr>
+            <td><code>GRAPH-031.1</code></td>
+            <td>Tag .py nodes library_keyword in nodes_from_edges</td>
+            <td>0/2</td>
+          </tr>
+          
+          <tr>
+            <td><code>GRAPH-046.1</code></td>
+            <td>Resolve unique cross-file keyword names</td>
+            <td>0/2</td>
+          </tr>
+          
+          <tr>
+            <td><code>GRAPH-048.1</code></td>
+            <td>Reuse nodes_from_edges in incremental_update</td>
+            <td>0/1</td>
+          </tr>
+          
+          <tr>
+            <td><code>GRAPH-049.1</code></td>
+            <td>Drop Robot builtin callees</td>
+            <td>0/1</td>
+          </tr>
+          
+          <tr>
+            <td><code>GRAPH-050.1</code></td>
+            <td>Metrics on the in-memory scan graph</td>
+            <td>0/1</td>
+          </tr>
+          
+        </tbody>
+      </table>
+      
+    
+  </section>
+
+  <section>
+    <h2>Tekijälle</h2>
+    <p class="answer"><strong>Voiko valmis-merkintää uskoa.</strong> 1 kerran 4:stä agentti merkitsi tehtävän valmiiksi, mutta vastaus oli väärä. Niissä valmis-merkintä ei riitä ilman ihmisen tarkistusta.</p>
+    <p class="answer"><strong>Onko odotusaika käyttökelpoinen.</strong> Tyypillinen tehtävä vei 31,5 minuuttia, hitain 40 minuuttia. Tyypillinen tehtävä käytti 18 askelta, eniten 206.</p>
+    <p class="answer"><strong>Mihin korjaus kohdistuu.</strong> Mukana on sekä vääriä vastauksia että prosessin katkeamisia. Korjauskohde on sekä malli tai prompti että työkalut.</p>
+
+    <h3>Aika ja askeleet</h3>
+    
+    
+    <table>
+      <thead><tr><th></th><th>Tyypillinen</th><th>Hitain</th><th>Kertoja</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Minuutteja</td>
+          <td>31.5</td>
+          <td>40.0</td>
+          <td>19</td>
+        </tr>
+        <tr>
+          <td>Askeleet</td>
+          <td>18.0</td>
+          <td>206.0</td>
+          <td>12</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Mihin ajot kaatuivat</h3>
+    <table>
+      <thead><tr><th>Syy</th><th>Ajot</th></tr></thead>
+      <tbody>
+        
+        <tr>
+          <td>aikakatkaisu</td>
+          <td>7</td>
+        </tr>
+        
+        <tr>
+          <td>silmukka</td>
+          <td>5</td>
+        </tr>
+        
+        <tr>
+          <td>työkaluvirheet</td>
+          <td>1</td>
+        </tr>
+        
+        <tr>
+          <td>askelbudjetti</td>
+          <td>0</td>
+        </tr>
+        
+        <tr>
+          <td>testit</td>
+          <td>3</td>
+        </tr>
+        
+        <tr>
+          <td>muu</td>
+          <td>0</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    <p class="muted">Epäonnistuneita ajoja 16.</p>
+
+    <h3>Läpäisy kriteereittäin</h3>
+    <table>
+      <thead>
+        <tr><th>Kriteeri</th><th>Osuus</th><th>Heitto</th><th>Kertoja</th><th>Ero edelliseen</th></tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td>Prosessiraja</td>
+          <td>68.4 %</td>
+          <td>± 10.7 prosenttiyksikköä</td>
+          <td>19</td>
+          <td>-31.6 prosenttiyksikköä</td>
+        </tr>
+        
+        <tr>
+          <td>Testit</td>
+          <td>21.1 %</td>
+          <td>± 9.3 prosenttiyksikköä</td>
+          <td>19</td>
+          <td>-67.8 prosenttiyksikköä</td>
+        </tr>
+        
+        <tr>
+          <td>Valmis-merkintä</td>
+          <td>21.1 %</td>
+          <td>± 9.3 prosenttiyksikköä</td>
+          <td>19</td>
+          <td>-76.2 prosenttiyksikköä</td>
+        </tr>
+        
+      </tbody>
+    </table>
+
+    <h3>Mitä arvioidaan</h3>
+    
+      <h4>Valmis-merkintä</h4>
+      <p>Agentti merkitsi tehtävän valmiiksi ja tarkistus hyväksyi sen.</p>
+      <p class="muted">Miksi: Sujuvakaan keskustelu ei riitä, jos tehtävää ei merkitä valmiiksi.</p>
+      <p class="muted">Miten: Luetaan tehtävän tila ajon jälkeen. Läpi vain, jos tila on valmis.</p>
+    
+      <h4>Testit</h4>
+      <p>Aiemmin hyväksytyn version testit menevät läpi agentin kirjoittamalla koodilla.</p>
+      <p class="muted">Miksi: Agentin omat testit voivat olla liian heikot. Nämä ovat regressiotestejä, eivät erillisiä piilotestejä.</p>
+      <p class="muted">Miten: Ajon jälkeen ajetaan hyväksytyn version testitiedostot.</p>
+    
+      <h4>Prosessiraja</h4>
+      <p>Agentti valmistui ilman silmukkaa, askelbudjetin loppumista tai työkaluvirheiden tulvaa.</p>
+      <p class="muted">Miksi: Paikallinen malli epäonnistuu usein tapaan tehdä työtä, ei vain vastauksen oikeellisuuteen.</p>
+      <p class="muted">Miten: Luetaan ajon yhteenveto. Hylätään, jos yrityksiä on yli 10, askeleita yli 160, sama työkalukutsu toistuu yli 5 kertaa, tai työkaluvirheiden osuus on yli 40%.</p>
+    
+
+    <h3>Epäonnistumiset ensin</h3>
+    
+    
+      <article class="fail">
+        <h4>GRAPH-003.1 kerta 1 — Parse one test case direct keyword calls</h4>
+        <p><strong>Kriteeri:</strong> Valmis-merkintä</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-003.1: Parse one test case direct keyword calls. Implement only enough Robot parsing to return two direct keyword call edges from one test case fixture.</p>
+        <pre>Timed out after 2400s. Subtask GRAPH-003.1 status=BLOCKED. Assistant stopped without tool call at step 10.</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-003.1 kerta 1 — Parse one test case direct keyword calls</h4>
+        <p><strong>Kriteeri:</strong> Testit</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-003.1: Parse one test case direct keyword calls. Implement only enough Robot parsing to return two direct keyword call edges from one test case fixture.</p>
+        <pre>Gold tests failed (exit 1).
+F                                                                        [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+__________________________ test_extract_robot_edges ___________________________
+tests\test_robot_extractor.py:5: in test_extract_robot_edges
+    assert len(edges) == 2
+E   assert 0 == 2
+E    +  where 0 = len([])
+=========================== short test summary info ===========================
+FAILED tests/test_robot_extractor.py::test_extract_robot_edges - assert 0 == 2
+1 failed in 0.12s
+
+</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-006.1 kerta 1 — Parse one Python function call</h4>
+        <p><strong>Kriteeri:</strong> Valmis-merkintä</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-006.1: Parse one Python function call. One same-file Python call. Return exactly one edge. No builtin filtering.</p>
+        <pre>Subtask GRAPH-006.1 status=IN_PROGRESS. Declared verification passed during test-writer; tests do not prove new behavior.</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-006.1 kerta 1 — Parse one Python function call</h4>
+        <p><strong>Kriteeri:</strong> Testit</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-006.1: Parse one Python function call. One same-file Python call. Return exactly one edge. No builtin filtering.</p>
+        <pre>Gold tests failed (exit 1).
+.F                                                                       [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+______________ test_extract_python_edges_nested_call_GRAPH_006_1 ______________
+tests\test_python_extractor.py:16: in test_extract_python_edges_nested_call_GRAPH_006_1
+    assert len(edges) == 1
+E   assert 0 == 1
+E    +  where 0 = len([])
+=========================== short test summary info ===========================
+FAILED tests/test_python_extractor.py::test_extract_python_edges_nested_call_GRAPH_006_1
+1 failed, 1 passed in 0.13s
+
+</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-011.1 kerta 1 — Count distinct callers</h4>
+        <p><strong>Kriteeri:</strong> Valmis-merkintä</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-011.1: Count distinct callers. fan_in only. Distinct caller_id values. No fan-out.</p>
+        <pre>Subtask GRAPH-011.1 status=FAILED. Verification failed: python -m pytest tests/test_fan_in.py -q</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-011.1 kerta 1 — Count distinct callers</h4>
+        <p><strong>Kriteeri:</strong> Testit</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-011.1: Count distinct callers. fan_in only. Distinct caller_id values. No fan-out.</p>
+        <pre>Gold tests failed (exit 1).
+FFF                                                                      [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+___ TestComputeFanIn.test_callee_fan_in_counts_distinct_callers_GRAPH_011_1 ___
+tests\test_fan_in.py:41: in test_callee_fan_in_counts_distinct_callers_GRAPH_011_1
+    result = compute_fan_in(nodes, edges)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\living_graph\metrics.py:4: in compute_fan_in
+    node_id_to_node = {node['id']: node for node in nodes}
+                       ^^^^^^^^^^
+E   TypeError: 'Node' object is not subscriptable
+_ TestComputeFanIn.test_node_without_incoming_edges_has_fan_in_zero_GRAPH_011_1 _
+tests\test_fan_in.py:54: in test_node_without_incoming_edges_has_fan_in_zero_GRAPH_011_1
+    result = compute_fan_in(nodes, edges)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\living_graph\metrics.py:4: in compute_fan_in
+    node_id_to_node = {node['id']: node for node in nodes}
+                       ^^^^^^^^^^
+E   TypeError: 'Node' object is not subscriptable
+________ TestComputeFanIn.test_duplicate_edges_count_once_GRAPH_011_1 _________
+tests\test_fan_in.py:70: in test_duplicate_edges_count_once_GRAPH_011_1
+    result = compute_fan_in(nodes, edges)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\living_graph\metrics.py:4: in compute_fan_in
+    node_id_to_node = {node['id']: node for node in nodes}
+                       ^^^^^^^^^^
+E   TypeError: 'Node' object is not subscriptable
+=========================== short test summary info ===========================
+FAILED tests/test_fan_in.py::TestComputeFanIn::test_callee_fan_in_counts_distinct_callers_GRAPH_011_1
+FAILED tests/test_fan_in.py::TestComputeFanIn::test_node_without_incoming_edges_has_fan_in_zero_GRAPH_011_1
+FAILED tests/test_fan_in.py::TestComputeFanIn::test_duplicate_edges_count_once_GRAPH_011_1
+3 failed in 0.13s
+
+</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-011.1 kerta 1 — Count distinct callers</h4>
+        <p><strong>Kriteeri:</strong> Prosessiraja</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-011.1: Count distinct callers. fan_in only. Distinct caller_id values. No fan-out.</p>
+        <pre>Process budget failed: maxRepeatOfOneCall 13 > 5</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-013.1 kerta 1 — True on a two-node cycle, False on a chain</h4>
+        <p><strong>Kriteeri:</strong> Valmis-merkintä</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-013.1: True on a two-node cycle, False on a chain. One boolean function. Two tiny in-memory graphs. No serialization.</p>
+        <pre>Timed out after 2400s. Subtask GRAPH-013.1 status=FAILED. Assistant stopped without tool call at step 15.</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-031.1 kerta 1 — Tag .py nodes library_keyword in nodes_from_edges</h4>
+        <p><strong>Kriteeri:</strong> Testit</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-031.1: Tag .py nodes library_keyword in nodes_from_edges. Path suffix .py means library_keyword. Robot types stay as they are.</p>
+        <pre>Gold tests failed (exit 1).
+...FF                                                                    [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+_____________ test_unresolved_callee_stays_unresolved_GRAPH_031_1 _____________
+tests\test_scan_python_node_type.py:81: in test_unresolved_callee_stays_unresolved_GRAPH_031_1
+    assert unresolved.type == "unresolved"
+E   AssertionError: assert 'library_keyword' == 'unresolved'
+E     
+E     - unresolved
+E     + library_keyword
+_______ test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1 ________
+tests\test_scan_python_node_type.py:89: in test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1
+    assert len(open_session) == 1, "open_session node not found in scanned graph"
+E   AssertionError: open_session node not found in scanned graph
+E   assert 2 == 1
+E    +  where 2 = len([<living_graph.model.Node object at 0x00000172B8B735B0>, <living_graph.model.Node object at 0x00000172B8B68100>])
+=========================== short test summary info ===========================
+FAILED tests/test_scan_python_node_type.py::test_unresolved_callee_stays_unresolved_GRAPH_031_1
+FAILED tests/test_scan_python_node_type.py::test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1
+2 failed, 3 passed in 0.20s
+
+</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-046.1 kerta 1 — Resolve unique cross-file keyword names</h4>
+        <p><strong>Kriteeri:</strong> Valmis-merkintä</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-046.1: Resolve unique cross-file keyword names. One definition of Open Session in a .resource file. Missing Keyword stays unresolved.</p>
+        <pre>Subtask GRAPH-046.1 status=BLOCKED. Worker exhausted tool step budget (80 steps) without marking subtask GRAPH-046.1 DONE.</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-046.1 kerta 1 — Resolve unique cross-file keyword names</h4>
+        <p><strong>Kriteeri:</strong> Testit</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-046.1: Resolve unique cross-file keyword names. One definition of Open Session in a .resource file. Missing Keyword stays unresolved.</p>
+        <pre>Gold tests failed (exit 1).
+F.                                                                       [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+_____________ test_cross_file_unique_keyword_resolved_GRAPH_046_1 _____________
+tests\test_cross_file_resolve.py:19: in test_cross_file_unique_keyword_resolved_GRAPH_046_1
+    assert edge.resolved is True
+E   assert False is True
+E    +  where False = <living_graph.model.Edge object at 0x0000014EB061DE80>.resolved
+=========================== short test summary info ===========================
+FAILED tests/test_cross_file_resolve.py::test_cross_file_unique_keyword_resolved_GRAPH_046_1
+1 failed, 1 passed in 0.21s
+
+</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-046.1 kerta 1 — Resolve unique cross-file keyword names</h4>
+        <p><strong>Kriteeri:</strong> Prosessiraja</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-046.1: Resolve unique cross-file keyword names. One definition of Open Session in a .resource file. Missing Keyword stays unresolved.</p>
+        <pre>Process budget failed: steps 206 > 160; maxRepeatOfOneCall 26 > 5; toolErrorRate 0.44 > 0.4</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-048.1 kerta 1 — Reuse nodes_from_edges in incremental_update</h4>
+        <p><strong>Kriteeri:</strong> Valmis-merkintä</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-048.1: Reuse nodes_from_edges in incremental_update. Drop _nodes_from_edge_ids or make it call nodes_from_edges. No doubled ids.</p>
+        <pre>Subtask GRAPH-048.1 status=FAILED. Verification failed: python -m pytest tests/test_incremental_node_types.py tests/test_incremental_replace.py tests/test_incremental_unchanged.py -q</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-048.1 kerta 1 — Reuse nodes_from_edges in incremental_update</h4>
+        <p><strong>Kriteeri:</strong> Testit</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-048.1: Reuse nodes_from_edges in incremental_update. Drop _nodes_from_edge_ids or make it call nodes_from_edges. No doubled ids.</p>
+        <pre>Gold tests failed (exit 1).
+..F                                                                      [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+_________ test_incremental_update_kept_nodes_same_objects_graph_048_1 _________
+tests\test_incremental_node_types.py:77: in test_incremental_update_kept_nodes_same_objects_graph_048_1
+    assert node in updated.nodes
+E   assert <living_graph.model.Node object at 0x000002CF671CE970> in [<living_graph.model.Node object at 0x000002CF67158C50>, <living_graph.model.Node object at 0x000002CF671D5390>]
+E    +  where [<living_graph.model.Node object at 0x000002CF67158C50>, <living_graph.model.Node object at 0x000002CF671D5390>] = <living_graph.scan.Graph object at 0x000002CF671128D0>.nodes
+=========================== short test summary info ===========================
+FAILED tests/test_incremental_node_types.py::test_incremental_update_kept_nodes_same_objects_graph_048_1
+1 failed, 2 passed in 0.12s
+
+</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-048.1 kerta 1 — Reuse nodes_from_edges in incremental_update</h4>
+        <p><strong>Kriteeri:</strong> Prosessiraja</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-048.1: Reuse nodes_from_edges in incremental_update. Drop _nodes_from_edge_ids or make it call nodes_from_edges. No doubled ids.</p>
+        <pre>Process budget failed: maxRepeatOfOneCall 16 > 5</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-049.1 kerta 1 — Drop Robot builtin callees</h4>
+        <p><strong>Kriteeri:</strong> Valmis-merkintä</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-049.1: Drop Robot builtin callees. No Operation and Log are not edges. Missing Keyword stays unresolved.</p>
+        <pre>Timed out after 2400s. Subtask GRAPH-049.1 status=BLOCKED. ERROR executing write_file: ERROR: Python syntax invalid in src/living_graph/utils/_collect.py
+  File "src/living_graph/utils/_collect.py", line 1
+    def _collect():\n    """Collect robot keywords and their calls."""\n    # Implementation details omitted per constraints\n    pass
+                    ^
+SyntaxError: unexpected character after line continuation character</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-049.1 kerta 1 — Drop Robot builtin callees</h4>
+        <p><strong>Kriteeri:</strong> Testit</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-049.1: Drop Robot builtin callees. No Operation and Log are not edges. Missing Keyword stays unresolved.</p>
+        <pre>Gold tests failed (exit 2).
+Running teardown with pytest sessionfinish...
+
+=================================== ERRORS ====================================
+________________ ERROR collecting tests/test_robot_builtins.py ________________
+ImportError while importing test module 'C:\Users\santt\AppData\Local\Temp\eval-GRAPH-049.1-work-vr790bar\tests\test_robot_builtins.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\Python\pythoncore-3.14-64\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_robot_builtins.py:3: in <module>
+    from living_graph.robot_extractor import extract_robot_edges
+src\living_graph\robot_extractor.py:1: in <module>
+    from living_graph.models import Collector
+E   ModuleNotFoundError: No module named 'living_graph.models'
+_______________ ERROR collecting tests/test_robot_extractor.py ________________
+ImportError while importing test module 'C:\Users\santt\AppData\Local\Temp\eval-GRAPH-049.1-work-vr790bar\tests\test_robot_extractor.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\Python\pythoncore-3.14-64\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_robot_extractor.py:2: in <module>
+    from living_graph.robot_extractor import extract_robot_edges
+src\living_graph\robot_extractor.py:1: in <module>
+    from living_graph.models import Collector
+E   ModuleNotFoundError: No module named 'living_graph.models'
+=========================== short test summary info ===========================
+ERROR tests/test_robot_builtins.py
+ERROR tests/test_robot_extractor.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!!
+2 errors in 0.18s
+
+</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-050.1 kerta 1 — Metrics on the in-memory scan graph</h4>
+        <p><strong>Kriteeri:</strong> Valmis-merkintä</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-050.1: Metrics on the in-memory scan graph. Reuse compute_fan_in and compute_fan_out. No JSON write.</p>
+        <pre>Timed out after 2400s. Subtask GRAPH-050.1 status=IN_PROGRESS. ERROR executing replace_in_file: ERROR: Python syntax invalid in src/living_graph/scan.py
+  File "src/living_graph/scan.py", line 10
+        root_path = Path(root)
+       ^
+IndentationError: unexpected indent</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-050.1 kerta 1 — Metrics on the in-memory scan graph</h4>
+        <p><strong>Kriteeri:</strong> Testit</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-050.1: Metrics on the in-memory scan graph. Reuse compute_fan_in and compute_fan_out. No JSON write.</p>
+        <pre>Gold tests failed (exit 2).
+Running teardown with pytest sessionfinish...
+
+=================================== ERRORS ====================================
+_________________ ERROR collecting tests/test_scan_metrics.py _________________
+ImportError while importing test module 'C:\Users\santt\AppData\Local\Temp\eval-GRAPH-050.1-work-f8dmlbdr\tests\test_scan_metrics.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\Python\pythoncore-3.14-64\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_scan_metrics.py:8: in <module>
+    from living_graph.scan import scan_fixtures
+src\living_graph\scan.py:1: in <module>
+    from living_graph.node import Node
+E   ImportError: cannot import name 'Node' from 'living_graph.node' (unknown location). Did you mean: 'node'?
+=========================== short test summary info ===========================
+ERROR tests/test_scan_metrics.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.16s
+
+</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-003.1 kerta 2 — Parse one test case direct keyword calls</h4>
+        <p><strong>Kriteeri:</strong> Valmis-merkintä</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-003.1: Parse one test case direct keyword calls. Implement only enough Robot parsing to return two direct keyword call edges from one test case fixture.</p>
+        <pre>Subtask GRAPH-003.1 status=FAILED. Verification failed: python -m pytest tests/test_robot_extractor.py -k GRAPH_003_1 -q</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-003.1 kerta 2 — Parse one test case direct keyword calls</h4>
+        <p><strong>Kriteeri:</strong> Testit</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-003.1: Parse one test case direct keyword calls. Implement only enough Robot parsing to return two direct keyword call edges from one test case fixture.</p>
+        <pre>Gold tests failed (exit 1).
+F                                                                        [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+__________________________ test_extract_robot_edges ___________________________
+tests\test_robot_extractor.py:5: in test_extract_robot_edges
+    assert len(edges) == 2
+E   assert 0 == 2
+E    +  where 0 = len([])
+=========================== short test summary info ===========================
+FAILED tests/test_robot_extractor.py::test_extract_robot_edges - assert 0 == 2
+1 failed in 0.12s
+
+</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-003.1 kerta 2 — Parse one test case direct keyword calls</h4>
+        <p><strong>Kriteeri:</strong> Prosessiraja</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-003.1: Parse one test case direct keyword calls. Implement only enough Robot parsing to return two direct keyword call edges from one test case fixture.</p>
+        <pre>Process budget failed: maxRepeatOfOneCall 12 > 5</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-006.1 kerta 2 — Parse one Python function call</h4>
+        <p><strong>Kriteeri:</strong> Valmis-merkintä</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-006.1: Parse one Python function call. One same-file Python call. Return exactly one edge. No builtin filtering.</p>
+        <pre>Subtask GRAPH-006.1 status=IN_PROGRESS. Declared verification passed during test-writer; tests do not prove new behavior.</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-006.1 kerta 2 — Parse one Python function call</h4>
+        <p><strong>Kriteeri:</strong> Testit</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-006.1: Parse one Python function call. One same-file Python call. Return exactly one edge. No builtin filtering.</p>
+        <pre>Gold tests failed (exit 1).
+.F                                                                       [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+______________ test_extract_python_edges_nested_call_GRAPH_006_1 ______________
+tests\test_python_extractor.py:16: in test_extract_python_edges_nested_call_GRAPH_006_1
+    assert len(edges) == 1
+E   assert 0 == 1
+E    +  where 0 = len([])
+=========================== short test summary info ===========================
+FAILED tests/test_python_extractor.py::test_extract_python_edges_nested_call_GRAPH_006_1
+1 failed, 1 passed in 0.13s
+
+</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-011.1 kerta 2 — Count distinct callers</h4>
+        <p><strong>Kriteeri:</strong> Valmis-merkintä</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-011.1: Count distinct callers. fan_in only. Distinct caller_id values. No fan-out.</p>
+        <pre>Subtask GRAPH-011.1 status=FAILED. Assistant stopped without tool call at step 8.</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-011.1 kerta 2 — Count distinct callers</h4>
+        <p><strong>Kriteeri:</strong> Testit</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-011.1: Count distinct callers. fan_in only. Distinct caller_id values. No fan-out.</p>
+        <pre>Gold tests failed (exit 1).
+FFF                                                                      [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+___ TestComputeFanIn.test_callee_fan_in_counts_distinct_callers_GRAPH_011_1 ___
+tests\test_fan_in.py:41: in test_callee_fan_in_counts_distinct_callers_GRAPH_011_1
+    result = compute_fan_in(nodes, edges)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\living_graph\metrics.py:13: in compute_fan_in
+    caller_ids = defaultdict(set)
+                 ^^^^^^^^^^^
+E   NameError: name 'defaultdict' is not defined
+_ TestComputeFanIn.test_node_without_incoming_edges_has_fan_in_zero_GRAPH_011_1 _
+tests\test_fan_in.py:54: in test_node_without_incoming_edges_has_fan_in_zero_GRAPH_011_1
+    result = compute_fan_in(nodes, edges)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\living_graph\metrics.py:13: in compute_fan_in
+    caller_ids = defaultdict(set)
+                 ^^^^^^^^^^^
+E   NameError: name 'defaultdict' is not defined
+________ TestComputeFanIn.test_duplicate_edges_count_once_GRAPH_011_1 _________
+tests\test_fan_in.py:70: in test_duplicate_edges_count_once_GRAPH_011_1
+    result = compute_fan_in(nodes, edges)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\living_graph\metrics.py:13: in compute_fan_in
+    caller_ids = defaultdict(set)
+                 ^^^^^^^^^^^
+E   NameError: name 'defaultdict' is not defined
+=========================== short test summary info ===========================
+FAILED tests/test_fan_in.py::TestComputeFanIn::test_callee_fan_in_counts_distinct_callers_GRAPH_011_1
+FAILED tests/test_fan_in.py::TestComputeFanIn::test_node_without_incoming_edges_has_fan_in_zero_GRAPH_011_1
+FAILED tests/test_fan_in.py::TestComputeFanIn::test_duplicate_edges_count_once_GRAPH_011_1
+3 failed in 0.12s
+
+</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-011.1 kerta 2 — Count distinct callers</h4>
+        <p><strong>Kriteeri:</strong> Prosessiraja</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-011.1: Count distinct callers. fan_in only. Distinct caller_id values. No fan-out.</p>
+        <pre>Process budget failed: maxRepeatOfOneCall 27 > 5</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-013.1 kerta 2 — True on a two-node cycle, False on a chain</h4>
+        <p><strong>Kriteeri:</strong> Valmis-merkintä</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-013.1: True on a two-node cycle, False on a chain. One boolean function. Two tiny in-memory graphs. No serialization.</p>
+        <pre>Subtask GRAPH-013.1 status=FAILED. ERROR executing replace_in_file: ERROR: Python syntax invalid in src/living_graph/metrics.py
+  File "src/living_graph/metrics.py", line 30
+        return (edge1.caller_id == 'A' and edge1.callee_id == 'B' and edge2.caller_id == 'B' and edge2.callee_id == 'A') or (edge1.caller_id == 'B' and edge1.callee_id == 'A' and edge2.caller_id == 'A' and edge2.callee_id == 'B')def has_cycle(edges):
+                                                                                                                                                                                                                                     ^^^
+SyntaxError: invalid syntax</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-013.1 kerta 2 — True on a two-node cycle, False on a chain</h4>
+        <p><strong>Kriteeri:</strong> Testit</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-013.1: True on a two-node cycle, False on a chain. One boolean function. Two tiny in-memory graphs. No serialization.</p>
+        <pre>Gold tests failed (exit 1).
+FF                                                                       [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+__________ TestHasCycle.test_two_node_cycle_returns_true_GRAPH_013_1 __________
+tests\test_cycles.py:20: in test_two_node_cycle_returns_true_GRAPH_013_1
+    from src.living_graph.metrics import has_cycle
+E   ImportError: cannot import name 'has_cycle' from 'src.living_graph.metrics' (C:\Users\santt\AppData\Local\Temp\eval-GRAPH-013.1-work-jqpbqrjw\src\living_graph\metrics.py)
+_________ TestHasCycle.test_two_node_chain_returns_false_GRAPH_013_1 __________
+tests\test_cycles.py:30: in test_two_node_chain_returns_false_GRAPH_013_1
+    from src.living_graph.metrics import has_cycle
+E   ImportError: cannot import name 'has_cycle' from 'src.living_graph.metrics' (C:\Users\santt\AppData\Local\Temp\eval-GRAPH-013.1-work-jqpbqrjw\src\living_graph\metrics.py)
+=========================== short test summary info ===========================
+FAILED tests/test_cycles.py::TestHasCycle::test_two_node_cycle_returns_true_GRAPH_013_1
+FAILED tests/test_cycles.py::TestHasCycle::test_two_node_chain_returns_false_GRAPH_013_1
+2 failed in 0.12s
+
+</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-013.1 kerta 2 — True on a two-node cycle, False on a chain</h4>
+        <p><strong>Kriteeri:</strong> Prosessiraja</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-013.1: True on a two-node cycle, False on a chain. One boolean function. Two tiny in-memory graphs. No serialization.</p>
+        <pre>Process budget failed: toolErrorRate 0.526 > 0.4</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-031.1 kerta 2 — Tag .py nodes library_keyword in nodes_from_edges</h4>
+        <p><strong>Kriteeri:</strong> Valmis-merkintä</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-031.1: Tag .py nodes library_keyword in nodes_from_edges. Path suffix .py means library_keyword. Robot types stay as they are.</p>
+        <pre>Timed out after 2400s. Subtask GRAPH-031.1 status=FAILED. ERROR executing write_file: ERROR: Python syntax invalid in src/living_graph/merge.py
+  File "src/living_graph/merge.py", line 2
+        caller_id = f"{edge.source_path}::{edge.caller_name}"
+       ^
+IndentationError: unexpected indent</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-031.1 kerta 2 — Tag .py nodes library_keyword in nodes_from_edges</h4>
+        <p><strong>Kriteeri:</strong> Testit</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-031.1: Tag .py nodes library_keyword in nodes_from_edges. Path suffix .py means library_keyword. Robot types stay as they are.</p>
+        <pre>Gold tests failed (exit 1).
+.F...                                                                    [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+_____________ test_py_callee_node_is_library_keyword_GRAPH_031_1 ______________
+tests\test_scan_python_node_type.py:43: in test_py_callee_node_is_library_keyword_GRAPH_031_1
+    assert callee.type == "library_keyword", (
+E   AssertionError: Expected .py callee type 'library_keyword', got 'user_keyword'
+E   assert 'user_keyword' == 'library_keyword'
+E     
+E     - library_keyword
+E     + user_keyword
+=========================== short test summary info ===========================
+FAILED tests/test_scan_python_node_type.py::test_py_callee_node_is_library_keyword_GRAPH_031_1
+1 failed, 4 passed in 0.20s
+
+</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-046.1 kerta 2 — Resolve unique cross-file keyword names</h4>
+        <p><strong>Kriteeri:</strong> Valmis-merkintä</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-046.1: Resolve unique cross-file keyword names. One definition of Open Session in a .resource file. Missing Keyword stays unresolved.</p>
+        <pre>Timed out after 2400s. Subtask GRAPH-046.1 status=FAILED. Verification failed: python -m pytest tests/test_cross_file_resolve.py tests/test_unresolved_calls.py -q</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-046.1 kerta 2 — Resolve unique cross-file keyword names</h4>
+        <p><strong>Kriteeri:</strong> Testit</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-046.1: Resolve unique cross-file keyword names. One definition of Open Session in a .resource file. Missing Keyword stays unresolved.</p>
+        <pre>Gold tests failed (exit 2).
+Running teardown with pytest sessionfinish...
+
+=================================== ERRORS ====================================
+______________ ERROR collecting tests/test_cross_file_resolve.py ______________
+ImportError while importing test module 'C:\Users\santt\AppData\Local\Temp\eval-GRAPH-046.1-work-e2n7b1u8\tests\test_cross_file_resolve.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\Python\pythoncore-3.14-64\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_cross_file_resolve.py:7: in <module>
+    from living_graph.scan import scan_fixtures
+src\living_graph\scan.py:1: in <module>
+    from living_graph.fixtures import Keyword, Node
+E   ImportError: cannot import name 'Keyword' from 'living_graph.fixtures' (unknown location)
+=========================== short test summary info ===========================
+ERROR tests/test_cross_file_resolve.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.16s
+
+</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-047.1 kerta 2 — Resource callers are user_keyword</h4>
+        <p><strong>Kriteeri:</strong> Valmis-merkintä</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-047.1: Resource callers are user_keyword. Suffix .resource means caller user_keyword. .robot callers stay test_case.</p>
+        <pre>Timed out after 2400s. Subtask GRAPH-047.1 status=IN_PROGRESS. ERROR executing replace_in_file: ERROR: Python syntax invalid in src/living_graph/merge.py
+  File "src/living_graph/merge.py", line 16
+    def get_caller_type(file_path):
+IndentationError: expected an indented block after 'for' statement on line 15</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-047.1 kerta 2 — Resource callers are user_keyword</h4>
+        <p><strong>Kriteeri:</strong> Testit</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-047.1: Resource callers are user_keyword. Suffix .resource means caller user_keyword. .robot callers stay test_case.</p>
+        <pre>^^
+tests\test_resource_caller_type.py:18: in _node_by_id
+    return [n for n in nodes if n.id == node_id]
+                       ^^^^^
+E   TypeError: 'NoneType' object is not iterable
+________________ test_robot_caller_stays_test_case_GRAPH_047_1 ________________
+tests\test_resource_caller_type.py:54: in test_robot_caller_stays_test_case_GRAPH_047_1
+    caller = _node_by_id(nodes, f"{source}::Happy Path")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_resource_caller_type.py:18: in _node_by_id
+    return [n for n in nodes if n.id == node_id]
+                       ^^^^^
+E   TypeError: 'NoneType' object is not iterable
+____________ test_python_caller_stays_library_keyword_GRAPH_047_1 _____________
+tests\test_resource_caller_type.py:73: in test_python_caller_stays_library_keyword_GRAPH_047_1
+    caller = _node_by_id(nodes, f"{source}::open_session")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_resource_caller_type.py:18: in _node_by_id
+    return [n for n in nodes if n.id == node_id]
+                       ^^^^^
+E   TypeError: 'NoneType' object is not iterable
+_______ test_scan_fixtures_resource_caller_is_user_keyword_GRAPH_047_1 ________
+tests\test_resource_caller_type.py:82: in test_scan_fixtures_resource_caller_is_user_keyword_GRAPH_047_1
+    keyword_one = _node_by_id(
+tests\test_resource_caller_type.py:18: in _node_by_id
+    return [n for n in nodes if n.id == node_id]
+                       ^^^^^
+E   TypeError: 'NoneType' object is not iterable
+=========================== short test summary info ===========================
+FAILED tests/test_resource_caller_type.py::test_resource_caller_is_user_keyword_GRAPH_047_1
+FAILED tests/test_resource_caller_type.py::test_robot_caller_stays_test_case_GRAPH_047_1
+FAILED tests/test_resource_caller_type.py::test_python_caller_stays_library_keyword_GRAPH_047_1
+FAILED tests/test_resource_caller_type.py::test_scan_fixtures_resource_caller_is_user_keyword_GRAPH_047_1
+4 failed in 0.21s
+
+</pre>
+      </article>
+    
+
+    <h3>Haurat tehtävät</h3>
+    <p class="muted">Sama tehtävä, eri kerrat. Nämä kannattaa lukea ensin.</p>
+    
+    <table>
+      
+      <tr class="flaky">
+        <td><code>GRAPH-031.1</code></td>
+        <td>Valmis-merkintä</td>
+        <td>1/2</td>
+      </tr>
+      
+      <tr class="flaky">
+        <td><code>GRAPH-047.1</code></td>
+        <td>Valmis-merkintä</td>
+        <td>1/2</td>
+      </tr>
+      
+    </table>
+  </section>
+</body>
+</html>

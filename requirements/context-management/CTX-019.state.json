@@ -1,0 +1,32 @@
+{
+  "taskId": "CTX-019",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-06T08:15:15+00:00",
+  "updatedAt": "2026-10-06T08:19:18+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "CTX-019.1",
+      "title": "Emit one stored event",
+      "status": "DONE",
+      "summary": "Resuming from handoff CTX-019-0005: tests exist but implementation is incomplete. Need to update mcp_server.py to emit a stored-shape event with user_id_hash."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

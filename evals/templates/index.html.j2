@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8">
+  <title>TDD-koodarin arviot</title>
+  <style>
+    body { font-family: Georgia, serif; margin: 2rem auto; max-width: 1100px; line-height: 1.45; color: #1a1a1a; }
+    h1, h2 { font-family: "Segoe UI", sans-serif; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border-bottom: 1px solid #ddd; text-align: left; padding: 0.4rem 0.6rem; vertical-align: top; white-space: nowrap; }
+    th { font-family: "Segoe UI", sans-serif; font-weight: 600; }
+    .muted { color: #555; font-size: 0.95rem; }
+    .dry { color: #777; }
+    .partial { background: #fff4ce; }
+    code { font-family: Consolas, monospace; }
+  </style>
+</head>
+<body>
+  <h1>TDD-koodarin arviot</h1>
+  <p class="muted">Yksi rivi per raportti kansiossa <code>evals/reports/</code>. Päivitetty {{ generatedAt }}.</p>
+  {% if not rows %}
+  <p>Ei raportteja vielä.</p>
+  {% endif %}
+  <table>
+    <thead>
+      <tr>
+        <th>Luotu</th>
+        <th>Malli</th>
+        <th>Kehote</th>
+        <th>Tila</th>
+        <th>Yhteenveto</th>
+        <th>Ajot</th>
+        <th>Tiedostot</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr class="{% if row.dryRun %}dry{% elif row.runStatus != 'success' %}partial{% endif %}">
+        <td>{{ row.createdAt }}</td>
+        <td><code>{{ row.model }}</code></td>
+        <td><code>{{ row.promptVariant }}</code></td>
+        <td>{% if row.dryRun %}kuivaharjoitus{% elif row.runStatus == "success" %}valmis{% elif row.runStatus == "cancelled" %}keskeytetty{% elif row.runStatus == "error" %}virhe{% elif row.runStatus == "started" %}kesken{% else %}{{ row.runStatus }}{% endif %}</td>
+        <td>{{ row.headline }}</td>
+        <td>{{ row.nTrials }}{% if row.plannedTrials %}/{{ row.plannedTrials }}{% endif %} ({{ row.nSamples }} tehtävää)</td>
+        <td>
+          {% if row.html %}<a href="{{ row.html }}">HTML</a>{% endif %}
+          {% if row.pdf %}· <a href="{{ row.pdf }}">PDF</a>{% endif %}
+          · <a href="{{ row.json }}">JSON</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>

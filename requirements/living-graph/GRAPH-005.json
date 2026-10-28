@@ -1,0 +1,93 @@
+{
+  "id": "GRAPH-005",
+  "type": "task",
+  "summary": "Mark unresolved Robot keyword calls",
+  "dependsOn": [
+    "GRAPH-004"
+  ],
+  "description": "If a test case calls a keyword that has no definition in the given fixture, still record the edge and mark the callee unresolved instead of crashing or dropping it.",
+  "scope": [
+    "Add tests/fixtures/unresolved_call.robot with one test case that calls Missing Keyword",
+    "extract_robot_edges returns that edge instead of raising or omitting it",
+    "Set edge.resolved to false",
+    "Set callee_id to unresolved::Missing Keyword"
+  ],
+  "acceptanceCriteria": "A call to Missing Keyword from tests/fixtures/unresolved_call.robot yields an edge with resolved false and callee id unresolved::Missing Keyword.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-006.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not parse Python files.",
+    "Do not merge graphs."
+  ],
+  "verification": [
+    "python -m pytest tests/test_unresolved_calls.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-005.1",
+      "title": "Flag undefined Robot callees as unresolved",
+      "summary": "One fixture call to Missing Keyword becomes an unresolved edge, not a crash or a dropped row.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "extract_robot_edges",
+        "module": "src/living_graph/robot_extractor.py",
+        "test": "tests/test_unresolved_calls.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "tests/fixtures/unresolved_call.robot",
+          "purpose": "Tiny fixture: one test case calls an undefined keyword."
+        },
+        {
+          "path": "src/living_graph/model.py",
+          "purpose": "GRAPH-002 Node and Edge contracts."
+        },
+        {
+          "path": "docs/data-contracts.md",
+          "purpose": "Node and Edge contract source of truth."
+        }
+      ],
+      "scope": [
+        "Add tests/fixtures/unresolved_call.robot with one test case that calls Missing Keyword",
+        "extract_robot_edges returns that edge instead of raising or omitting it",
+        "Set edge.resolved to false",
+        "Set callee_id to unresolved::Missing Keyword"
+      ],
+      "dataExamples": [
+        "Fixture file: tests/fixtures/unresolved_call.robot.",
+        "Fixture test case: Uses Missing Keyword.",
+        "Body row: Missing Keyword.",
+        "Edge: Uses Missing Keyword -> Missing Keyword.",
+        "resolved is false.",
+        "callee_id is unresolved::Missing Keyword."
+      ],
+      "businessRules": [
+        "Unknown callees use type unresolved and id unresolved::{name}.",
+        "Do not invent a source_path file for unresolved nodes."
+      ],
+      "verification": [
+        "python -m pytest tests/test_unresolved_calls.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_unresolved_calls.py first.",
+        "Run python -m pytest tests/test_unresolved_calls.py -q and confirm failure.",
+        "Implement only extract_robot_edges in src/living_graph/robot_extractor.py.",
+        "Run python -m pytest tests/test_unresolved_calls.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/robot_extractor.py"
+    ],
+    "businessRules": [
+      "Unknown callees use type unresolved and id unresolved::{name}.",
+      "Do not invent a source_path file for unresolved nodes."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_unresolved_calls.py -q"
+    ]
+  }
+}

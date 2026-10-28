@@ -1,0 +1,32 @@
+{
+  "taskId": "GRAPH-012",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-09-16T19:43:32+00:00",
+  "updatedAt": "2026-09-16T19:48:39+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "GRAPH-012.1",
+      "title": "Count distinct callees",
+      "status": "DONE",
+      "summary": "Implementing compute_fan_out in src/living_graph/metrics.py."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

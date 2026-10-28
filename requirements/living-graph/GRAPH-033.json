@@ -1,0 +1,83 @@
+{
+  "id": "GRAPH-033",
+  "type": "task",
+  "summary": "Fetch graph.json and fill node and edge counts",
+  "dependsOn": [
+    "GRAPH-021",
+    "GRAPH-032"
+  ],
+  "description": "The static page fetches graph.json and writes nodes.length and edges.length into #node-count and #edge-count. No 3D library.",
+  "scope": [
+    "Add src/living_graph/static/viewer.js",
+    "viewer.js calls fetch('graph.json') and sets #node-count and #edge-count via textContent",
+    "index.html includes script src viewer.js"
+  ],
+  "acceptanceCriteria": "index.html loads viewer.js. viewer.js fetches graph.json and assigns data.nodes.length to #node-count and data.edges.length to #edge-count.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-034.",
+    "Do not add a watcher or CLI unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not add a 3D canvas.",
+    "Do not include 3d-force-graph."
+  ],
+  "verification": [
+    "python -m pytest tests/test_viewer_fetch.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-033.1",
+      "title": "Fetch JSON and update counts",
+      "summary": "File-content tests only. No browser. No 3D.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "viewer.js",
+        "module": "src/living_graph/static/viewer.js",
+        "test": "tests/test_viewer_fetch.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "src/living_graph/static/index.html",
+          "purpose": "Must include script src=\"viewer.js\" and keep #node-count and #edge-count."
+        }
+      ],
+      "scope": [
+        "Add src/living_graph/static/viewer.js",
+        "viewer.js calls fetch('graph.json') and sets #node-count and #edge-count via textContent",
+        "index.html includes script src viewer.js"
+      ],
+      "dataExamples": [
+        "fetch('graph.json') appears in viewer.js.",
+        "getElementById('node-count') appears in viewer.js.",
+        "getElementById('edge-count') appears in viewer.js.",
+        "index.html contains viewer.js."
+      ],
+      "businessRules": [
+        "Tests read HTML/JS as text. Do not use Selenium or a real browser.",
+        "Use textContent for counts, not innerHTML."
+      ],
+      "verification": [
+        "python -m pytest tests/test_viewer_fetch.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_viewer_fetch.py first.",
+        "Run python -m pytest tests/test_viewer_fetch.py -q and confirm failure.",
+        "Add viewer.js and the script tag in index.html.",
+        "Run python -m pytest tests/test_viewer_fetch.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/static/viewer.js",
+      "src/living_graph/static/index.html"
+    ],
+    "businessRules": [
+      "Tests read HTML/JS as text. Do not use Selenium or a real browser.",
+      "Use textContent for counts, not innerHTML."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_viewer_fetch.py -q"
+    ]
+  }
+}

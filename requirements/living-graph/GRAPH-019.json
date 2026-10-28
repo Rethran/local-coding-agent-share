@@ -1,0 +1,87 @@
+{
+  "id": "GRAPH-019",
+  "type": "task",
+  "summary": "Pass through unchanged-file node objects",
+  "dependsOn": [
+    "GRAPH-018"
+  ],
+  "description": "GRAPH-018 may rebuild the whole node list from remaining edges. This task requires incremental_update to keep the original Node (and Edge) objects for every source_path that did not change. A naive nodes_from_edges rebuild must fail the test.",
+  "scope": [
+    "Change incremental_update so nodes and edges whose source_path is not changed_path are the same objects as in the input graph",
+    "Update only tests/fixtures/simple_test.robot",
+    "Keep a reference to a simple_library.py node before the call and assert it is the identical object after (Python 'is', not == or JSON bytes)",
+    "Do not reconstruct library nodes via nodes_from_edges"
+  ],
+  "acceptanceCriteria": "After incremental_update for tests/fixtures/simple_test.robot, every node and edge with source_path tests/fixtures/simple_library.py satisfies 'is' against the matching input object. JSON-value equality alone is not enough.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-020.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not add a filesystem watcher.",
+    "Do not assert only JSON bytes or dataclass ==; those already pass after GRAPH-018."
+  ],
+  "verification": [
+    "python -m pytest tests/test_incremental_unchanged.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-019.1",
+      "title": "Unchanged rows stay the same objects",
+      "summary": "Update robot path only. Library Node/Edge instances must be reused, not rebuilt.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "incremental_update",
+        "module": "src/living_graph/scan.py",
+        "test": "tests/test_incremental_unchanged.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "src/living_graph/model.py",
+          "purpose": "GRAPH-002 Node and Edge contracts."
+        }
+      ],
+      "scope": [
+        "Change incremental_update so nodes and edges whose source_path is not changed_path are the same objects as in the input graph",
+        "Update only tests/fixtures/simple_test.robot",
+        "Keep a reference to a simple_library.py node before the call and assert it is the identical object after (Python 'is', not == or JSON bytes)",
+        "Do not reconstruct library nodes via nodes_from_edges"
+      ],
+      "dataExamples": [
+        "Unchanged file: tests/fixtures/simple_library.py.",
+        "Changed file: tests/fixtures/simple_test.robot.",
+        "lib_node = next(n for n in graph.nodes if n.source_path.endswith('simple_library.py')).",
+        "updated = incremental_update(graph, robot_path, new_edges).",
+        "assert any(n is lib_node for n in updated.nodes)."
+      ],
+      "businessRules": [
+        "Copy through nodes and edges where source_path != changed_path.",
+        "Build replacement nodes only from new_edges for changed_path.",
+        "Value equality or JSON bytes of library rows is insufficient; object identity is required."
+      ],
+      "verification": [
+        "python -m pytest tests/test_incremental_unchanged.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_incremental_unchanged.py first.",
+        "The test must use 'is' on a library node (or edge) kept from the input graph. Do not compare JSON bytes or Node == Node.",
+        "Run python -m pytest tests/test_incremental_unchanged.py -q and confirm failure against the GRAPH-018 rebuild.",
+        "Change incremental_update in src/living_graph/scan.py so unchanged source_path rows are reused.",
+        "Run python -m pytest tests/test_incremental_unchanged.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/scan.py"
+    ],
+    "businessRules": [
+      "Copy through nodes and edges where source_path != changed_path.",
+      "Build replacement nodes only from new_edges for changed_path.",
+      "Value equality or JSON bytes of library rows is insufficient; object identity is required."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_incremental_unchanged.py -q"
+    ]
+  }
+}

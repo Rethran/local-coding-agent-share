@@ -1,0 +1,126 @@
+{
+  "id": "CTX-074",
+  "type": "task",
+  "summary": "Estimate prompt tokens before the upstream call",
+  "dependsOn": [
+    "CTX-010",
+    "CTX-058"
+  ],
+  "description": "FR-C1-03. Before the request is forwarded, the rule engine needs a prompt-token estimate. With no earlier session count, use the profile divisor on the new text. With a last reported session prompt_tokens, add the estimate for the new text to that count. The after-response provider usage path stays in CTX-010.",
+  "scope": [
+    "Eight characters and divisor 4 with no session count is 2",
+    "A session count of 100 plus that estimate is 102"
+  ],
+  "acceptanceCriteria": "preflight_prompt_tokens(None, '12345678', 4) is 2. preflight_prompt_tokens(100, '12345678', 4) is 102. FR-C1-03.",
+  "constraints": [
+    "Do not call the upstream to get this number.",
+    "Do not replace the CTX-010 provider usage path.",
+    "Do not store the new message text on an event."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_074_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_074_1_fresh.py -q -k CTX_074_1",
+    "python -m pytest tests/test_ctx_074_2_session.py -q -k CTX_074_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-074.1",
+      "title": "Estimate from the new text",
+      "summary": "No session count and text 12345678 with divisor 4 returns 2.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/tokenize.py",
+        "test": "tests/test_ctx_074_1_fresh.py",
+        "function": "preflight_prompt_tokens"
+      },
+      "scope": [
+        "session_prompt_tokens null",
+        "divisor 4",
+        "result 2"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_074_1_fresh.py -q -k CTX_074_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_074_1.",
+        "This subtask's only job: No session count and text 12345678 with divisor 4 returns 2.",
+        "Touch only src/context_mgmt/tokenize.py and tests/test_ctx_074_1_fresh.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "preflight_prompt_tokens(session_prompt_tokens, new_text, divisor) uses max(1, len(new_text) // divisor) when session_prompt_tokens is None.",
+        "Run python -m pytest tests/test_ctx_074_1_fresh.py -q -k CTX_074_1."
+      ],
+      "dataExamples": [
+        {
+          "input": {
+            "session_prompt_tokens": null,
+            "new_text": "12345678",
+            "divisor": 4
+          },
+          "output": 2
+        }
+      ],
+      "businessRules": [
+        "FR-C1-03: the pre-flight estimate uses the model profile divisor when the session has no earlier prompt_tokens."
+      ]
+    },
+    {
+      "id": "CTX-074.2",
+      "title": "Add the new text to the session count",
+      "summary": "Session prompt_tokens 100 plus text 12345678 at divisor 4 returns 102.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/tokenize.py",
+        "test": "tests/test_ctx_074_2_session.py",
+        "function": "preflight_prompt_tokens"
+      },
+      "scope": [
+        "session_prompt_tokens 100",
+        "divisor 4",
+        "result 102"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_074_2_session.py -q -k CTX_074_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_074_2.",
+        "This subtask's only job: Session prompt_tokens 100 plus text 12345678 at divisor 4 returns 102.",
+        "Touch only src/context_mgmt/tokenize.py and tests/test_ctx_074_2_session.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Add the new-text estimate to the session count. Do not replace the session count.",
+        "Run python -m pytest tests/test_ctx_074_2_session.py -q -k CTX_074_2."
+      ],
+      "dataExamples": [
+        {
+          "input": {
+            "session_prompt_tokens": 100,
+            "new_text": "12345678",
+            "divisor": 4
+          },
+          "output": 102
+        }
+      ],
+      "businessRules": [
+        "FR-C1-03: last reported session prompt_tokens plus an estimate for the new messages."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/tokenize.py"
+    ],
+    "businessRules": [
+      "None session returns max(1, len(new_text) // divisor). A session count returns that count plus the same estimate."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_074_1_fresh.py -q -k CTX_074_1",
+      "python -m pytest tests/test_ctx_074_2_session.py -q -k CTX_074_2"
+    ]
+  }
+}

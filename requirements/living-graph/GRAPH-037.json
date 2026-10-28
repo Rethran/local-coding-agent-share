@@ -1,0 +1,83 @@
+{
+  "id": "GRAPH-037",
+  "type": "task",
+  "summary": "Mount ForceGraph3D with graph-force.json",
+  "dependsOn": [
+    "GRAPH-034",
+    "GRAPH-035",
+    "GRAPH-036"
+  ],
+  "description": "viewer.js fetches graph-force.json and passes it to ForceGraph3D mounted on #graph. That is the connected-node 3D view.",
+  "scope": [
+    "Update src/living_graph/static/viewer.js",
+    "Call ForceGraph3D()(document.getElementById('graph'))",
+    "Fetch graph-force.json and call graphData with the parsed body"
+  ],
+  "acceptanceCriteria": "viewer.js contains ForceGraph3D, getElementById('graph'), fetch('graph-force.json'), and graphData.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-038.",
+    "Do not add a watcher or CLI unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not add onNodeClick.",
+    "Do not add npm or a bundler."
+  ],
+  "verification": [
+    "python -m pytest tests/test_force_graph_mount.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-037.1",
+      "title": "Call ForceGraph3D and graphData",
+      "summary": "File-content tests only. Fetch graph-force.json. No click handler.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "viewer.js",
+        "module": "src/living_graph/static/viewer.js",
+        "test": "tests/test_force_graph_mount.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "src/living_graph/static/index.html",
+          "purpose": "Must already have 3d-force-graph script and div#graph."
+        }
+      ],
+      "scope": [
+        "Update src/living_graph/static/viewer.js",
+        "Call ForceGraph3D()(document.getElementById('graph'))",
+        "Fetch graph-force.json and call graphData with the parsed body"
+      ],
+      "dataExamples": [
+        "ForceGraph3D appears in viewer.js.",
+        "getElementById('graph') appears in viewer.js.",
+        "fetch('graph-force.json') appears in viewer.js.",
+        "graphData appears in viewer.js."
+      ],
+      "businessRules": [
+        "Tests read JS as text. Do not use a browser.",
+        "Keep the GRAPH-033 count fetch for graph.json."
+      ],
+      "verification": [
+        "python -m pytest tests/test_force_graph_mount.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_force_graph_mount.py first.",
+        "Run python -m pytest tests/test_force_graph_mount.py -q and confirm failure.",
+        "Update only viewer.js to mount ForceGraph3D.",
+        "Run python -m pytest tests/test_force_graph_mount.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/static/viewer.js"
+    ],
+    "businessRules": [
+      "Tests read JS as text. Do not use a browser.",
+      "Keep the GRAPH-033 count fetch for graph.json."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_force_graph_mount.py -q"
+    ]
+  }
+}

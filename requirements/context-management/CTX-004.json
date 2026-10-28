@@ -1,0 +1,167 @@
+{
+  "id": "CTX-004",
+  "type": "task",
+  "summary": "Drop duplicate tool and file context",
+  "dependsOn": [
+    "CTX-003"
+  ],
+  "description": "Rule R3. FR-C2-04. Two messages with the same dedupe_key keep the later one. A single copy is left unchanged. Dropped token_count sums into tokens_saved_est.",
+  "scope": [
+    "Remove earlier messages that share dedupe_key with a later message",
+    "Keep the later message",
+    "Return none when a key appears once and R1 and R2 do not match"
+  ],
+  "acceptanceCriteria": "Two tool messages with dedupe_key file:a.py keep the second content new and drop old. tokens_saved_est is 10. One tool message with that key and token_count 10 returns none and the same messages. FR-C2-04.",
+  "constraints": [
+    "Do not drop a system message.",
+    "Do not drop the latest user message even if its dedupe_key repeats.",
+    "Do not remove the R2 trim of a surviving tool message that is still over the cap."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not add storage, events, or HTTP code.",
+    "Every test function for a subtask must contain that slice token, for example CTX_004_1.",
+    "After writing or changing a test, always call the declared pytest command. Do not stop with only explanation text.",
+    "CTX-004 is the first task that treats repeated dedupe_key values as duplicates. Earlier CTX-003 tests used dedupe_key only as inert data."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_004_1_dedupe.py -q -k CTX_004_1",
+    "python -m pytest tests/test_ctx_004_2_single.py -q -k CTX_004_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-004.1",
+      "title": "Keep the latest duplicate",
+      "summary": "Two tool messages with the same dedupe_key keep the later content and count the earlier token_count as saved.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/rules.py",
+        "test": "tests/test_ctx_004_1_dedupe.py",
+        "function": "decide"
+      },
+      "scope": [
+        "Input order is system, old tool, new tool, latest user",
+        "Output messages omit the old tool",
+        "action trim, reason duplicate_context, tokens_saved_est 10"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_004_1_dedupe.py -q -k CTX_004_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_004_1.",
+        "This subtask's only job: Two tool messages with the same dedupe_key keep the later content and count the earlier token_count as saved.",
+        "Touch only src/context_mgmt/rules.py and tests/test_ctx_004_1_dedupe.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Use token_count 10 on both tools so R2 does not also fire.",
+        "Assert content new remains and content old is gone.",
+        "Keep context_pct at 0.10.",
+        "Do not change system or latest user messages.",
+        "Run python -m pytest tests/test_ctx_004_1_dedupe.py -q -k CTX_004_1."
+      ],
+      "dataExamples": [
+        {
+          "context_pct": 0.1,
+          "messages": [
+            {
+              "role": "system",
+              "content": "SYS",
+              "token_count": 1
+            },
+            {
+              "role": "tool",
+              "content": "old",
+              "token_count": 10,
+              "dedupe_key": "file:a.py"
+            },
+            {
+              "role": "tool",
+              "content": "new",
+              "token_count": 12,
+              "dedupe_key": "file:a.py"
+            },
+            {
+              "role": "user",
+              "content": "LATEST",
+              "token_count": 1
+            }
+          ],
+          "tokens_saved_est": 10
+        }
+      ],
+      "businessRules": [
+        "FR-C2-04: keep the latest copy of a repeated file or tool output."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/rules.py",
+          "purpose": "Pure decide function. Precedence R3, then R2, then R1."
+        }
+      ]
+    },
+    {
+      "id": "CTX-004.2",
+      "title": "Leave a single copy unchanged",
+      "summary": "One tool message is not a duplicate. Action stays none when the cap and compact rules also miss.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/rules.py",
+        "test": "tests/test_ctx_004_2_single.py",
+        "function": "decide"
+      },
+      "scope": [
+        "One tool message with dedupe_key file:a.py and token_count 10",
+        "messages length stays the same",
+        "action none"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_004_2_single.py -q -k CTX_004_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_004_2.",
+        "This subtask's only job: One tool message is not a duplicate. Action stays none when the cap and compact rules also miss.",
+        "Touch only src/context_mgmt/rules.py and tests/test_ctx_004_2_single.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Assert the marker is absent.",
+        "Do not treat a unique dedupe_key as a duplicate.",
+        "If this verification already passes after CTX-004.1, run the declared command and mark the subtask done.",
+        "Run python -m pytest tests/test_ctx_004_2_single.py -q -k CTX_004_2."
+      ],
+      "dataExamples": [
+        {
+          "context_pct": 0.1,
+          "messages": [
+            {
+              "role": "tool",
+              "content": "only",
+              "token_count": 10,
+              "dedupe_key": "file:a.py"
+            }
+          ],
+          "action": "none",
+          "reason": "below_threshold"
+        }
+      ],
+      "businessRules": [
+        "A key that appears once is kept."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/rules.py",
+          "purpose": "Pure decide function. Precedence R3, then R2, then R1."
+        }
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/rules.py"
+    ],
+    "businessRules": [
+      "Apply R3 before R2. Dropped messages are not trimmed.",
+      "Reason for a pure dedupe is duplicate_context and action is trim."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_004_1_dedupe.py -q -k CTX_004_1",
+      "python -m pytest tests/test_ctx_004_2_single.py -q -k CTX_004_2"
+    ]
+  }
+}

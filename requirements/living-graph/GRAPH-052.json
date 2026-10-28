@@ -1,0 +1,82 @@
+{
+  "id": "GRAPH-052",
+  "type": "task",
+  "summary": "Stop scattering node.z — depth tunnel makes the graph seasick",
+  "dependsOn": [
+    "GRAPH-037"
+  ],
+  "description": "Bug: viewer.js assigns each node a rotating z from ((i % 4) - 1.5) * 40 before graphData. Combined with dagMode('lr'), clusters recede into the distance like a tunnel. The 3D page looks sparse and the camera feels nauseating because nodes sit at different depths. Product code still has this scatter; do not leave it. Pin every node z to 0 so the layout is a left-to-right plane, not a depth stack.",
+  "scope": [
+    "In src/living_graph/static/viewer.js set node.z = 0 for each node before graphData",
+    "Remove the ((i % 4) - 1.5) * 40 z assignment",
+    "Keep dagMode and graphData"
+  ],
+  "acceptanceCriteria": "viewer.js contains node.z = 0 and does not contain i % 4 used to set z.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-053.",
+    "Do not add a watcher or CLI unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not remove dagMode.",
+    "Do not add npm or a bundler."
+  ],
+  "verification": [
+    "python -m pytest tests/test_camera_plane.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-052.1",
+      "title": "Zero the node z coordinate",
+      "summary": "File-content tests. No browser. z is 0. Problem is the depth tunnel from rotating z.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "viewer.js",
+        "module": "src/living_graph/static/viewer.js",
+        "test": "tests/test_camera_plane.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "src/living_graph/static/viewer.js",
+          "purpose": "GRAPH-041 dagMode viewer. Current bug: node.z = ((i % 4) - 1.5) * 40."
+        }
+      ],
+      "scope": [
+        "In src/living_graph/static/viewer.js set node.z = 0 for each node before graphData",
+        "Remove the ((i % 4) - 1.5) * 40 z assignment",
+        "Keep dagMode and graphData"
+      ],
+      "dataExamples": [
+        "Current bug: node.z = ((i % 4) - 1.5) * 40.",
+        "Required: node.z = 0.",
+        "The i % 4 z formula must be gone."
+      ],
+      "businessRules": [
+        "Tests read JS as text. Do not use a browser.",
+        "Keep GRAPH-041 dagMode.",
+        "Random or stepped z is the seasick cause; pin z."
+      ],
+      "verification": [
+        "python -m pytest tests/test_camera_plane.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_camera_plane.py first. Assert viewer.js contains node.z = 0 and does not use i % 4 to set z.",
+        "Run python -m pytest tests/test_camera_plane.py -q and confirm failure (product code still scatters z).",
+        "Pin node.z to 0 in viewer.js. Delete the rotating z formula.",
+        "Run python -m pytest tests/test_camera_plane.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/static/viewer.js"
+    ],
+    "businessRules": [
+      "Tests read JS as text. Do not use a browser.",
+      "Keep GRAPH-041 dagMode.",
+      "Random or stepped z is the seasick cause; pin z."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_camera_plane.py -q"
+    ]
+  }
+}

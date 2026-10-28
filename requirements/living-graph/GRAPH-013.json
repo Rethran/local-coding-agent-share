@@ -1,0 +1,79 @@
+{
+  "id": "GRAPH-013",
+  "type": "task",
+  "summary": "Detect a call cycle on a tiny graph",
+  "dependsOn": [
+    "GRAPH-009"
+  ],
+  "description": "Return True when A calls B and B calls A. Return False for a two-node chain with no back edge.",
+  "scope": [
+    "Add has_cycle(edges) in src/living_graph/metrics.py",
+    "Cyclic fixture: A -> B and B -> A returns True",
+    "Acyclic fixture: A -> B returns False"
+  ],
+  "acceptanceCriteria": "has_cycle returns True for A->B plus B->A, and False for A->B only.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-014.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not serialize JSON.",
+    "Do not scan the fixtures folder."
+  ],
+  "verification": [
+    "python -m pytest tests/test_cycles.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-013.1",
+      "title": "True on a two-node cycle, False on a chain",
+      "summary": "One boolean function. Two tiny in-memory graphs. No serialization.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "has_cycle",
+        "module": "src/living_graph/metrics.py",
+        "test": "tests/test_cycles.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "src/living_graph/model.py",
+          "purpose": "GRAPH-002 Node and Edge contracts."
+        }
+      ],
+      "scope": [
+        "Add has_cycle(edges) in src/living_graph/metrics.py",
+        "Cyclic fixture: A -> B and B -> A returns True",
+        "Acyclic fixture: A -> B returns False"
+      ],
+      "dataExamples": [
+        "Cyclic edges: A -> B, B -> A.",
+        "Acyclic edges: A -> B."
+      ],
+      "businessRules": [
+        "A cycle exists when a directed path returns to its start.",
+        "Self-loops count as cycles if they appear, but the required fixtures are A<->B and A->B."
+      ],
+      "verification": [
+        "python -m pytest tests/test_cycles.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_cycles.py first.",
+        "Run python -m pytest tests/test_cycles.py -q and confirm failure.",
+        "Implement only has_cycle in src/living_graph/metrics.py.",
+        "Run python -m pytest tests/test_cycles.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/metrics.py"
+    ],
+    "businessRules": [
+      "A cycle exists when a directed path returns to its start.",
+      "Self-loops count as cycles if they appear, but the required fixtures are A<->B and A->B."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_cycles.py -q"
+    ]
+  }
+}

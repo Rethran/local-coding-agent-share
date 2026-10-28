@@ -1,0 +1,125 @@
+{
+  "id": "CTX-059",
+  "type": "task",
+  "summary": "Send the owner only license and org counts",
+  "dependsOn": [
+    "CTX-026",
+    "CTX-056"
+  ],
+  "description": "OWN-01 through OWN-05, P4, and P9. The default channel sends nothing. The revocation body and the optional usage report contain org-level counts only. An owner response cannot change config.",
+  "scope": [
+    "Both payloads exclude prompts and user ids",
+    "The report is off by default and an owner body does not change config"
+  ],
+  "acceptanceCriteria": "revocation_payload keys are exactly license_id and org_id. usage_report keys are exactly active_seats, total_requests, total_tokens, and tokens_saved_est. preview returns that dict. usage_report_enabled false makes send_usage_report return sent false without calling transport. apply_owner_response returns the same compact_threshold. OWN-01 OWN-02 OWN-03 OWN-04 OWN-05 P4 P9.",
+  "constraints": [
+    "Do not include a user id or a prompt in either payload.",
+    "Do not send the usage report when it is disabled.",
+    "Do not apply commands from an owner response."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_059_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_059_1_payload.py -q -k CTX_059_1",
+    "python -m pytest tests/test_ctx_059_2_off.py -q -k CTX_059_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-059.1",
+      "title": "Build the two owner payloads",
+      "summary": "The revocation body and the usage report contain only their declared keys.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/owner.py",
+        "test": "tests/test_ctx_059_1_payload.py",
+        "function": "usage_report"
+      },
+      "scope": [
+        "Revocation key set",
+        "Usage key set",
+        "preview matches the usage report"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_059_1_payload.py -q -k CTX_059_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_059_1.",
+        "This subtask's only job: The revocation body and the usage report contain only their declared keys.",
+        "Touch only src/context_mgmt/owner.py and tests/test_ctx_059_1_payload.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Pass an extra user_id argument and assert it is not in the result.",
+        "Run python -m pytest tests/test_ctx_059_1_payload.py -q -k CTX_059_1."
+      ],
+      "dataExamples": [
+        {
+          "license_id": "lic-1",
+          "org_id": "org-a",
+          "active_seats": 4,
+          "total_requests": 20,
+          "total_tokens": 100,
+          "tokens_saved_est": 5
+        }
+      ],
+      "businessRules": [
+        "P4 and OWN-01: no per-person data. OWN-03 sends license_id and org_id only."
+      ]
+    },
+    {
+      "id": "CTX-059.2",
+      "title": "Keep the report off and ignore owner commands",
+      "summary": "A disabled report does not call transport. An owner body does not change compact_threshold.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/owner.py",
+        "test": "tests/test_ctx_059_2_off.py",
+        "function": "send_usage_report"
+      },
+      "scope": [
+        "sent false",
+        "transport not called",
+        "compact_threshold stays 0.60"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_059_2_off.py -q -k CTX_059_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_059_2.",
+        "This subtask's only job: A disabled report does not call transport. An owner body does not change compact_threshold.",
+        "Touch only src/context_mgmt/owner.py and tests/test_ctx_059_2_off.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Default usage_report_enabled is false. The owner body can contain a fake command key.",
+        "Run python -m pytest tests/test_ctx_059_2_off.py -q -k CTX_059_2."
+      ],
+      "dataExamples": [
+        {
+          "sent": false,
+          "compact_threshold": 0.6,
+          "owner_body": {
+            "command": "disable-trim"
+          }
+        }
+      ],
+      "businessRules": [
+        "OWN-02 is the default. OWN-05: owner responses carry no commands."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/owner.py"
+    ],
+    "businessRules": [
+      "preview_usage_report returns the dict and does not send it."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_059_1_payload.py -q -k CTX_059_1",
+      "python -m pytest tests/test_ctx_059_2_off.py -q -k CTX_059_2"
+    ]
+  }
+}

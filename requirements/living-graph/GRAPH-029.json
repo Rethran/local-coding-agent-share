@@ -1,0 +1,90 @@
+{
+  "id": "GRAPH-029",
+  "type": "task",
+  "summary": "Serialize callee-only nodes into graph JSON",
+  "dependsOn": [
+    "GRAPH-014"
+  ],
+  "description": "serialize_graph must keep nodes that appear only as callees. Do not drop a node just because it never appears as caller_id.",
+  "scope": [
+    "Keep serialize_graph(nodes, edges) in src/living_graph/serialize.py",
+    "Emit every supplied node, including callee-only Open Application",
+    "Update tests/fixtures/expected_graph.json so GRAPH-014 still matches field by field"
+  ],
+  "acceptanceCriteria": "serialize_graph of Happy Path plus Open Application includes both nodes. expected_graph.json contains the Open Application node so existing serialize tests still pass.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-030.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not scan the fixtures folder.",
+    "Do not mount a 3D canvas."
+  ],
+  "verification": [
+    "python -m pytest tests/test_serialize_callees.py tests/test_serialize_graph.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-029.1",
+      "title": "Keep callee-only nodes",
+      "summary": "No caller-only filter. Update expected_graph.json. No scan.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "serialize_graph",
+        "module": "src/living_graph/serialize.py",
+        "test": "tests/test_serialize_callees.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "tests/fixtures/expected_graph.json",
+          "purpose": "GRAPH-014 fixture. Must include the Open Application callee node after this task."
+        },
+        {
+          "path": "docs/data-contracts.md",
+          "purpose": "Node and Edge contract source of truth."
+        },
+        {
+          "path": "tests/test_serialize_graph.py",
+          "purpose": "Must keep passing after expected_graph.json gains the callee node."
+        }
+      ],
+      "scope": [
+        "Keep serialize_graph(nodes, edges) in src/living_graph/serialize.py",
+        "Emit every supplied node, including callee-only Open Application",
+        "Update tests/fixtures/expected_graph.json so GRAPH-014 still matches field by field"
+      ],
+      "dataExamples": [
+        "Happy Path remains in nodes.",
+        "Open Application id is tests/fixtures/simple_test.robot::Open Application.",
+        "Open Application type is user_keyword."
+      ],
+      "businessRules": [
+        "Do not filter nodes to caller_id values.",
+        "Node order is the order of the nodes argument.",
+        "Update expected_graph.json rather than weakening GRAPH-014 assertions."
+      ],
+      "verification": [
+        "python -m pytest tests/test_serialize_callees.py tests/test_serialize_graph.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_serialize_callees.py first.",
+        "Run python -m pytest tests/test_serialize_callees.py -q and confirm failure.",
+        "Stop filtering callee-only nodes in serialize_graph and update expected_graph.json.",
+        "Run python -m pytest tests/test_serialize_callees.py tests/test_serialize_graph.py -q and stop when both pass."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/serialize.py"
+    ],
+    "businessRules": [
+      "Do not filter nodes to caller_id values.",
+      "Node order is the order of the nodes argument.",
+      "Update expected_graph.json rather than weakening GRAPH-014 assertions."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_serialize_callees.py tests/test_serialize_graph.py -q"
+    ]
+  }
+}

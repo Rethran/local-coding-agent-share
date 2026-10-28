@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>TDD coder eval — baseline / night-runner:latest</title>
+  <style>
+    body { font-family: Georgia, serif; margin: 2rem auto; max-width: 960px; line-height: 1.45; color: #1a1a1a; }
+    h1, h2 { font-family: "Segoe UI", sans-serif; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border-bottom: 1px solid #ddd; text-align: left; padding: 0.4rem 0.6rem; vertical-align: top; }
+    th { font-family: "Segoe UI", sans-serif; font-weight: 600; }
+    .fail { background: #fdecea; }
+    .flaky { background: #fff4ce; }
+    .muted { color: #555; font-size: 0.95rem; }
+    pre { white-space: pre-wrap; background: #f6f6f6; padding: 0.75rem; overflow-x: auto; }
+    code { font-family: Consolas, monospace; }
+  </style>
+</head>
+<body>
+  <h1>TDD coder eval</h1>
+  <p class="muted">
+    Variant <code>baseline</code>
+    · model <code>night-runner:latest</code>
+    · 2026-09-30T20:00:21+00:00
+    · source <code>evals.runner</code>
+  </p>
+
+  <h2>Summary</h2>
+  <table>
+    <thead>
+      <tr><th>Criterion</th><th>Pass rate</th><th>stderr</th><th>n</th><th>Δ previous</th></tr>
+    </thead>
+    <tbody>
+      
+      <tr>
+        <td><code>process_budget</code></td>
+        <td>100.0%</td>
+        <td>± 0.0%</td>
+        <td>12</td>
+        <td>
+          —
+        </td>
+      </tr>
+      
+      <tr>
+        <td><code>reference_tests_pass</code></td>
+        <td>0.0%</td>
+        <td>± 0.0%</td>
+        <td>12</td>
+        <td>
+          —
+        </td>
+      </tr>
+      
+      <tr>
+        <td><code>subtask_done</code></td>
+        <td>0.0%</td>
+        <td>± 0.0%</td>
+        <td>12</td>
+        <td>
+          —
+        </td>
+      </tr>
+      
+    </tbody>
+  </table>
+  <p class="muted">
+    12 samples,
+    12 trials,
+    p95 wall 0.0s,
+    0 tokens.
+  </p>
+
+  <h2>What is assessed</h2>
+  
+    <h3><code>subtask_done</code></h3>
+    <p>The orchestrator marked the pinned subtask DONE after the independent verifier passed.</p>
+    <p class="muted">Why: This is the outcome that matters: the agent's own declared verification succeeded and the coordinator agreed. A fluent transcript that never reaches DONE is still a failure.</p>
+    <p class="muted">How (code): Code. Read the copied requirements <task_id>.state.json after the run. Pass iff the matching subtask status is DONE.</p>
+  
+    <h3><code>reference_tests_pass</code></h3>
+    <p>Tests from the historically accepted commit still pass against the code the agent just wrote.</p>
+    <p class="muted">Why: The agent's own tests can be too weak or accidentally rewritten. Overlaying the accepted commit's test files is a cheap substitute for hidden tests. These are regression tests, not independently authored hidden tests.</p>
+    <p class="muted">How (code): Code. After the agent finishes, overlay tests/ files from accepted_commit, then run pytest on those paths in the worktree.</p>
+  
+    <h3><code>process_budget</code></h3>
+    <p>The agent finished without looping, blowing the step budget, or drowning in tool errors.</p>
+    <p class="muted">Why: Local models often fail on process before they fail on correctness. A pass that took 80 identical read_file calls is not a prompt you want to keep.</p>
+    <p class="muted">How (code): Code, from run_summary.json. Fail if attempts > 10, steps > 160, any identical tool fingerprint repeats more than 5 times, or tool error rate > 40%.</p>
+  
+
+  <h2>Failures first</h2>
+  
+  
+    <article class="fail">
+      <h3>GRAPH-003.1 epoch 1 — Parse one test case direct keyword calls</h3>
+      <p><strong>Failed:</strong> <code>subtask_done</code></p>
+      <p><strong>Input:</strong> Implement GRAPH-003.1: Parse one test case direct keyword calls. Implement only enough Robot parsing to return two direct keyword call edges from one test case fixture.</p>
+      <pre>Subtask GRAPH-003.1 status=FAILED. dry_run</pre>
+    </article>
+  
+    <article class="fail">
+      <h3>GRAPH-003.1 epoch 1 — Parse one test case direct keyword calls</h3>
+      <p><strong>Failed:</strong> <code>reference_tests_pass</code></p>
+      <p><strong>Input:</strong> Implement GRAPH-003.1: Parse one test case direct keyword calls. Implement only enough Robot parsing to return two direct keyword call edges from one test case fixture.</p>
+      <pre>Gold tests failed (exit 2).
+Running teardown with pytest sessionfinish...
+
+=================================== ERRORS ====================================
+_______________ ERROR collecting tests/test_robot_extractor.py ________________
+ImportError while importing test module 'C:\Users\santt\AppData\Local\Temp\eval-GRAPH-003.1-e1-work-6doxe2v3\tests\test_robot_extractor.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\Python\pythoncore-3.14-64\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\test_robot_extractor.py:1: in <module>
+    from living_graph.robot_extractor import extract_robot_edges
+E   ModuleNotFoundError: No module named 'living_graph.robot_extractor'
+=========================== short test summary info ===========================
+ERROR tests/test_robot_extractor.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.16s
+
+</pre>
+    </article>
+  
+    <article class="fail">
+      <h3>GRAPH-006.1 epoch 1 — Parse one Python function call</h3>
+      <p><strong>Failed:</strong> <code>subtask_done</code></p>
+      <p><strong>Input:</strong> Implement GRAPH-006.1: Parse one Python function call. One same-file Python call. Return exactly one edge. No builtin filtering.</p>
+      <pre>Subtask GRAPH-006.1 status=FAILED. dry_run</pre>
+    </article>
+  
+    <article class="fail">
+      <h3>GRAPH-006.1 epoch 1 — Parse one Python function call</h3>
+      <p><strong>Failed:</strong> <code>reference_tests_pass</code></p>
+      <p><strong>Input:</strong> Implement GRAPH-006.1: Parse one Python function call. One same-file Python call. Return exactly one edge. No builtin filtering.</p>
+      <pre>Gold tests failed (exit 1).
+.F                                                                       [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+______________ test_extract_python_edges_nested_call_GRAPH_006_1 ______________
+tests\test_python_extractor.py:16: in test_extract_python_edges_nested_call_GRAPH_006_1
+    assert len(edges) == 1
+E   assert 0 == 1
+E    +  where 0 = len([])
+=========================== short test summary info ===========================
+FAILED tests/test_python_extractor.py::test_extract_python_edges_nested_call_GRAPH_006_1
+1 failed, 1 passed in 0.13s
+
+</pre>
+    </article>
+  
+    <article class="fail">
+      <h3>GRAPH-011.1 epoch 1 — Count distinct callers</h3>
+      <p><strong>Failed:</strong> <code>subtask_done</code></p>
+      <p><strong>Input:</strong> Implement GRAPH-011.1: Count distinct callers. fan_in only. Distinct caller_id values. No fan-out.</p>
+      <pre>Subtask GRAPH-011.1 status=FAILED. dry_run</pre>
+    </article>
+  
+    <article class="fail">
+      <h3>GRAPH-011.1 epoch 1 — Count distinct callers</h3>
+      <p><strong>Failed:</strong> <code>reference_tests_pass</code></p>
+      <p><strong>Input:</strong> Implement GRAPH-011.1: Count distinct callers. fan_in only. Distinct caller_id values. No fan-out.</p>
+      <pre>Gold tests failed (exit 1).
+FFF                                                                      [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+___ TestComputeFanIn.test_callee_fan_in_counts_distinct_callers_GRAPH_011_1 ___
+tests\test_fan_in.py:30: in test_callee_fan_in_counts_distinct_callers_GRAPH_011_1
+    from src.living_graph.metrics import compute_fan_in
+E   ModuleNotFoundError: No module named 'src.living_graph.metrics'
+_ TestComputeFanIn.test_node_without_incoming_edges_has_fan_in_zero_GRAPH_011_1 _
+tests\test_fan_in.py:47: in test_node_without_incoming_edges_has_fan_in_zero_GRAPH_011_1
+    from src.living_graph.metrics import compute_fan_in
+E   ModuleNotFoundError: No module named 'src.living_graph.metrics'
+________ TestComputeFanIn.test_duplicate_edges_count_once_GRAPH_011_1 _________
+tests\test_fan_in.py:60: in test_duplicate_edges_count_once_GRAPH_011_1
+    from src.living_graph.metrics import compute_fan_in
+E   ModuleNotFoundError: No module named 'src.living_graph.metrics'
+=========================== short test summary info ===========================
+FAILED tests/test_fan_in.py::TestComputeFanIn::test_callee_fan_in_counts_distinct_callers_GRAPH_011_1
+FAILED tests/test_fan_in.py::TestComputeFanIn::test_node_without_incoming_edges_has_fan_in_zero_GRAPH_011_1
+FAILED tests/test_fan_in.py::TestComputeFanIn::test_duplicate_edges_count_once_GRAPH_011_1
+3 failed in 0.13s
+
+</pre>
+    </article>
+  
+    <article class="fail">
+      <h3>GRAPH-013.1 epoch 1 — True on a two-node cycle, False on a chain</h3>
+      <p><strong>Failed:</strong> <code>subtask_done</code></p>
+      <p><strong>Input:</strong> Implement GRAPH-013.1: True on a two-node cycle, False on a chain. One boolean function. Two tiny in-memory graphs. No serialization.</p>
+      <pre>Subtask GRAPH-013.1 status=FAILED. dry_run</pre>
+    </article>
+  
+    <article class="fail">
+      <h3>GRAPH-013.1 epoch 1 — True on a two-node cycle, False on a chain</h3>
+      <p><strong>Failed:</strong> <code>reference_tests_pass</code></p>
+      <p><strong>Input:</strong> Implement GRAPH-013.1: True on a two-node cycle, False on a chain. One boolean function. Two tiny in-memory graphs. No serialization.</p>
+      <pre>Gold tests failed (exit 1).
+FF                                                                       [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+__________ TestHasCycle.test_two_node_cycle_returns_true_GRAPH_013_1 __________
+tests\test_cycles.py:20: in test_two_node_cycle_returns_true_GRAPH_013_1
+    from src.living_graph.metrics import has_cycle
+E   ImportError: cannot import name 'has_cycle' from 'src.living_graph.metrics' (C:\Users\santt\AppData\Local\Temp\eval-GRAPH-013.1-e1-work-rq9dro07\src\living_graph\metrics.py)
+_________ TestHasCycle.test_two_node_chain_returns_false_GRAPH_013_1 __________
+tests\test_cycles.py:30: in test_two_node_chain_returns_false_GRAPH_013_1
+    from src.living_graph.metrics import has_cycle
+E   ImportError: cannot import name 'has_cycle' from 'src.living_graph.metrics' (C:\Users\santt\AppData\Local\Temp\eval-GRAPH-013.1-e1-work-rq9dro07\src\living_graph\metrics.py)
+=========================== short test summary info ===========================
+FAILED tests/test_cycles.py::TestHasCycle::test_two_node_cycle_returns_true_GRAPH_013_1
+FAILED tests/test_cycles.py::TestHasCycle::test_two_node_chain_returns_false_GRAPH_013_1
+2 failed in 0.12s
+
+</pre>
+    </article>
+  
+    <article class="fail">
+      <h3>GRAPH-031.1 epoch 1 — Tag .py nodes library_keyword in nodes_from_edges</h3>
+      <p><strong>Failed:</strong> <code>subtask_done</code></p>
+      <p><strong>Input:</strong> Implement GRAPH-031.1: Tag .py nodes library_keyword in nodes_from_edges. Path suffix .py means library_keyword. Robot types stay as they are.</p>
+      <pre>Subtask GRAPH-031.1 status=FAILED. dry_run</pre>
+    </article>
+  
+    <article class="fail">
+      <h3>GRAPH-031.1 epoch 1 — Tag .py nodes library_keyword in nodes_from_edges</h3>
+      <p><strong>Failed:</strong> <code>reference_tests_pass</code></p>
+      <p><strong>Input:</strong> Implement GRAPH-031.1: Tag .py nodes library_keyword in nodes_from_edges. Path suffix .py means library_keyword. Robot types stay as they are.</p>
+      <pre>Gold tests failed (exit 1).
+FF..F                                                                    [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+_____________ test_py_caller_node_is_library_keyword_GRAPH_031_1 ______________
+tests\test_scan_python_node_type.py:23: in test_py_caller_node_is_library_keyword_GRAPH_031_1
+    assert caller.type == "library_keyword", (
+E   AssertionError: Expected .py caller type 'library_keyword', got 'test_case'
+E   assert 'test_case' == 'library_keyword'
+E     
+E     - library_keyword
+E     + test_case
+_____________ test_py_callee_node_is_library_keyword_GRAPH_031_1 ______________
+tests\test_scan_python_node_type.py:43: in test_py_callee_node_is_library_keyword_GRAPH_031_1
+    assert callee.type == "library_keyword", (
+E   AssertionError: Expected .py callee type 'library_keyword', got 'user_keyword'
+E   assert 'user_keyword' == 'library_keyword'
+E     
+E     - library_keyword
+E     + user_keyword
+_______ test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1 ________
+tests\test_scan_python_node_type.py:89: in test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1
+    assert len(open_session) == 1, "open_session node not found in scanned graph"
+E   AssertionError: open_session node not found in scanned graph
+E   assert 2 == 1
+E    +  where 2 = len([<living_graph.model.Node object at 0x000002158D84C050>, <living_graph.model.Node object at 0x000002158D80C940>])
+=========================== short test summary info ===========================
+FAILED tests/test_scan_python_node_type.py::test_py_caller_node_is_library_keyword_GRAPH_031_1
+FAILED tests/test_scan_python_node_type.py::test_py_callee_node_is_library_keyword_GRAPH_031_1
+FAILED tests/test_scan_python_node_type.py::test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1
+3 failed, 2 passed in 0.21s
+
+</pre>
+    </article>
+  
+    <article class="fail">
+      <h3>GRAPH-046.1 epoch 1 — Resolve unique cross-file keyword names</h3>
+      <p><strong>Failed:</strong> <code>subtask_done</code></p>
+      <p><strong>Input:</strong> Implement GRAPH-046.1: Resolve unique cross-file keyword names. One definition of Open Session in a .resource file. Missing Keyword stays unresolved.</p>
+      <pre>Subtask GRAPH-046.1 status=FAILED. dry_run</pre>
+    </article>
+  
+    <article class="fail">
+      <h3>GRAPH-046.1 epoch 1 — Resolve unique cross-file keyword names</h3>
+      <p><strong>Failed:</strong> <code>reference_tests_pass</code></p>
+      <p><strong>Input:</strong> Implement GRAPH-046.1: Resolve unique cross-file keyword names. One definition of Open Session in a .resource file. Missing Keyword stays unresolved.</p>
+      <pre>Gold tests failed (exit 1).
+F.                                                                       [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+_____________ test_cross_file_unique_keyword_resolved_GRAPH_046_1 _____________
+tests\test_cross_file_resolve.py:19: in test_cross_file_unique_keyword_resolved_GRAPH_046_1
+    assert edge.resolved is True
+E   assert False is True
+E    +  where False = <living_graph.model.Edge object at 0x00000268AB38DE80>.resolved
+=========================== short test summary info ===========================
+FAILED tests/test_cross_file_resolve.py::test_cross_file_unique_keyword_resolved_GRAPH_046_1
+1 failed, 1 passed in 0.21s
+
+</pre>
+    </article>
+  
+    <article class="fail">
+      <h3>GRAPH-047.1 epoch 1 — Resource callers are user_keyword</h3>
+      <p><strong>Failed:</strong> <code>subtask_done</code></p>
+      <p><strong>Input:</strong> Implement GRAPH-047.1: Resource callers are user_keyword. Suffix .resource means caller user_keyword. .robot callers stay test_case.</p>
+      <pre>Subtask GRAPH-047.1 status=FAILED. dry_run</pre>
+    </article>
+  
+    <article class="fail">
+      <h3>GRAPH-047.1 epoch 1 — Resource callers are user_keyword</h3>
+      <p><strong>Failed:</strong> <code>reference_tests_pass</code></p>
+      <p><strong>Input:</strong> Implement GRAPH-047.1: Resource callers are user_keyword. Suffix .resource means caller user_keyword. .robot callers stay test_case.</p>
+      <pre>Gold tests failed (exit 1).
+F..F                                                                     [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+______________ test_resource_caller_is_user_keyword_GRAPH_047_1 _______________
+tests\test_resource_caller_type.py:37: in test_resource_caller_is_user_keyword_GRAPH_047_1
+    assert caller[0].type == "user_keyword"
+E   AssertionError: assert 'test_case' == 'user_keyword'
+E     
+E     - user_keyword
+E     + test_case
+_______ test_scan_fixtures_resource_caller_is_user_keyword_GRAPH_047_1 ________
+tests\test_resource_caller_type.py:86: in test_scan_fixtures_resource_caller_is_user_keyword_GRAPH_047_1
+    assert keyword_one[0].type == "user_keyword"
+E   AssertionError: assert 'test_case' == 'user_keyword'
+E     
+E     - user_keyword
+E     + test_case
+=========================== short test summary info ===========================
+FAILED tests/test_resource_caller_type.py::test_resource_caller_is_user_keyword_GRAPH_047_1
+FAILED tests/test_resource_caller_type.py::test_scan_fixtures_resource_caller_is_user_keyword_GRAPH_047_1
+2 failed, 2 passed in 0.22s
+
+</pre>
+    </article>
+  
+    <article class="fail">
+      <h3>GRAPH-048.1 epoch 1 — Reuse nodes_from_edges in incremental_update</h3>
+      <p><strong>Failed:</strong> <code>subtask_done</code></p>
+      <p><strong>Input:</strong> Implement GRAPH-048.1: Reuse nodes_from_edges in incremental_update. Drop _nodes_from_edge_ids or make it call nodes_from_edges. No doubled ids.</p>
+      <pre>Subtask GRAPH-048.1 status=FAILED. dry_run</pre>
+    </article>
+  
+    <article class="fail">
+      <h3>GRAPH-048.1 epoch 1 — Reuse nodes_from_edges in incremental_update</h3>
+      <p><strong>Failed:</strong> <code>reference_tests_pass</code></p>
+      <p><strong>Input:</strong> Implement GRAPH-048.1: Reuse nodes_from_edges in incremental_update. Drop _nodes_from_edge_ids or make it call nodes_from_edges. No doubled ids.</p>
+      <pre>Gold tests failed (exit 1).
+F..                                                                      [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+______ test_incremental_update_py_caller_is_library_keyword_graph_048_1 _______
+tests\test_incremental_node_types.py:49: in test_incremental_update_py_caller_is_library_keyword_graph_048_1
+    assert by_id[f"{LIBRARY}::open_session"].type == "library_keyword"
+E   AssertionError: assert 'test_case' == 'library_keyword'
+E     
+E     - library_keyword
+E     + test_case
+=========================== short test summary info ===========================
+FAILED tests/test_incremental_node_types.py::test_incremental_update_py_caller_is_library_keyword_graph_048_1
+1 failed, 2 passed in 0.21s
+
+</pre>
+    </article>
+  
+    <article class="fail">
+      <h3>GRAPH-049.1 epoch 1 — Drop Robot builtin callees</h3>
+      <p><strong>Failed:</strong> <code>subtask_done</code></p>
+      <p><strong>Input:</strong> Implement GRAPH-049.1: Drop Robot builtin callees. No Operation and Log are not edges. Missing Keyword stays unresolved.</p>
+      <pre>Subtask GRAPH-049.1 status=FAILED. dry_run</pre>
+    </article>
+  
+    <article class="fail">
+      <h3>GRAPH-049.1 epoch 1 — Drop Robot builtin callees</h3>
+      <p><strong>Failed:</strong> <code>reference_tests_pass</code></p>
+      <p><strong>Input:</strong> Implement GRAPH-049.1: Drop Robot builtin callees. No Operation and Log are not edges. Missing Keyword stays unresolved.</p>
+      <pre>Gold tests failed (exit 1).
+F.F..F.                                                                  [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+__________________ test_no_operation_not_an_edge_GRAPH_049_1 __________________
+tests\test_robot_builtins.py:10: in test_no_operation_not_an_edge_GRAPH_049_1
+    assert "No Operation" not in callee_names, (
+E   AssertionError: No Operation is a Robot builtin and must not produce an edge
+E   assert 'No Operation' not in ['Keyword Two', 'No Operation']
+__________________ test_builtin_case_insensitive_GRAPH_049_1 __________________
+tests\test_robot_builtins.py:26: in test_builtin_case_insensitive_GRAPH_049_1
+    assert "no operation" not in callee_names, (
+E   AssertionError: Lowercase 'no operation' must be recognized as a builtin
+E   assert 'no operation' not in ['no operation', 'log', 'Missing Keyword']
+_________________ test_extract_robot_edges_from_user_keywords _________________
+tests\test_robot_extractor.py:24: in test_extract_robot_edges_from_user_keywords
+    assert len(pairs) == 1
+E   AssertionError: assert 2 == 1
+E    +  where 2 = len([('Keyword One', 'Keyword Two'), ('Keyword Two', 'No Operation')])
+=========================== short test summary info ===========================
+FAILED tests/test_robot_builtins.py::test_no_operation_not_an_edge_GRAPH_049_1
+FAILED tests/test_robot_builtins.py::test_builtin_case_insensitive_GRAPH_049_1
+FAILED tests/test_robot_extractor.py::test_extract_robot_edges_from_user_keywords
+3 failed, 4 passed in 0.22s
+
+</pre>
+    </article>
+  
+    <article class="fail">
+      <h3>GRAPH-050.1 epoch 1 — Metrics on the in-memory scan graph</h3>
+      <p><strong>Failed:</strong> <code>subtask_done</code></p>
+      <p><strong>Input:</strong> Implement GRAPH-050.1: Metrics on the in-memory scan graph. Reuse compute_fan_in and compute_fan_out. No JSON write.</p>
+      <pre>Subtask GRAPH-050.1 status=FAILED. dry_run</pre>
+    </article>
+  
+    <article class="fail">
+      <h3>GRAPH-050.1 epoch 1 — Metrics on the in-memory scan graph</h3>
+      <p><strong>Failed:</strong> <code>reference_tests_pass</code></p>
+      <p><strong>Input:</strong> Implement GRAPH-050.1: Metrics on the in-memory scan graph. Reuse compute_fan_in and compute_fan_out. No JSON write.</p>
+      <pre>Gold tests failed (exit 1).
+FF                                                                       [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+_________________ test_scan_fixtures_happy_path_fan_out_is_2 __________________
+tests\test_scan_metrics.py:24: in test_scan_fixtures_happy_path_fan_out_is_2
+    assert happy_path.fan_out == 2
+E   assert 0 == 2
+E    +  where 0 = <living_graph.model.Node object at 0x00000246F268C8D0>.fan_out
+____________ test_scan_fixtures_some_node_fan_in_greater_than_zero ____________
+tests\test_scan_metrics.py:31: in test_scan_fixtures_some_node_fan_in_greater_than_zero
+    assert any(node.fan_in > 0 for node in graph.nodes)
+E   assert False
+E    +  where False = any(<generator object test_scan_fixtures_some_node_fan_in_greater_than_zero.<locals>.<genexpr> at 0x00000246F1283030>)
+=========================== short test summary info ===========================
+FAILED tests/test_scan_metrics.py::test_scan_fixtures_happy_path_fan_out_is_2
+FAILED tests/test_scan_metrics.py::test_scan_fixtures_some_node_fan_in_greater_than_zero
+2 failed in 0.22s
+
+</pre>
+    </article>
+  
+    <article class="fail">
+      <h3>GRAPH-052.1 epoch 1 — Zero the node z coordinate</h3>
+      <p><strong>Failed:</strong> <code>subtask_done</code></p>
+      <p><strong>Input:</strong> Implement GRAPH-052.1: Zero the node z coordinate. File-content tests. No browser. z is 0. Problem is the depth tunnel from rotating z.</p>
+      <pre>Subtask GRAPH-052.1 status=FAILED. dry_run</pre>
+    </article>
+  
+    <article class="fail">
+      <h3>GRAPH-052.1 epoch 1 — Zero the node z coordinate</h3>
+      <p><strong>Failed:</strong> <code>reference_tests_pass</code></p>
+      <p><strong>Input:</strong> Implement GRAPH-052.1: Zero the node z coordinate. File-content tests. No browser. z is 0. Problem is the depth tunnel from rotating z.</p>
+      <pre>Gold tests failed (exit 1).
+FF.                                                                      [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+_________________ test_viewer_pins_node_z_to_zero_GRAPH_052_1 _________________
+tests\test_camera_plane.py:18: in test_viewer_pins_node_z_to_zero_GRAPH_052_1
+    assert "node.z = 0" in js, (
+E   AssertionError: viewer.js must pin node.z = 0 (slice GRAPH_052_1)
+E   assert 'node.z = 0' in "fetch('graph.json')\n  .then(function (response) {\n    return response.json();\n  })\n  .then(function (data) {\n   ...ion (n) {\n            return set.has(n.id) ? nodeFill(n) : '#8993A4';\n          });\n        });\n      });\n  });\n"
+________________ test_viewer_no_rotating_z_formula_GRAPH_052_1 ________________
+tests\test_camera_plane.py:26: in test_viewer_no_rotating_z_formula_GRAPH_052_1
+    assert "i % 4" not in js, (
+E   AssertionError: viewer.js must not use i % 4 to set z (slice GRAPH_052_1)
+E   assert 'i % 4' not in "fetch('grap...});\n  });\n"
+E     
+E     'i % 4' is contained here:
+E       ode.z = ((i % 4) - 1.5) * 40;
+E     ?           +++++
+E           });
+E           var graph = ForceGraph3D()(document.getElementById('graph'))
+E             .backgroundColor('#05060a')...
+E     
+E     ...Full output truncated (27 lines hidden), use '-vv' to show
+=========================== short test summary info ===========================
+FAILED tests/test_camera_plane.py::test_viewer_pins_node_z_to_zero_GRAPH_052_1
+FAILED tests/test_camera_plane.py::test_viewer_no_rotating_z_formula_GRAPH_052_1
+2 failed, 1 passed in 0.13s
+
+</pre>
+    </article>
+  
+    <article class="fail">
+      <h3>GRAPH-054.1 epoch 1 — Lock polar angle to the horizon</h3>
+      <p><strong>Failed:</strong> <code>subtask_done</code></p>
+      <p><strong>Input:</strong> Implement GRAPH-054.1: Lock polar angle to the horizon. Face-on camera. No pitch. File-content tests. Problem is orbit pitching into depth.</p>
+      <pre>Subtask GRAPH-054.1 status=FAILED. dry_run</pre>
+    </article>
+  
+    <article class="fail">
+      <h3>GRAPH-054.1 epoch 1 — Lock polar angle to the horizon</h3>
+      <p><strong>Failed:</strong> <code>reference_tests_pass</code></p>
+      <p><strong>Input:</strong> Implement GRAPH-054.1: Lock polar angle to the horizon. Face-on camera. No pitch. File-content tests. Problem is orbit pitching into depth.</p>
+      <pre>Gold tests failed (exit 1).
+....FF..                                                                 [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+________________ test_viewer_locks_min_polar_angle_GRAPH_054_1 ________________
+tests\test_camera_plane.py:54: in test_viewer_locks_min_polar_angle_GRAPH_054_1
+    assert "minPolarAngle" in js, (
+E   AssertionError: viewer.js must set minPolarAngle (slice GRAPH_054_1)
+E   assert 'minPolarAngle' in "fetch('graph.json')\n  .then(function (response) {\n    return response.json();\n  })\n  .then(function (data) {\n   ...ion (n) {\n            return set.has(n.id) ? nodeFill(n) : '#8993A4';\n          });\n        });\n      });\n  });\n"
+________________ test_viewer_locks_max_polar_angle_GRAPH_054_1 ________________
+tests\test_camera_plane.py:65: in test_viewer_locks_max_polar_angle_GRAPH_054_1
+    assert "maxPolarAngle" in js, (
+E   AssertionError: viewer.js must set maxPolarAngle (slice GRAPH_054_1)
+E   assert 'maxPolarAngle' in "fetch('graph.json')\n  .then(function (response) {\n    return response.json();\n  })\n  .then(function (data) {\n   ...ion (n) {\n            return set.has(n.id) ? nodeFill(n) : '#8993A4';\n          });\n        });\n      });\n  });\n"
+=========================== short test summary info ===========================
+FAILED tests/test_camera_plane.py::test_viewer_locks_min_polar_angle_GRAPH_054_1
+FAILED tests/test_camera_plane.py::test_viewer_locks_max_polar_angle_GRAPH_054_1
+2 failed, 6 passed in 0.13s
+
+</pre>
+    </article>
+  
+
+  <h2>Flaky cases</h2>
+  <p class="muted">Same sample, different epochs. These are usually the most informative trials.</p>
+  
+    <p>No mixed pass/fail samples (need epochs ≥ 2).</p>
+  
+  <table>
+    
+  </table>
+
+  <h2>Trend</h2>
+  
+    <p class="muted">No previous reports in <code>evals/reports/</code>.</p>
+  
+</body>
+</html>

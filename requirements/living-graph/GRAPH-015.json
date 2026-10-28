@@ -1,0 +1,90 @@
+{
+  "id": "GRAPH-015",
+  "type": "task",
+  "summary": "Scan fixtures into one in-memory graph",
+  "dependsOn": [
+    "GRAPH-005",
+    "GRAPH-008",
+    "GRAPH-010"
+  ],
+  "description": "Run extraction over tests/fixtures and return one in-memory graph containing nodes and edges from every fixture file. Do not write a JSON file yet.",
+  "scope": [
+    "Add scan_fixtures(root) in src/living_graph/scan.py",
+    "Scan tests/fixtures only",
+    "Return an in-memory object with nodes and edges",
+    "Include at least Happy Path from simple_test.robot and open_session from simple_library.py"
+  ],
+  "acceptanceCriteria": "scan_fixtures('tests/fixtures') returns nodes and edges from simple_test.robot and simple_library.py combined, without writing a file.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-016.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not write an output JSON file.",
+    "Do not watch the filesystem."
+  ],
+  "verification": [
+    "python -m pytest tests/test_scan_fixtures.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-015.1",
+      "title": "Combine fixture files in memory",
+      "summary": "Folder scan to memory only. No JSON write. No watcher.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "scan_fixtures",
+        "module": "src/living_graph/scan.py",
+        "test": "tests/test_scan_fixtures.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "tests/fixtures/simple_test.robot",
+          "purpose": "Tiny Robot fixture with Happy Path calling Open Application and Verify Dashboard."
+        },
+        {
+          "path": "tests/fixtures/simple_library.py",
+          "purpose": "Tiny Python fixture with one function calling another function."
+        }
+      ],
+      "scope": [
+        "Add scan_fixtures(root) in src/living_graph/scan.py",
+        "Scan tests/fixtures only",
+        "Return an in-memory object with nodes and edges",
+        "Include at least Happy Path from simple_test.robot and open_session from simple_library.py"
+      ],
+      "dataExamples": [
+        "Result contains node tests/fixtures/simple_test.robot::Happy Path.",
+        "Result contains node tests/fixtures/simple_library.py::open_session.",
+        "No file is created under a default output path."
+      ],
+      "businessRules": [
+        "Parse .robot and .resource with the Robot extractor.",
+        "Parse .py with the Python extractor.",
+        "Merge with nodes_from_edges."
+      ],
+      "verification": [
+        "python -m pytest tests/test_scan_fixtures.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_scan_fixtures.py first.",
+        "Run python -m pytest tests/test_scan_fixtures.py -q and confirm failure.",
+        "Implement only scan_fixtures in src/living_graph/scan.py.",
+        "Run python -m pytest tests/test_scan_fixtures.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/scan.py"
+    ],
+    "businessRules": [
+      "Parse .robot and .resource with the Robot extractor.",
+      "Parse .py with the Python extractor.",
+      "Merge with nodes_from_edges."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_scan_fixtures.py -q"
+    ]
+  }
+}

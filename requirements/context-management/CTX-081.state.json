@@ -1,0 +1,38 @@
+{
+  "taskId": "CTX-081",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-14T14:03:07+00:00",
+  "updatedAt": "2026-10-14T14:05:35+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "CTX-081.1",
+      "title": "List the local commands",
+      "status": "DONE",
+      "summary": "Writing failing test for command_names in tests/test_ctx_081_1_commands.py"
+    },
+    {
+      "id": "CTX-081.2",
+      "title": "Register the ctx script",
+      "status": "DONE",
+      "summary": "Adding [project.scripts] to pyproject.toml"
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

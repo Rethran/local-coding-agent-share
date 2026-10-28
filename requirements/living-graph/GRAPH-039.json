@@ -1,0 +1,80 @@
+{
+  "id": "GRAPH-039",
+  "type": "task",
+  "summary": "Build a highlight payload for every node",
+  "dependsOn": [
+    "GRAPH-027"
+  ],
+  "description": "Return a dict of node id to highlight_set ids so the page can dim unrelated nodes on click. Pure Python. No DOM.",
+  "scope": [
+    "Add highlight_payload(edges, node_ids) in src/living_graph/query.py",
+    "Each key maps to sorted(highlight_set(edges, key))",
+    "Use the A -> B -> C fixture"
+  ],
+  "acceptanceCriteria": "highlight_payload(edges, ['A', 'B', 'C']) maps B to ['A', 'B', 'C'] for the A->B->C chain.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-040.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not attach a DOM click handler.",
+    "Do not rewrite highlight_set."
+  ],
+  "verification": [
+    "python -m pytest tests/test_highlight_payload.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-039.1",
+      "title": "Map each node id to its highlight set",
+      "summary": "Call highlight_set per id. Return sorted lists. No DOM.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "highlight_payload",
+        "module": "src/living_graph/query.py",
+        "test": "tests/test_highlight_payload.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "src/living_graph/query.py",
+          "purpose": "highlight_set from GRAPH-027."
+        }
+      ],
+      "scope": [
+        "Add highlight_payload(edges, node_ids) in src/living_graph/query.py",
+        "Each key maps to sorted(highlight_set(edges, key))",
+        "Use the A -> B -> C fixture"
+      ],
+      "dataExamples": [
+        "Edges: A -> B, B -> C.",
+        "payload['B'] is ['A', 'B', 'C'].",
+        "payload['A'] includes A, B, and C."
+      ],
+      "businessRules": [
+        "Call highlight_set. Do not copy ancestor or descendant loops.",
+        "Values are sorted unique id lists."
+      ],
+      "verification": [
+        "python -m pytest tests/test_highlight_payload.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_highlight_payload.py first.",
+        "Run python -m pytest tests/test_highlight_payload.py -q and confirm failure.",
+        "Implement only highlight_payload in src/living_graph/query.py.",
+        "Run python -m pytest tests/test_highlight_payload.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/query.py"
+    ],
+    "businessRules": [
+      "Call highlight_set. Do not copy ancestor or descendant loops.",
+      "Values are sorted unique id lists."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_highlight_payload.py -q"
+    ]
+  }
+}

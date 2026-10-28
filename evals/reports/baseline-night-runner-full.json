@@ -1,0 +1,2706 @@
+{
+  "schema": "eval-report/v1",
+  "createdAt": "2026-10-03T18:20:55+00:00",
+  "sourceLog": "evals\\logs\\2026-10-01T17-59-24-00-00_tdd-coder_M7D73mJ9QES7a9RityQkZr.eval",
+  "model": "night-runner:latest",
+  "promptVariant": "baseline",
+  "runStatus": "success",
+  "dryRun": false,
+  "plannedTrials": 36,
+  "criteria": {
+    "subtask_done": {
+      "what": "The orchestrator marked the pinned subtask DONE after the independent verifier passed.",
+      "why": "This is the outcome that matters: the agent's own declared verification succeeded and the coordinator agreed. A fluent transcript that never reaches DONE is still a failure.",
+      "how": "Code. Read the copied requirements <task_id>.state.json after the run. Pass iff the matching subtask status is DONE.",
+      "grader": "code"
+    },
+    "reference_tests_pass": {
+      "what": "Tests from the historically accepted commit still pass against the code the agent just wrote.",
+      "why": "The agent's own tests can be too weak or accidentally rewritten. Overlaying the accepted commit's test files is a cheap substitute for hidden tests. These are regression tests, not independently authored hidden tests.",
+      "how": "Code. After the agent finishes, overlay tests/ files from accepted_commit, then run pytest on those paths in the worktree.",
+      "grader": "code"
+    },
+    "process_budget": {
+      "what": "The agent finished without looping, blowing the step budget, or drowning in tool errors.",
+      "why": "Local models often fail on process before they fail on correctness. A pass that took 80 identical read_file calls is not a prompt you want to keep.",
+      "how": "Code, from run_summary.json. Fail if attempts > 10, steps > 160, any identical tool fingerprint repeats more than 5 times, or tool error rate > 40%.",
+      "grader": "code",
+      "thresholds": {
+        "max_attempts": 10,
+        "max_steps": 160,
+        "max_repeat_of_one_call": 5,
+        "max_tool_error_rate": 0.4
+      }
+    }
+  },
+  "summary": {
+    "scorers": {
+      "process_budget": {
+        "passRate": 1.0,
+        "stderr": 0.0,
+        "n": 36,
+        "passed": 36,
+        "delta": 0.3158
+      },
+      "reference_tests_pass": {
+        "passRate": 0.8889,
+        "stderr": 0.0524,
+        "n": 36,
+        "passed": 32,
+        "delta": 0.6784
+      },
+      "subtask_done": {
+        "passRate": 0.9722,
+        "stderr": 0.0274,
+        "n": 36,
+        "passed": 35,
+        "delta": 0.7617
+      }
+    },
+    "p95WallSeconds": 1832.586,
+    "meanWallSeconds": 353.516,
+    "totalTokens": 4976671,
+    "nTrials": 36,
+    "nSamples": 12
+  },
+  "review": {
+    "falseDone": {
+      "rate": 0.0857,
+      "stderr": 0.0473,
+      "falseDone": 3,
+      "claimedDone": 35
+    },
+    "consistency": {
+      "scorer": "reference_tests_pass",
+      "reliable": [
+        {
+          "sampleId": "GRAPH-003.1",
+          "title": "Parse one test case direct keyword calls",
+          "passed": 3,
+          "epochs": 3
+        },
+        {
+          "sampleId": "GRAPH-006.1",
+          "title": "Parse one Python function call",
+          "passed": 3,
+          "epochs": 3
+        },
+        {
+          "sampleId": "GRAPH-011.1",
+          "title": "Count distinct callers",
+          "passed": 3,
+          "epochs": 3
+        },
+        {
+          "sampleId": "GRAPH-013.1",
+          "title": "True on a two-node cycle, False on a chain",
+          "passed": 3,
+          "epochs": 3
+        },
+        {
+          "sampleId": "GRAPH-047.1",
+          "title": "Resource callers are user_keyword",
+          "passed": 3,
+          "epochs": 3
+        },
+        {
+          "sampleId": "GRAPH-048.1",
+          "title": "Reuse nodes_from_edges in incremental_update",
+          "passed": 3,
+          "epochs": 3
+        },
+        {
+          "sampleId": "GRAPH-049.1",
+          "title": "Drop Robot builtin callees",
+          "passed": 3,
+          "epochs": 3
+        },
+        {
+          "sampleId": "GRAPH-050.1",
+          "title": "Metrics on the in-memory scan graph",
+          "passed": 3,
+          "epochs": 3
+        },
+        {
+          "sampleId": "GRAPH-052.1",
+          "title": "Zero the node z coordinate",
+          "passed": 3,
+          "epochs": 3
+        },
+        {
+          "sampleId": "GRAPH-054.1",
+          "title": "Lock polar angle to the horizon",
+          "passed": 3,
+          "epochs": 3
+        }
+      ],
+      "fragile": [
+        {
+          "sampleId": "GRAPH-046.1",
+          "title": "Resolve unique cross-file keyword names",
+          "passed": 2,
+          "epochs": 3
+        }
+      ],
+      "cannot": [
+        {
+          "sampleId": "GRAPH-031.1",
+          "title": "Tag .py nodes library_keyword in nodes_from_edges",
+          "passed": 0,
+          "epochs": 3
+        }
+      ]
+    },
+    "cost": {
+      "gpuMinutes": 212.11,
+      "fullSuccesses": 10,
+      "minutesPerSuccess": 21.21
+    },
+    "timing": {
+      "wallSeconds": {
+        "median": 170.472,
+        "worst": 2400.015,
+        "n": 36
+      },
+      "steps": {
+        "median": 9.0,
+        "worst": 44.0,
+        "n": 35
+      }
+    },
+    "failureTypes": {
+      "counts": {
+        "timeout": 1,
+        "loop": 0,
+        "tool_errors": 0,
+        "step_budget": 0,
+        "reference_tests": 3,
+        "other": 0
+      },
+      "labels": {
+        "timeout": "aikakatkaisu",
+        "loop": "silmukka",
+        "tool_errors": "työkaluvirheet",
+        "step_budget": "askelbudjetti",
+        "reference_tests": "testit",
+        "other": "muu"
+      },
+      "order": [
+        "timeout",
+        "loop",
+        "tool_errors",
+        "step_budget",
+        "reference_tests",
+        "other"
+      ],
+      "failedTrials": 4
+    },
+    "referenceTests": {
+      "passRate": 0.8889,
+      "stderr": 0.0524,
+      "n": 36
+    },
+    "reliableShare": 0.8333,
+    "nSamples": 12,
+    "deltas": {
+      "referenceTestsPassRate": {
+        "delta": 0.6784,
+        "combinedStderr": 0.1072,
+        "noise": false
+      },
+      "falseDoneRate": {
+        "delta": -0.1643,
+        "combinedStderr": 0.2216,
+        "noise": true
+      },
+      "reliableShare": {
+        "delta": 0.6666,
+        "combinedStderr": 0.1522,
+        "noise": false
+      }
+    }
+  },
+  "brief": {
+    "assign": "10 tehtävää onnistui kaikilla kolmella kerralla: Parse one test case direct keyword calls, Parse one Python function call, Count distinct callers, True on a two-node cycle, False on a chain, Resource callers are user_keyword, Reuse nodes_from_edges in incremental_update, Drop Robot builtin callees, Metrics on the in-memory scan graph, Zero the node z coordinate, Lock polar angle to the horizon. 1 onnistui vain joskus: Resolve unique cross-file keyword names (2/3). 1 tehtävää agentti ei osaa: Tag .py nodes library_keyword in nodes_from_edges (0/3).",
+    "cost": "21,2 minuuttia per tehtävä, joka onnistui joka kerta. Epäonnistuneet ajot ovat mukana: 212,1 minuuttia yhteensä, 10 täysin onnistunutta tehtävää.",
+    "trend": "Ero edelliseen on suurempi kuin satunnainen heitto, tämä on oikea muutos.",
+    "trust": "3 kertaa 35:stä agentti merkitsi tehtävän valmiiksi, mutta vastaus oli väärä. Niissä valmis-merkintä ei riitä ilman ihmisen tarkistusta.",
+    "time": "Tyypillinen tehtävä vei 2,8 minuuttia, hitain 40 minuuttia. Tyypillinen tehtävä käytti 9 askelta, eniten 44.",
+    "fix": "Mukana on sekä vääriä vastauksia että prosessin katkeamisia. Korjauskohde on sekä malli tai prompti että työkalut.",
+    "headline": "10 luotettavaa, 1 haurasta, 1 ei osaa · 21,2 min/onnistuminen"
+  },
+  "failures": [
+    {
+      "sampleId": "GRAPH-031.1",
+      "epoch": 1,
+      "title": "Tag .py nodes library_keyword in nodes_from_edges",
+      "input": "Implement GRAPH-031.1: Tag .py nodes library_keyword in nodes_from_edges. Path suffix .py means library_keyword. Robot types stay as they are.",
+      "criterion": "reference_tests_pass",
+      "explanation": "Gold tests failed (exit 1).\n....F                                                                    [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n_______ test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1 ________\ntests\\test_scan_python_node_type.py:89: in test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1\n    assert len(open_session) == 1, \"open_session node not found in scanned graph\"\nE   AssertionError: open_session node not found in scanned graph\nE   assert 2 == 1\nE    +  where 2 = len([<living_graph.model.Node object at 0x0000016258E435B0>, <living_graph.model.Node object at 0x0000016258E26BA0>])\n=========================== short test summary info ===========================\nFAILED tests/test_scan_python_node_type.py::test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1\n1 failed, 4 passed in 0.21s\n\n",
+      "stopReason": "library_keyword in nodes_from_edges\nGRAPH-031: DONE\nGRAPH-031: consumed 8 handoff(s)\nAll selected GRAPH tasks are DONE.\n"
+    },
+    {
+      "sampleId": "GRAPH-031.1",
+      "epoch": 2,
+      "title": "Tag .py nodes library_keyword in nodes_from_edges",
+      "input": "Implement GRAPH-031.1: Tag .py nodes library_keyword in nodes_from_edges. Path suffix .py means library_keyword. Robot types stay as they are.",
+      "criterion": "reference_tests_pass",
+      "explanation": "Gold tests failed (exit 1).\n....F                                                                    [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n_______ test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1 ________\ntests\\test_scan_python_node_type.py:89: in test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1\n    assert len(open_session) == 1, \"open_session node not found in scanned graph\"\nE   AssertionError: open_session node not found in scanned graph\nE   assert 2 == 1\nE    +  where 2 = len([<living_graph.model.Node object at 0x000002167FA775B0>, <living_graph.model.Node object at 0x000002167FA56BA0>])\n=========================== short test summary info ===========================\nFAILED tests/test_scan_python_node_type.py::test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1\n1 failed, 4 passed in 0.20s\n\n",
+      "stopReason": "library_keyword in nodes_from_edges\nGRAPH-031: DONE\nGRAPH-031: consumed 8 handoff(s)\nAll selected GRAPH tasks are DONE.\n"
+    },
+    {
+      "sampleId": "GRAPH-031.1",
+      "epoch": 3,
+      "title": "Tag .py nodes library_keyword in nodes_from_edges",
+      "input": "Implement GRAPH-031.1: Tag .py nodes library_keyword in nodes_from_edges. Path suffix .py means library_keyword. Robot types stay as they are.",
+      "criterion": "reference_tests_pass",
+      "explanation": "Gold tests failed (exit 1).\n.F..F                                                                    [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n_____________ test_py_callee_node_is_library_keyword_GRAPH_031_1 ______________\ntests\\test_scan_python_node_type.py:43: in test_py_callee_node_is_library_keyword_GRAPH_031_1\n    assert callee.type == \"library_keyword\", (\nE   AssertionError: Expected .py callee type 'library_keyword', got 'user_keyword'\nE   assert 'user_keyword' == 'library_keyword'\nE     \nE     - library_keyword\nE     + user_keyword\n_______ test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1 ________\ntests\\test_scan_python_node_type.py:89: in test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1\n    assert len(open_session) == 1, \"open_session node not found in scanned graph\"\nE   AssertionError: open_session node not found in scanned graph\nE   assert 2 == 1\nE    +  where 2 = len([<living_graph.model.Node object at 0x000002150F0E7770>, <living_graph.model.Node object at 0x000002150F0D81B0>])\n=========================== short test summary info ===========================\nFAILED tests/test_scan_python_node_type.py::test_py_callee_node_is_library_keyword_GRAPH_031_1\nFAILED tests/test_scan_python_node_type.py::test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1\n2 failed, 3 passed in 0.20s\n\n",
+      "stopReason": "library_keyword in nodes_from_edges\nGRAPH-031: DONE\nGRAPH-031: consumed 8 handoff(s)\nAll selected GRAPH tasks are DONE.\n"
+    },
+    {
+      "sampleId": "GRAPH-046.1",
+      "epoch": 3,
+      "title": "Resolve unique cross-file keyword names",
+      "input": "Implement GRAPH-046.1: Resolve unique cross-file keyword names. One definition of Open Session in a .resource file. Missing Keyword stays unresolved.",
+      "criterion": "subtask_done",
+      "explanation": "Timed out after 2400s. Subtask GRAPH-046.1 status=IN_PROGRESS. Assistant stopped without tool call at step 77.",
+      "stopReason": "timeout"
+    },
+    {
+      "sampleId": "GRAPH-046.1",
+      "epoch": 3,
+      "title": "Resolve unique cross-file keyword names",
+      "input": "Implement GRAPH-046.1: Resolve unique cross-file keyword names. One definition of Open Session in a .resource file. Missing Keyword stays unresolved.",
+      "criterion": "reference_tests_pass",
+      "explanation": "Gold tests failed (exit 1).\nF.                                                                       [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n_____________ test_cross_file_unique_keyword_resolved_GRAPH_046_1 _____________\ntests\\test_cross_file_resolve.py:19: in test_cross_file_unique_keyword_resolved_GRAPH_046_1\n    assert edge.resolved is True\nE   assert False is True\nE    +  where False = <living_graph.model.Edge object at 0x00000212AE78DE80>.resolved\n=========================== short test summary info ===========================\nFAILED tests/test_cross_file_resolve.py::test_cross_file_unique_keyword_resolved_GRAPH_046_1\n1 failed, 1 passed in 0.21s\n\n",
+      "stopReason": "timeout"
+    }
+  ],
+  "flaky": [
+    {
+      "sampleId": "GRAPH-046.1",
+      "scorer": "subtask_done",
+      "passed": 2,
+      "epochs": 3
+    }
+  ],
+  "trend": [
+    {
+      "createdAt": "2026-09-30T19:59:49+00:00",
+      "promptVariant": "baseline",
+      "model": "night-runner:latest",
+      "scorers": {
+        "process_budget": 1.0,
+        "reference_tests_pass": 0.0,
+        "subtask_done": 0.0
+      },
+      "referenceTestsPassRate": 0.0,
+      "falseDoneRate": null,
+      "reliableCases": 0
+    },
+    {
+      "createdAt": "2026-09-30T20:00:21+00:00",
+      "promptVariant": "baseline",
+      "model": "night-runner:latest",
+      "scorers": {
+        "process_budget": 1.0,
+        "reference_tests_pass": 0.0,
+        "subtask_done": 0.0
+      },
+      "referenceTestsPassRate": 0.0,
+      "falseDoneRate": null,
+      "reliableCases": 0
+    },
+    {
+      "createdAt": "2026-10-02T08:14:47+00:00",
+      "promptVariant": "baseline",
+      "model": "night-runner:latest",
+      "scorers": {
+        "process_budget": 1.0,
+        "reference_tests_pass": 0.9048,
+        "subtask_done": 1.0
+      },
+      "referenceTestsPassRate": 0.9048,
+      "falseDoneRate": 0.0952,
+      "reliableCases": 11
+    },
+    {
+      "createdAt": "2026-10-02T21:45:28+00:00",
+      "promptVariant": "baseline",
+      "model": "qwen3:8b",
+      "scorers": {
+        "process_budget": 0.6842,
+        "reference_tests_pass": 0.2105,
+        "subtask_done": 0.2105
+      },
+      "referenceTestsPassRate": 0.2105,
+      "falseDoneRate": 0.25,
+      "reliableCases": 2
+    },
+    {
+      "createdAt": "2026-10-03T17:57:56+00:00",
+      "promptVariant": "baseline",
+      "model": "night-runner:latest",
+      "scorers": {
+        "process_budget": 1.0,
+        "reference_tests_pass": 0.0,
+        "subtask_done": 0.0
+      },
+      "referenceTestsPassRate": 0.0,
+      "falseDoneRate": null,
+      "reliableCases": 0
+    },
+    {
+      "createdAt": "2026-10-03T18:20:02+00:00",
+      "promptVariant": "summa",
+      "model": "esimerkki",
+      "scorers": {
+        "process_budget": 1.0,
+        "reference_tests_pass": 0.5556,
+        "subtask_done": 1.0
+      },
+      "referenceTestsPassRate": 0.5556,
+      "falseDoneRate": 0.4444,
+      "reliableCases": 1
+    },
+    {
+      "createdAt": "2026-10-03T18:20:03+00:00",
+      "promptVariant": "baseline",
+      "model": "night-runner:latest",
+      "scorers": {
+        "process_budget": 1.0,
+        "reference_tests_pass": 0.8889,
+        "subtask_done": 0.9722
+      },
+      "referenceTestsPassRate": 0.8889,
+      "falseDoneRate": 0.0857,
+      "reliableCases": 10
+    },
+    {
+      "createdAt": "2026-10-03T18:20:04+00:00",
+      "promptVariant": "baseline",
+      "model": "qwen3:8b",
+      "scorers": {
+        "process_budget": 0.6842,
+        "reference_tests_pass": 0.2105,
+        "subtask_done": 0.2105
+      },
+      "referenceTestsPassRate": 0.2105,
+      "falseDoneRate": 0.25,
+      "reliableCases": 2
+    },
+    {
+      "createdAt": "2026-10-03T18:20:55+00:00",
+      "promptVariant": "baseline",
+      "model": "night-runner:latest",
+      "scorers": {
+        "process_budget": 1.0,
+        "reference_tests_pass": 0.8889,
+        "subtask_done": 0.9722
+      },
+      "referenceTestsPassRate": 0.8889,
+      "falseDoneRate": 0.0857,
+      "reliableCases": 10
+    }
+  ],
+  "trials": [
+    {
+      "sampleId": "GRAPH-003.1",
+      "epoch": 1,
+      "input": "Implement GRAPH-003.1: Parse one test case direct keyword calls. Implement only enough Robot parsing to return two direct keyword call edges from one test case fixture.",
+      "title": "Parse one test case direct keyword calls",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-003.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (1 files).\n.                                                                        [100%]Running teardown with pytest sessionfinish...\n\n1 passed in 0.01s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=10/160, maxRepeatOfOneCall=2/5, toolErrorRate=0.067/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 10,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 2,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.067,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 488.231,
+      "tokens": 121153,
+      "steps": 10,
+      "totals": {
+        "steps": 10,
+        "toolCalls": 15,
+        "toolErrors": 1,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 2,
+        "promptTokens": 101775,
+        "completionTokens": 19378
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": "one test case direct keyword calls\nGRAPH-003: DONE\nGRAPH-003: consumed 15 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-006.1",
+      "epoch": 1,
+      "input": "Implement GRAPH-006.1: Parse one Python function call. One same-file Python call. Return exactly one edge. No builtin filtering.",
+      "title": "Parse one Python function call",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-006.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (2 files).\n..                                                                       [100%]Running teardown with pytest sessionfinish...\n\n2 passed in 0.01s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=3/10, steps=9/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.167/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 3,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 9,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 1,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.167,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 285.529,
+      "tokens": 121750,
+      "steps": 9,
+      "totals": {
+        "steps": 9,
+        "toolCalls": 12,
+        "toolErrors": 2,
+        "attempts": 3,
+        "repeatedIdenticalCalls": 0,
+        "promptTokens": 110717,
+        "completionTokens": 11033
+      },
+      "stopReasons": [
+        "Declared verification passed during test-writer; tests do not prove new behavior.",
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": ".1: Parse one Python function call\nGRAPH-006: DONE\nGRAPH-006: consumed 12 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-011.1",
+      "epoch": 1,
+      "input": "Implement GRAPH-011.1: Count distinct callers. fan_in only. Distinct caller_id values. No fan-out.",
+      "title": "Count distinct callers",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-011.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (1 files).\n...                                                                      [100%]Running teardown with pytest sessionfinish...\n\n3 passed in 0.01s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=6/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.0/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 6,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 1,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.0,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 98.225,
+      "tokens": 61903,
+      "steps": 6,
+      "totals": {
+        "steps": 6,
+        "toolCalls": 9,
+        "toolErrors": 0,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 0,
+        "promptTokens": 58570,
+        "completionTokens": 3333
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": "GRAPH-011.1: Count distinct callers\nGRAPH-011: DONE\nGRAPH-011: consumed 9 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-013.1",
+      "epoch": 1,
+      "input": "Implement GRAPH-013.1: True on a two-node cycle, False on a chain. One boolean function. Two tiny in-memory graphs. No serialization.",
+      "title": "True on a two-node cycle, False on a chain",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-013.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (1 files).\n..                                                                       [100%]Running teardown with pytest sessionfinish...\n\n2 passed in 0.01s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=7/160, maxRepeatOfOneCall=2/5, toolErrorRate=0.0/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 7,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 2,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.0,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 97.603,
+      "tokens": 70984,
+      "steps": 7,
+      "totals": {
+        "steps": 7,
+        "toolCalls": 8,
+        "toolErrors": 0,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 1,
+        "promptTokens": 68000,
+        "completionTokens": 2984
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": " a two-node cycle, False on a chain\nGRAPH-013: DONE\nGRAPH-013: consumed 8 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-031.1",
+      "epoch": 1,
+      "input": "Implement GRAPH-031.1: Tag .py nodes library_keyword in nodes_from_edges. Path suffix .py means library_keyword. Robot types stay as they are.",
+      "title": "Tag .py nodes library_keyword in nodes_from_edges",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-031.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": false,
+          "explanation": "Gold tests failed (exit 1).\n....F                                                                    [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n_______ test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1 ________\ntests\\test_scan_python_node_type.py:89: in test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1\n    assert len(open_session) == 1, \"open_session node not found in scanned graph\"\nE   AssertionError: open_session node not found in scanned graph\nE   assert 2 == 1\nE    +  where 2 = len([<living_graph.model.Node object at 0x0000016258E435B0>, <living_graph.model.Node object at 0x0000016258E26BA0>])\n=========================== short test summary info ===========================\nFAILED tests/test_scan_python_node_type.py::test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1\n1 failed, 4 passed in 0.21s\n\n",
+          "value": "I"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=6/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.0/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 6,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 1,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.0,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 73.789,
+      "tokens": 74311,
+      "steps": 6,
+      "totals": {
+        "steps": 6,
+        "toolCalls": 8,
+        "toolErrors": 0,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 0,
+        "promptTokens": 72255,
+        "completionTokens": 2056
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": "library_keyword in nodes_from_edges\nGRAPH-031: DONE\nGRAPH-031: consumed 8 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-046.1",
+      "epoch": 1,
+      "input": "Implement GRAPH-046.1: Resolve unique cross-file keyword names. One definition of Open Session in a .resource file. Missing Keyword stays unresolved.",
+      "title": "Resolve unique cross-file keyword names",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-046.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (1 files).\n..                                                                       [100%]Running teardown with pytest sessionfinish...\n\n2 passed in 0.08s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=18/160, maxRepeatOfOneCall=3/5, toolErrorRate=0.091/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 18,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 3,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.091,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 1029.151,
+      "tokens": 332459,
+      "steps": 18,
+      "totals": {
+        "steps": 18,
+        "toolCalls": 22,
+        "toolErrors": 2,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 3,
+        "promptTokens": 291360,
+        "completionTokens": 41099
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": "ve unique cross-file keyword names\nGRAPH-046: DONE\nGRAPH-046: consumed 22 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-047.1",
+      "epoch": 1,
+      "input": "Implement GRAPH-047.1: Resource callers are user_keyword. Suffix .resource means caller user_keyword. .robot callers stay test_case.",
+      "title": "Resource callers are user_keyword",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-047.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (1 files).\n....                                                                     [100%]Running teardown with pytest sessionfinish...\n\n4 passed in 0.08s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=7/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.0/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 7,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 1,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.0,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 88.559,
+      "tokens": 79354,
+      "steps": 7,
+      "totals": {
+        "steps": 7,
+        "toolCalls": 10,
+        "toolErrors": 0,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 0,
+        "promptTokens": 76628,
+        "completionTokens": 2726
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": " Resource callers are user_keyword\nGRAPH-047: DONE\nGRAPH-047: consumed 10 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-048.1",
+      "epoch": 1,
+      "input": "Implement GRAPH-048.1: Reuse nodes_from_edges in incremental_update. Drop _nodes_from_edge_ids or make it call nodes_from_edges. No doubled ids.",
+      "title": "Reuse nodes_from_edges in incremental_update",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-048.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (1 files).\n...                                                                      [100%]Running teardown with pytest sessionfinish...\n\n3 passed in 0.07s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=15/160, maxRepeatOfOneCall=2/5, toolErrorRate=0.062/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 15,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 2,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.062,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 737.706,
+      "tokens": 255868,
+      "steps": 15,
+      "totals": {
+        "steps": 15,
+        "toolCalls": 16,
+        "toolErrors": 1,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 1,
+        "promptTokens": 224991,
+        "completionTokens": 30877
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": "s_from_edges in incremental_update\nGRAPH-048: DONE\nGRAPH-048: consumed 16 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-049.1",
+      "epoch": 1,
+      "input": "Implement GRAPH-049.1: Drop Robot builtin callees. No Operation and Log are not edges. Missing Keyword stays unresolved.",
+      "title": "Drop Robot builtin callees",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-049.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (2 files).\n.......                                                                  [100%]Running teardown with pytest sessionfinish...\n\n7 passed in 0.08s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=12/160, maxRepeatOfOneCall=2/5, toolErrorRate=0.0/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 12,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 2,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.0,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 204.328,
+      "tokens": 161272,
+      "steps": 12,
+      "totals": {
+        "steps": 12,
+        "toolCalls": 16,
+        "toolErrors": 0,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 1,
+        "promptTokens": 153780,
+        "completionTokens": 7492
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": "-049.1: Drop Robot builtin callees\nGRAPH-049: DONE\nGRAPH-049: consumed 16 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-050.1",
+      "epoch": 1,
+      "input": "Implement GRAPH-050.1: Metrics on the in-memory scan graph. Reuse compute_fan_in and compute_fan_out. No JSON write.",
+      "title": "Metrics on the in-memory scan graph",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-050.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (1 files).\n..                                                                       [100%]Running teardown with pytest sessionfinish...\n\n2 passed in 0.08s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=11/160, maxRepeatOfOneCall=2/5, toolErrorRate=0.067/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 11,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 2,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.067,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 350.848,
+      "tokens": 172768,
+      "steps": 11,
+      "totals": {
+        "steps": 11,
+        "toolCalls": 15,
+        "toolErrors": 1,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 1,
+        "promptTokens": 159057,
+        "completionTokens": 13711
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": "etrics on the in-memory scan graph\nGRAPH-050: DONE\nGRAPH-050: consumed 15 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-052.1",
+      "epoch": 1,
+      "input": "Implement GRAPH-052.1: Zero the node z coordinate. File-content tests. No browser. z is 0. Problem is the depth tunnel from rotating z.",
+      "title": "Zero the node z coordinate",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-052.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (1 files).\n...                                                                      [100%]Running teardown with pytest sessionfinish...\n\n3 passed in 0.01s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=6/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.0/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 6,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 1,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.0,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 59.616,
+      "tokens": 64285,
+      "steps": 6,
+      "totals": {
+        "steps": 6,
+        "toolCalls": 8,
+        "toolErrors": 0,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 0,
+        "promptTokens": 62598,
+        "completionTokens": 1687
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": "H-052.1: Zero the node z coordinate\nGRAPH-052: DONE\nGRAPH-052: consumed 8 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-054.1",
+      "epoch": 1,
+      "input": "Implement GRAPH-054.1: Lock polar angle to the horizon. Face-on camera. No pitch. File-content tests. Problem is orbit pitching into depth.",
+      "title": "Lock polar angle to the horizon",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-054.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (1 files).\n........                                                                 [100%]Running teardown with pytest sessionfinish...\n\n8 passed in 0.02s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=11/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.154/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 11,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 1,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.154,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 211.567,
+      "tokens": 125560,
+      "steps": 11,
+      "totals": {
+        "steps": 11,
+        "toolCalls": 13,
+        "toolErrors": 2,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 0,
+        "promptTokens": 117297,
+        "completionTokens": 8263
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": "1: Lock polar angle to the horizon\nGRAPH-054: DONE\nGRAPH-054: consumed 13 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-003.1",
+      "epoch": 2,
+      "input": "Implement GRAPH-003.1: Parse one test case direct keyword calls. Implement only enough Robot parsing to return two direct keyword call edges from one test case fixture.",
+      "title": "Parse one test case direct keyword calls",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-003.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (1 files).\n.                                                                        [100%]Running teardown with pytest sessionfinish...\n\n1 passed in 0.01s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=11/160, maxRepeatOfOneCall=2/5, toolErrorRate=0.158/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 11,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 2,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.158,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 368.306,
+      "tokens": 129177,
+      "steps": 11,
+      "totals": {
+        "steps": 11,
+        "toolCalls": 19,
+        "toolErrors": 3,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 1,
+        "promptTokens": 114149,
+        "completionTokens": 15028
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": "one test case direct keyword calls\nGRAPH-003: DONE\nGRAPH-003: consumed 19 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-006.1",
+      "epoch": 2,
+      "input": "Implement GRAPH-006.1: Parse one Python function call. One same-file Python call. Return exactly one edge. No builtin filtering.",
+      "title": "Parse one Python function call",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-006.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (2 files).\n..                                                                       [100%]Running teardown with pytest sessionfinish...\n\n2 passed in 0.01s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=3/10, steps=9/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.214/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 3,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 9,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 1,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.214,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 456.828,
+      "tokens": 129293,
+      "steps": 9,
+      "totals": {
+        "steps": 9,
+        "toolCalls": 14,
+        "toolErrors": 3,
+        "attempts": 3,
+        "repeatedIdenticalCalls": 0,
+        "promptTokens": 110955,
+        "completionTokens": 18338
+      },
+      "stopReasons": [
+        "Declared verification passed during test-writer; tests do not prove new behavior.",
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": ".1: Parse one Python function call\nGRAPH-006: DONE\nGRAPH-006: consumed 14 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-011.1",
+      "epoch": 2,
+      "input": "Implement GRAPH-011.1: Count distinct callers. fan_in only. Distinct caller_id values. No fan-out.",
+      "title": "Count distinct callers",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-011.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (1 files).\n...                                                                      [100%]Running teardown with pytest sessionfinish...\n\n3 passed in 0.01s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=6/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.0/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 6,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 1,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.0,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 104.495,
+      "tokens": 61355,
+      "steps": 6,
+      "totals": {
+        "steps": 6,
+        "toolCalls": 8,
+        "toolErrors": 0,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 0,
+        "promptTokens": 57647,
+        "completionTokens": 3708
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": "GRAPH-011.1: Count distinct callers\nGRAPH-011: DONE\nGRAPH-011: consumed 8 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-013.1",
+      "epoch": 2,
+      "input": "Implement GRAPH-013.1: True on a two-node cycle, False on a chain. One boolean function. Two tiny in-memory graphs. No serialization.",
+      "title": "True on a two-node cycle, False on a chain",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-013.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (1 files).\n..                                                                       [100%]Running teardown with pytest sessionfinish...\n\n2 passed in 0.01s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=5/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.0/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 5,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 1,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.0,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 79.756,
+      "tokens": 49635,
+      "steps": 5,
+      "totals": {
+        "steps": 5,
+        "toolCalls": 6,
+        "toolErrors": 0,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 0,
+        "promptTokens": 46980,
+        "completionTokens": 2655
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": " a two-node cycle, False on a chain\nGRAPH-013: DONE\nGRAPH-013: consumed 6 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-031.1",
+      "epoch": 2,
+      "input": "Implement GRAPH-031.1: Tag .py nodes library_keyword in nodes_from_edges. Path suffix .py means library_keyword. Robot types stay as they are.",
+      "title": "Tag .py nodes library_keyword in nodes_from_edges",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-031.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": false,
+          "explanation": "Gold tests failed (exit 1).\n....F                                                                    [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n_______ test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1 ________\ntests\\test_scan_python_node_type.py:89: in test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1\n    assert len(open_session) == 1, \"open_session node not found in scanned graph\"\nE   AssertionError: open_session node not found in scanned graph\nE   assert 2 == 1\nE    +  where 2 = len([<living_graph.model.Node object at 0x000002167FA775B0>, <living_graph.model.Node object at 0x000002167FA56BA0>])\n=========================== short test summary info ===========================\nFAILED tests/test_scan_python_node_type.py::test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1\n1 failed, 4 passed in 0.20s\n\n",
+          "value": "I"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=6/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.0/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 6,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 1,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.0,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 98.534,
+      "tokens": 76050,
+      "steps": 6,
+      "totals": {
+        "steps": 6,
+        "toolCalls": 8,
+        "toolErrors": 0,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 0,
+        "promptTokens": 72757,
+        "completionTokens": 3293
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": "library_keyword in nodes_from_edges\nGRAPH-031: DONE\nGRAPH-031: consumed 8 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-046.1",
+      "epoch": 2,
+      "input": "Implement GRAPH-046.1: Resolve unique cross-file keyword names. One definition of Open Session in a .resource file. Missing Keyword stays unresolved.",
+      "title": "Resolve unique cross-file keyword names",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-046.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (1 files).\n..                                                                       [100%]Running teardown with pytest sessionfinish...\n\n2 passed in 0.08s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=3/10, steps=44/160, maxRepeatOfOneCall=4/5, toolErrorRate=0.173/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 3,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 44,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 4,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.173,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 1832.586,
+      "tokens": 797875,
+      "steps": 44,
+      "totals": {
+        "steps": 44,
+        "toolCalls": 52,
+        "toolErrors": 9,
+        "attempts": 3,
+        "repeatedIdenticalCalls": 6,
+        "promptTokens": 722682,
+        "completionTokens": 75193
+      },
+      "stopReasons": [
+        "ok",
+        "Assistant stopped without tool call at step 13.",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": "ve unique cross-file keyword names\nGRAPH-046: DONE\nGRAPH-046: consumed 53 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-047.1",
+      "epoch": 2,
+      "input": "Implement GRAPH-047.1: Resource callers are user_keyword. Suffix .resource means caller user_keyword. .robot callers stay test_case.",
+      "title": "Resource callers are user_keyword",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-047.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (1 files).\n....                                                                     [100%]Running teardown with pytest sessionfinish...\n\n4 passed in 0.08s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=5/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.0/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 5,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 1,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.0,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 67.437,
+      "tokens": 53812,
+      "steps": 5,
+      "totals": {
+        "steps": 5,
+        "toolCalls": 8,
+        "toolErrors": 0,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 0,
+        "promptTokens": 51841,
+        "completionTokens": 1971
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": ": Resource callers are user_keyword\nGRAPH-047: DONE\nGRAPH-047: consumed 8 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-048.1",
+      "epoch": 2,
+      "input": "Implement GRAPH-048.1: Reuse nodes_from_edges in incremental_update. Drop _nodes_from_edge_ids or make it call nodes_from_edges. No doubled ids.",
+      "title": "Reuse nodes_from_edges in incremental_update",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-048.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (1 files).\n...                                                                      [100%]Running teardown with pytest sessionfinish...\n\n3 passed in 0.07s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=11/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.143/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 11,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 1,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.143,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 145.592,
+      "tokens": 164390,
+      "steps": 11,
+      "totals": {
+        "steps": 11,
+        "toolCalls": 14,
+        "toolErrors": 2,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 0,
+        "promptTokens": 159664,
+        "completionTokens": 4726
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": "s_from_edges in incremental_update\nGRAPH-048: DONE\nGRAPH-048: consumed 14 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-049.1",
+      "epoch": 2,
+      "input": "Implement GRAPH-049.1: Drop Robot builtin callees. No Operation and Log are not edges. Missing Keyword stays unresolved.",
+      "title": "Drop Robot builtin callees",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-049.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (2 files).\n.......                                                                  [100%]Running teardown with pytest sessionfinish...\n\n7 passed in 0.08s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=11/160, maxRepeatOfOneCall=2/5, toolErrorRate=0.0/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 11,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 2,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.0,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 188.582,
+      "tokens": 145076,
+      "steps": 11,
+      "totals": {
+        "steps": 11,
+        "toolCalls": 14,
+        "toolErrors": 0,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 1,
+        "promptTokens": 138306,
+        "completionTokens": 6770
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": "-049.1: Drop Robot builtin callees\nGRAPH-049: DONE\nGRAPH-049: consumed 14 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-050.1",
+      "epoch": 2,
+      "input": "Implement GRAPH-050.1: Metrics on the in-memory scan graph. Reuse compute_fan_in and compute_fan_out. No JSON write.",
+      "title": "Metrics on the in-memory scan graph",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-050.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (1 files).\n..                                                                       [100%]Running teardown with pytest sessionfinish...\n\n2 passed in 0.09s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=15/160, maxRepeatOfOneCall=3/5, toolErrorRate=0.222/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 15,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 3,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.222,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 467.968,
+      "tokens": 238584,
+      "steps": 15,
+      "totals": {
+        "steps": 15,
+        "toolCalls": 18,
+        "toolErrors": 4,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 2,
+        "promptTokens": 220363,
+        "completionTokens": 18221
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": "etrics on the in-memory scan graph\nGRAPH-050: DONE\nGRAPH-050: consumed 18 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-052.1",
+      "epoch": 2,
+      "input": "Implement GRAPH-052.1: Zero the node z coordinate. File-content tests. No browser. z is 0. Problem is the depth tunnel from rotating z.",
+      "title": "Zero the node z coordinate",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-052.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (1 files).\n...                                                                      [100%]Running teardown with pytest sessionfinish...\n\n3 passed in 0.01s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=6/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.0/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 6,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 1,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.0,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 72.41,
+      "tokens": 64672,
+      "steps": 6,
+      "totals": {
+        "steps": 6,
+        "toolCalls": 8,
+        "toolErrors": 0,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 0,
+        "promptTokens": 62421,
+        "completionTokens": 2251
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": "H-052.1: Zero the node z coordinate\nGRAPH-052: DONE\nGRAPH-052: consumed 8 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-054.1",
+      "epoch": 2,
+      "input": "Implement GRAPH-054.1: Lock polar angle to the horizon. Face-on camera. No pitch. File-content tests. Problem is orbit pitching into depth.",
+      "title": "Lock polar angle to the horizon",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-054.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (1 files).\n........                                                                 [100%]Running teardown with pytest sessionfinish...\n\n8 passed in 0.02s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=3/10, steps=17/160, maxRepeatOfOneCall=2/5, toolErrorRate=0.353/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 3,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 17,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 2,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.353,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 696.815,
+      "tokens": 254213,
+      "steps": 17,
+      "totals": {
+        "steps": 17,
+        "toolCalls": 17,
+        "toolErrors": 6,
+        "attempts": 3,
+        "repeatedIdenticalCalls": 2,
+        "promptTokens": 225330,
+        "completionTokens": 28883
+      },
+      "stopReasons": [
+        "Assistant stopped without tool call at step 3.",
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": "1: Lock polar angle to the horizon\nGRAPH-054: DONE\nGRAPH-054: consumed 17 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-003.1",
+      "epoch": 3,
+      "input": "Implement GRAPH-003.1: Parse one test case direct keyword calls. Implement only enough Robot parsing to return two direct keyword call edges from one test case fixture.",
+      "title": "Parse one test case direct keyword calls",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-003.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (1 files).\n.                                                                        [100%]Running teardown with pytest sessionfinish...\n\n1 passed in 0.01s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=13/160, maxRepeatOfOneCall=2/5, toolErrorRate=0.111/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 13,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 2,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.111,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 310.043,
+      "tokens": 147865,
+      "steps": 13,
+      "totals": {
+        "steps": 13,
+        "toolCalls": 18,
+        "toolErrors": 2,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 2,
+        "promptTokens": 135731,
+        "completionTokens": 12134
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": "one test case direct keyword calls\nGRAPH-003: DONE\nGRAPH-003: consumed 18 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-006.1",
+      "epoch": 3,
+      "input": "Implement GRAPH-006.1: Parse one Python function call. One same-file Python call. Return exactly one edge. No builtin filtering.",
+      "title": "Parse one Python function call",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-006.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (2 files).\n..                                                                       [100%]Running teardown with pytest sessionfinish...\n\n2 passed in 0.01s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=3/10, steps=9/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.182/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 3,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 9,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 1,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.182,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 480.49,
+      "tokens": 129468,
+      "steps": 9,
+      "totals": {
+        "steps": 9,
+        "toolCalls": 11,
+        "toolErrors": 2,
+        "attempts": 3,
+        "repeatedIdenticalCalls": 0,
+        "promptTokens": 110095,
+        "completionTokens": 19373
+      },
+      "stopReasons": [
+        "Declared verification passed during test-writer; tests do not prove new behavior.",
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": ".1: Parse one Python function call\nGRAPH-006: DONE\nGRAPH-006: consumed 11 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-011.1",
+      "epoch": 3,
+      "input": "Implement GRAPH-011.1: Count distinct callers. fan_in only. Distinct caller_id values. No fan-out.",
+      "title": "Count distinct callers",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-011.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (1 files).\n...                                                                      [100%]Running teardown with pytest sessionfinish...\n\n3 passed in 0.01s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=7/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.0/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 7,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 1,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.0,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 105.151,
+      "tokens": 71409,
+      "steps": 7,
+      "totals": {
+        "steps": 7,
+        "toolCalls": 9,
+        "toolErrors": 0,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 0,
+        "promptTokens": 67603,
+        "completionTokens": 3806
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": "GRAPH-011.1: Count distinct callers\nGRAPH-011: DONE\nGRAPH-011: consumed 9 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-013.1",
+      "epoch": 3,
+      "input": "Implement GRAPH-013.1: True on a two-node cycle, False on a chain. One boolean function. Two tiny in-memory graphs. No serialization.",
+      "title": "True on a two-node cycle, False on a chain",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-013.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (1 files).\n..                                                                       [100%]Running teardown with pytest sessionfinish...\n\n2 passed in 0.01s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=7/160, maxRepeatOfOneCall=2/5, toolErrorRate=0.0/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 7,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 2,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.0,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 125.803,
+      "tokens": 72804,
+      "steps": 7,
+      "totals": {
+        "steps": 7,
+        "toolCalls": 8,
+        "toolErrors": 0,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 1,
+        "promptTokens": 68485,
+        "completionTokens": 4319
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": " a two-node cycle, False on a chain\nGRAPH-013: DONE\nGRAPH-013: consumed 8 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-031.1",
+      "epoch": 3,
+      "input": "Implement GRAPH-031.1: Tag .py nodes library_keyword in nodes_from_edges. Path suffix .py means library_keyword. Robot types stay as they are.",
+      "title": "Tag .py nodes library_keyword in nodes_from_edges",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-031.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": false,
+          "explanation": "Gold tests failed (exit 1).\n.F..F                                                                    [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n_____________ test_py_callee_node_is_library_keyword_GRAPH_031_1 ______________\ntests\\test_scan_python_node_type.py:43: in test_py_callee_node_is_library_keyword_GRAPH_031_1\n    assert callee.type == \"library_keyword\", (\nE   AssertionError: Expected .py callee type 'library_keyword', got 'user_keyword'\nE   assert 'user_keyword' == 'library_keyword'\nE     \nE     - library_keyword\nE     + user_keyword\n_______ test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1 ________\ntests\\test_scan_python_node_type.py:89: in test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1\n    assert len(open_session) == 1, \"open_session node not found in scanned graph\"\nE   AssertionError: open_session node not found in scanned graph\nE   assert 2 == 1\nE    +  where 2 = len([<living_graph.model.Node object at 0x000002150F0E7770>, <living_graph.model.Node object at 0x000002150F0D81B0>])\n=========================== short test summary info ===========================\nFAILED tests/test_scan_python_node_type.py::test_py_callee_node_is_library_keyword_GRAPH_031_1\nFAILED tests/test_scan_python_node_type.py::test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1\n2 failed, 3 passed in 0.20s\n\n",
+          "value": "I"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=6/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.0/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 6,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 1,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.0,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 79.61,
+      "tokens": 73241,
+      "steps": 6,
+      "totals": {
+        "steps": 6,
+        "toolCalls": 8,
+        "toolErrors": 0,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 0,
+        "promptTokens": 70803,
+        "completionTokens": 2438
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": "library_keyword in nodes_from_edges\nGRAPH-031: DONE\nGRAPH-031: consumed 8 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-046.1",
+      "epoch": 3,
+      "input": "Implement GRAPH-046.1: Resolve unique cross-file keyword names. One definition of Open Session in a .resource file. Missing Keyword stays unresolved.",
+      "title": "Resolve unique cross-file keyword names",
+      "scores": {
+        "subtask_done": {
+          "ok": false,
+          "explanation": "Timed out after 2400s. Subtask GRAPH-046.1 status=IN_PROGRESS. Assistant stopped without tool call at step 77.",
+          "value": "I"
+        },
+        "reference_tests_pass": {
+          "ok": false,
+          "explanation": "Gold tests failed (exit 1).\nF.                                                                       [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n_____________ test_cross_file_unique_keyword_resolved_GRAPH_046_1 _____________\ntests\\test_cross_file_resolve.py:19: in test_cross_file_unique_keyword_resolved_GRAPH_046_1\n    assert edge.resolved is True\nE   assert False is True\nE    +  where False = <living_graph.model.Edge object at 0x00000212AE78DE80>.resolved\n=========================== short test summary info ===========================\nFAILED tests/test_cross_file_resolve.py::test_cross_file_unique_keyword_resolved_GRAPH_046_1\n1 failed, 1 passed in 0.21s\n\n",
+          "value": "I"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=0/10, steps=0/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.0/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 0,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 0,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 1,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.0,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 2400.015,
+      "tokens": 0,
+      "steps": null,
+      "totals": {},
+      "stopReasons": [],
+      "timedOut": true,
+      "stopReason": "timeout",
+      "exitCode": null
+    },
+    {
+      "sampleId": "GRAPH-047.1",
+      "epoch": 3,
+      "input": "Implement GRAPH-047.1: Resource callers are user_keyword. Suffix .resource means caller user_keyword. .robot callers stay test_case.",
+      "title": "Resource callers are user_keyword",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-047.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (1 files).\n....                                                                     [100%]Running teardown with pytest sessionfinish...\n\n4 passed in 0.08s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=7/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.0/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 7,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 1,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.0,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 72.841,
+      "tokens": 78155,
+      "steps": 7,
+      "totals": {
+        "steps": 7,
+        "toolCalls": 10,
+        "toolErrors": 0,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 0,
+        "promptTokens": 76030,
+        "completionTokens": 2125
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": " Resource callers are user_keyword\nGRAPH-047: DONE\nGRAPH-047: consumed 10 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-048.1",
+      "epoch": 3,
+      "input": "Implement GRAPH-048.1: Reuse nodes_from_edges in incremental_update. Drop _nodes_from_edge_ids or make it call nodes_from_edges. No doubled ids.",
+      "title": "Reuse nodes_from_edges in incremental_update",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-048.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (1 files).\n...                                                                      [100%]Running teardown with pytest sessionfinish...\n\n3 passed in 0.07s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=8/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.0/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 8,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 1,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.0,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 152.363,
+      "tokens": 122224,
+      "steps": 8,
+      "totals": {
+        "steps": 8,
+        "toolCalls": 11,
+        "toolErrors": 0,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 0,
+        "promptTokens": 116749,
+        "completionTokens": 5475
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": "s_from_edges in incremental_update\nGRAPH-048: DONE\nGRAPH-048: consumed 11 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-049.1",
+      "epoch": 3,
+      "input": "Implement GRAPH-049.1: Drop Robot builtin callees. No Operation and Log are not edges. Missing Keyword stays unresolved.",
+      "title": "Drop Robot builtin callees",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-049.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (2 files).\n.......                                                                  [100%]Running teardown with pytest sessionfinish...\n\n7 passed in 0.09s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=10/160, maxRepeatOfOneCall=2/5, toolErrorRate=0.0/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 10,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 2,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.0,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 306.086,
+      "tokens": 140300,
+      "steps": 10,
+      "totals": {
+        "steps": 10,
+        "toolCalls": 14,
+        "toolErrors": 0,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 1,
+        "promptTokens": 128276,
+        "completionTokens": 12024
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": "-049.1: Drop Robot builtin callees\nGRAPH-049: DONE\nGRAPH-049: consumed 14 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-050.1",
+      "epoch": 3,
+      "input": "Implement GRAPH-050.1: Metrics on the in-memory scan graph. Reuse compute_fan_in and compute_fan_out. No JSON write.",
+      "title": "Metrics on the in-memory scan graph",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-050.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (1 files).\n..                                                                       [100%]Running teardown with pytest sessionfinish...\n\n2 passed in 0.08s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=11/160, maxRepeatOfOneCall=2/5, toolErrorRate=0.062/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 11,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 2,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.062,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 201.909,
+      "tokens": 181934,
+      "steps": 11,
+      "totals": {
+        "steps": 11,
+        "toolCalls": 16,
+        "toolErrors": 1,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 1,
+        "promptTokens": 175350,
+        "completionTokens": 6584
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": "etrics on the in-memory scan graph\nGRAPH-050: DONE\nGRAPH-050: consumed 16 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-052.1",
+      "epoch": 3,
+      "input": "Implement GRAPH-052.1: Zero the node z coordinate. File-content tests. No browser. z is 0. Problem is the depth tunnel from rotating z.",
+      "title": "Zero the node z coordinate",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-052.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (1 files).\n...                                                                      [100%]Running teardown with pytest sessionfinish...\n\n3 passed in 0.01s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=6/160, maxRepeatOfOneCall=1/5, toolErrorRate=0.0/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 6,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 1,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.0,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 60.709,
+      "tokens": 64255,
+      "steps": 6,
+      "totals": {
+        "steps": 6,
+        "toolCalls": 8,
+        "toolErrors": 0,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 0,
+        "promptTokens": 62565,
+        "completionTokens": 1690
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": "H-052.1: Zero the node z coordinate\nGRAPH-052: DONE\nGRAPH-052: consumed 8 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    },
+    {
+      "sampleId": "GRAPH-054.1",
+      "epoch": 3,
+      "input": "Implement GRAPH-054.1: Lock polar angle to the horizon. Face-on camera. No pitch. File-content tests. Problem is orbit pitching into depth.",
+      "title": "Lock polar angle to the horizon",
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Subtask GRAPH-054.1 is DONE.",
+          "value": "C"
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": "Gold tests passed (1 files).\n........                                                                 [100%]Running teardown with pytest sessionfinish...\n\n8 passed in 0.02s\n\n",
+          "value": "C"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Process budget held: attempts=2/10, steps=8/160, maxRepeatOfOneCall=2/5, toolErrorRate=0.3/0.4",
+          "value": "C",
+          "checks": {
+            "attempts": {
+              "value": 2,
+              "limit": 10,
+              "ok": true
+            },
+            "steps": {
+              "value": 8,
+              "limit": 160,
+              "ok": true
+            },
+            "maxRepeatOfOneCall": {
+              "value": 2,
+              "limit": 5,
+              "ok": true
+            },
+            "toolErrorRate": {
+              "value": 0.3,
+              "limit": 0.4,
+              "ok": true
+            }
+          }
+        }
+      },
+      "wallSeconds": 127.105,
+      "tokens": 89217,
+      "steps": 8,
+      "totals": {
+        "steps": 8,
+        "toolCalls": 10,
+        "toolErrors": 3,
+        "attempts": 2,
+        "repeatedIdenticalCalls": 1,
+        "promptTokens": 84493,
+        "completionTokens": 4724
+      },
+      "stopReasons": [
+        "ok",
+        "ok"
+      ],
+      "timedOut": false,
+      "stopReason": "1: Lock polar angle to the horizon\nGRAPH-054: DONE\nGRAPH-054: consumed 10 handoff(s)\nAll selected GRAPH tasks are DONE.\n",
+      "exitCode": 0
+    }
+  ]
+}

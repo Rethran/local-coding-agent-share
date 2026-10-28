@@ -1,0 +1,84 @@
+{
+  "id": "GRAPH-007",
+  "type": "task",
+  "summary": "Ignore Python builtin calls",
+  "dependsOn": [
+    "GRAPH-006"
+  ],
+  "description": "Do not record edges for Python builtins such as len() or print() inside a fixture function. Keep calls to functions defined in the analyzed file.",
+  "scope": [
+    "Add a tiny fixture or inline file where count_items calls len and connect",
+    "Assert no edge has callee len or print",
+    "Assert the connect edge is still present"
+  ],
+  "acceptanceCriteria": "A function that calls len() and connect() yields only the connect edge.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-008.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not tag node types yet.",
+    "Do not parse Robot files in this task."
+  ],
+  "verification": [
+    "python -m pytest tests/test_python_builtins.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-007.1",
+      "title": "Drop builtin Python calls",
+      "summary": "len() and print() are not edges. Same-file function calls remain edges.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "extract_python_edges",
+        "module": "src/living_graph/python_extractor.py",
+        "test": "tests/test_python_builtins.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "tests/fixtures/simple_library.py",
+          "purpose": "Tiny Python fixture with one function calling another function."
+        },
+        {
+          "path": "src/living_graph/model.py",
+          "purpose": "GRAPH-002 Node and Edge contracts."
+        }
+      ],
+      "scope": [
+        "Add a tiny fixture or inline file where count_items calls len and connect",
+        "Assert no edge has callee len or print",
+        "Assert the connect edge is still present"
+      ],
+      "dataExamples": [
+        "def count_items(items): n = len(items); connect(); return n.",
+        "Expected edge: count_items -> connect.",
+        "Forbidden edge: count_items -> len."
+      ],
+      "businessRules": [
+        "Treat names in the builtins module as non-edges.",
+        "Keep GRAPH-006 same-file call behavior unchanged."
+      ],
+      "verification": [
+        "python -m pytest tests/test_python_builtins.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_python_builtins.py first.",
+        "Run python -m pytest tests/test_python_builtins.py -q and confirm failure.",
+        "Implement only extract_python_edges in src/living_graph/python_extractor.py.",
+        "Run python -m pytest tests/test_python_builtins.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/python_extractor.py"
+    ],
+    "businessRules": [
+      "Treat names in the builtins module as non-edges.",
+      "Keep GRAPH-006 same-file call behavior unchanged."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_python_builtins.py -q"
+    ]
+  }
+}

@@ -1,0 +1,2 @@
+inspect_ai>=0.3.273
+Jinja2>=3.1

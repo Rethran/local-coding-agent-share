@@ -1,0 +1,192 @@
+{
+  "id": "CTX-007",
+  "type": "task",
+  "summary": "Accept events over HTTP",
+  "dependsOn": [
+    "CTX-006"
+  ],
+  "description": "Add the reporting FastAPI app. FR-C3-01 and FR-C3-07. POST /events stores a valid event, returns 422 for an invalid one, and refuses another org's key.",
+  "scope": [
+    "create_app(store, api_keys, config) -> FastAPI",
+    "POST /events returns 201 for a valid body",
+    "Invalid bodies return 422",
+    "Missing key returns 401 and a mismatched org returns 403"
+  ],
+  "acceptanceCriteria": "Header X-Api-Key maps through api_keys to an org_id. Valid POST /events returns 201 and {\"status\": \"stored\"}. action drop returns 422. A key for org-a posting org-b returns 403. A missing header returns 401. FR-C3-01 FR-C3-07.",
+  "constraints": [
+    "Do not return the raw user id or the hash in the POST response.",
+    "Do not accept an event whose org_id does not match the key.",
+    "Do not add the dashboard page in this task."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_007_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_007_1_post_201.py -q -k CTX_007_1",
+    "python -m pytest tests/test_ctx_007_2_post_422.py -q -k CTX_007_2",
+    "python -m pytest tests/test_ctx_007_3_auth.py -q -k CTX_007_3"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-007.1",
+      "title": "Store a valid posted event",
+      "summary": "POST /events with a matching API key returns 201 and the store lists the hashed row.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/api.py",
+        "test": "tests/test_ctx_007_1_post_201.py",
+        "function": "create_app"
+      },
+      "scope": [
+        "Use fastapi.testclient.TestClient",
+        "api_keys {'secret': 'org-a'}",
+        "Response body is exactly {\"status\": \"stored\"}"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_007_1_post_201.py -q -k CTX_007_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_007_1.",
+        "This subtask's only job: POST /events with a matching API key returns 201 and the store lists the hashed row.",
+        "Touch only src/context_mgmt/api.py and tests/test_ctx_007_1_post_201.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Set config.user_hash_salt to test-salt.",
+        "POST the valid event payload with header X-Api-Key secret.",
+        "Assert status 201 and list_events returns one org-a row.",
+        "Run python -m pytest tests/test_ctx_007_1_post_201.py -q -k CTX_007_1."
+      ],
+      "dataExamples": [
+        {
+          "status": 201,
+          "body": {
+            "status": "stored"
+          },
+          "header": "X-Api-Key"
+        }
+      ],
+      "businessRules": [
+        "FR-C3-01: valid events are stored."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/store.py",
+          "purpose": "SQLite event store scoped by org_id."
+        },
+        {
+          "path": "src/context_mgmt/events.py",
+          "purpose": "Event contract and salted user id hash."
+        },
+        {
+          "path": "src/context_mgmt/config.py",
+          "purpose": "OrgConfig defaults used by later tasks."
+        }
+      ]
+    },
+    {
+      "id": "CTX-007.2",
+      "title": "Reject an invalid posted event",
+      "summary": "POST /events with action drop returns 422 and stores nothing.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/api.py",
+        "test": "tests/test_ctx_007_2_post_422.py",
+        "function": "create_app"
+      },
+      "scope": [
+        "Same auth as the 201 test",
+        "action drop",
+        "list_events stays empty"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_007_2_post_422.py -q -k CTX_007_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_007_2.",
+        "This subtask's only job: POST /events with action drop returns 422 and stores nothing.",
+        "Touch only src/context_mgmt/api.py and tests/test_ctx_007_2_post_422.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Assert status code 422.",
+        "Do not store a partial row.",
+        "Run python -m pytest tests/test_ctx_007_2_post_422.py -q -k CTX_007_2."
+      ],
+      "dataExamples": [
+        {
+          "status": 422,
+          "action": "drop"
+        }
+      ],
+      "businessRules": [
+        "FR-C3-01: invalid events return 422."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/api.py",
+          "purpose": "Reporting API and static dashboard route."
+        }
+      ]
+    },
+    {
+      "id": "CTX-007.3",
+      "title": "Bind the API key to one org",
+      "summary": "A missing key is 401. A key for org-a cannot post org_id org-b.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/api.py",
+        "test": "tests/test_ctx_007_3_auth.py",
+        "function": "create_app"
+      },
+      "scope": [
+        "Missing X-Api-Key returns 401",
+        "Key secret for org-a with body org-b returns 403",
+        "Neither request stores a row"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_007_3_auth.py -q -k CTX_007_3"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_007_3.",
+        "This subtask's only job: A missing key is 401. A key for org-a cannot post org_id org-b.",
+        "Touch only src/context_mgmt/api.py and tests/test_ctx_007_3_auth.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Use the valid payload and only change the header or org_id.",
+        "Assert both status codes.",
+        "Run python -m pytest tests/test_ctx_007_3_auth.py -q -k CTX_007_3."
+      ],
+      "dataExamples": [
+        {
+          "missing_header": 401,
+          "wrong_org": 403
+        }
+      ],
+      "businessRules": [
+        "FR-C3-07: one org cannot write another org's data."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/api.py",
+          "purpose": "Reporting API and static dashboard route."
+        }
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/api.py"
+    ],
+    "businessRules": [
+      "api_keys maps the secret string to org_id.",
+      "Hash with config.user_hash_salt. Tests set it to test-salt.",
+      "Call to_stored_event and store.save."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_007_1_post_201.py -q -k CTX_007_1",
+      "python -m pytest tests/test_ctx_007_2_post_422.py -q -k CTX_007_2",
+      "python -m pytest tests/test_ctx_007_3_auth.py -q -k CTX_007_3"
+    ]
+  }
+}

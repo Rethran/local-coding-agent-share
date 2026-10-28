@@ -1,0 +1,38 @@
+{
+  "taskId": "CTX-050",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-07T17:01:30+00:00",
+  "updatedAt": "2026-10-07T17:05:05+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "CTX-050.1",
+      "title": "Reject default credentials",
+      "status": "DONE",
+      "summary": "Implementing validate_startup in src/context_mgmt/startup.py to reject weak admin keys (SEC-21)."
+    },
+    {
+      "id": "CTX-050.2",
+      "title": "Set the security headers",
+      "status": "DONE",
+      "summary": "Implementing security_headers in src/context_mgmt/startup.py."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

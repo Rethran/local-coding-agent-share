@@ -1,0 +1,38 @@
+{
+  "taskId": "CTX-001",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-05T13:05:33+00:00",
+  "updatedAt": "2026-10-05T13:10:20+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "CTX-001.1",
+      "title": "Create the importable package",
+      "status": "DONE",
+      "summary": "Test-writer starting: will write conftest.py, pyproject.toml, and failing test file."
+    },
+    {
+      "id": "CTX-001.2",
+      "title": "Add org config defaults",
+      "status": "DONE",
+      "summary": "Implementing OrgConfig dataclass and default_config() in src/context_mgmt/config.py"
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

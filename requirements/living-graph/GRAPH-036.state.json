@@ -1,0 +1,32 @@
+{
+  "taskId": "GRAPH-036",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-09-17T11:08:18+00:00",
+  "updatedAt": "2026-09-17T11:09:07+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "GRAPH-036.1",
+      "title": "Add div#graph",
+      "status": "DONE",
+      "summary": "Test already written and failing; adding div#graph to index.html."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

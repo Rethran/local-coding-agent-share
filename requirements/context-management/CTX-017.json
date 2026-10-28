@@ -1,0 +1,146 @@
+{
+  "id": "CTX-017",
+  "type": "task",
+  "summary": "Call a configurable observer model and isolate failures",
+  "dependsOn": [
+    "CTX-016"
+  ],
+  "description": "FR-C5-02 and FR-C5-04. HttpObserver posts metadata to a configurable endpoint. run_observer turns observer exceptions into empty guidance.",
+  "scope": [
+    "HttpObserver uses an injected httpx client and endpoint",
+    "Posted JSON does not contain stripped secrets when content_mode is false",
+    "run_observer returns empty guidance when analyze raises"
+  ],
+  "acceptanceCriteria": "A fake endpoint that returns assistant content reduce tools yields guidance reduce tools. The posted body does not contain secret. An observer that raises still produces {\"guidance\": \"\"} from run_observer. FR-C5-02 FR-C5-04.",
+  "constraints": [
+    "Do not hardcode a vendor URL.",
+    "Do not let an observer exception propagate from run_observer.",
+    "Do not call HttpObserver from create_gateway."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_017_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_017_1_http.py -q -k CTX_017_1",
+    "python -m pytest tests/test_ctx_017_2_failure.py -q -k CTX_017_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-017.1",
+      "title": "Post metadata to a configurable endpoint",
+      "summary": "HttpObserver reads guidance from an OpenAI-compatible JSON body and does not post the secret.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/observer.py",
+        "test": "tests/test_ctx_017_1_http.py",
+        "function": "HttpObserver"
+      },
+      "scope": [
+        "Constructor (client, endpoint, content_mode=False)",
+        "MockTransport captures the request",
+        "Guidance equals reduce tools"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_017_1_http.py -q -k CTX_017_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_017_1.",
+        "This subtask's only job: HttpObserver reads guidance from an OpenAI-compatible JSON body and does not post the secret.",
+        "Touch only src/context_mgmt/observer.py and tests/test_ctx_017_1_http.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Return choices[0].message.content reduce tools from the transport.",
+        "Feed an event with content secret and assert secret is absent from the request body.",
+        "Pass endpoint http://observer/v1/chat/completions.",
+        "Run python -m pytest tests/test_ctx_017_1_http.py -q -k CTX_017_1."
+      ],
+      "dataExamples": [
+        {
+          "endpoint": "http://observer/v1/chat/completions",
+          "response": {
+            "choices": [
+              {
+                "message": {
+                  "content": "reduce tools"
+                }
+              }
+            ]
+          },
+          "guidance": "reduce tools"
+        }
+      ],
+      "businessRules": [
+        "FR-C5-02: swap the endpoint without code changes. The model name in the POST is observer."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/observer.py",
+          "purpose": "Async observer implementations."
+        }
+      ]
+    },
+    {
+      "id": "CTX-017.2",
+      "title": "Hide observer failures",
+      "summary": "run_observer catches analyze exceptions and returns empty guidance.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/observer.py",
+        "test": "tests/test_ctx_017_2_failure.py",
+        "function": "run_observer"
+      },
+      "scope": [
+        "A local class whose analyze raises RuntimeError",
+        "run_observer returns {guidance: empty}",
+        "The exception does not escape"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_017_2_failure.py -q -k CTX_017_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_017_2.",
+        "This subtask's only job: run_observer catches analyze exceptions and returns empty guidance.",
+        "Touch only src/context_mgmt/observer.py and tests/test_ctx_017_2_failure.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Do not add a gateway import.",
+        "Assert the returned dict and that the test function itself does not raise.",
+        "Run python -m pytest tests/test_ctx_017_2_failure.py -q -k CTX_017_2."
+      ],
+      "dataExamples": [
+        {
+          "raises": "RuntimeError",
+          "output": {
+            "guidance": ""
+          }
+        }
+      ],
+      "businessRules": [
+        "FR-C5-04: observer failure does not affect gateway or reporting. run_observer is the boundary."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/observer.py",
+          "purpose": "Async observer implementations."
+        }
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/observer.py"
+    ],
+    "businessRules": [
+      "POST JSON shape: {model: observer, messages: [{role: user, content: json of stripped events}]}.",
+      "Read guidance from choices[0].message.content.",
+      "content_mode True would skip the strip. Default is False. Do not add a test that sends secrets."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_017_1_http.py -q -k CTX_017_1",
+      "python -m pytest tests/test_ctx_017_2_failure.py -q -k CTX_017_2"
+    ]
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "description": "Shorter TDD clause. Tests whether cutting the SOLID/KISS sermon reduces repeated identical tool calls without hurting subtask_done. Change only system.tdd so the A/B is one variable.",
+  "clauses": {
+    "system.tdd": "Write the smallest change that makes the existing tests pass. Do not add helpers you do not need. "
+  }
+}

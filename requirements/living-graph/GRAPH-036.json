@@ -1,0 +1,79 @@
+{
+  "id": "GRAPH-036",
+  "type": "task",
+  "summary": "Add a graph mount element to the page",
+  "dependsOn": [
+    "GRAPH-034"
+  ],
+  "description": "index.html has an empty div#graph that ForceGraph3D will mount into later. Do not call ForceGraph3D in this task.",
+  "scope": [
+    "Add <div id=\"graph\"></div> to src/living_graph/static/index.html",
+    "Keep the existing count list and heading",
+    "Do not call ForceGraph3D()"
+  ],
+  "acceptanceCriteria": "index.html contains a div whose id is graph.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-037.",
+    "Do not add a watcher or CLI unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not call ForceGraph3D().",
+    "Do not fetch graph-force.json yet."
+  ],
+  "verification": [
+    "python -m pytest tests/test_graph_mount.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-036.1",
+      "title": "Add div#graph",
+      "summary": "One empty mount node. No ForceGraph3D call.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "index.html",
+        "module": "src/living_graph/static/index.html",
+        "test": "tests/test_graph_mount.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "src/living_graph/static/index.html",
+          "purpose": "GRAPH-021 page plus GRAPH-034 script tag."
+        }
+      ],
+      "scope": [
+        "Add <div id=\"graph\"></div> to src/living_graph/static/index.html",
+        "Keep the existing count list and heading",
+        "Do not call ForceGraph3D()"
+      ],
+      "dataExamples": [
+        "HTML contains id=\"graph\".",
+        "The element is a div."
+      ],
+      "businessRules": [
+        "Tests read HTML as text. Do not use a browser.",
+        "Do not style beyond a full-viewport height if needed; a bare div is enough."
+      ],
+      "verification": [
+        "python -m pytest tests/test_graph_mount.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_graph_mount.py first.",
+        "Run python -m pytest tests/test_graph_mount.py -q and confirm failure.",
+        "Add only div#graph to index.html.",
+        "Run python -m pytest tests/test_graph_mount.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/static/index.html"
+    ],
+    "businessRules": [
+      "Tests read HTML as text. Do not use a browser.",
+      "Do not style beyond a full-viewport height if needed; a bare div is enough."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_graph_mount.py -q"
+    ]
+  }
+}

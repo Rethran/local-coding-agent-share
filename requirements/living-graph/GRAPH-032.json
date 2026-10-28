@@ -1,0 +1,82 @@
+{
+  "id": "GRAPH-032",
+  "type": "task",
+  "summary": "Publish graph JSON next to the static page",
+  "dependsOn": [
+    "GRAPH-016",
+    "GRAPH-021"
+  ],
+  "description": "Write the scanned graph JSON to src/living_graph/static/graph.json so the HTML page can fetch a same-origin file. No 3D library yet.",
+  "scope": [
+    "Add publish_graph(root, static_dir) in src/living_graph/scan.py",
+    "Write graph.json inside static_dir using write_graph",
+    "Default static_dir is src/living_graph/static"
+  ],
+  "acceptanceCriteria": "publish_graph('tests/fixtures', tmp_static) creates tmp_static/graph.json with top-level keys nodes and edges.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-033.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not fetch JSON from the browser.",
+    "Do not call a 3D library."
+  ],
+  "verification": [
+    "python -m pytest tests/test_publish_graph.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-032.1",
+      "title": "Write static/graph.json",
+      "summary": "Reuse write_graph. One file named graph.json. No viewer JS.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "publish_graph",
+        "module": "src/living_graph/scan.py",
+        "test": "tests/test_publish_graph.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "src/living_graph/static/index.html",
+          "purpose": "GRAPH-021 page that will later fetch graph.json."
+        }
+      ],
+      "scope": [
+        "Add publish_graph(root, static_dir) in src/living_graph/scan.py",
+        "Write graph.json inside static_dir using write_graph",
+        "Default static_dir is src/living_graph/static"
+      ],
+      "dataExamples": [
+        "Output file name is graph.json.",
+        "File body has keys nodes and edges."
+      ],
+      "businessRules": [
+        "Create static_dir if it does not exist.",
+        "Overwrite graph.json when it already exists.",
+        "Do not write graph-force.json in this task."
+      ],
+      "verification": [
+        "python -m pytest tests/test_publish_graph.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_publish_graph.py first.",
+        "Run python -m pytest tests/test_publish_graph.py -q and confirm failure.",
+        "Implement only publish_graph in src/living_graph/scan.py.",
+        "Run python -m pytest tests/test_publish_graph.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/scan.py"
+    ],
+    "businessRules": [
+      "Create static_dir if it does not exist.",
+      "Overwrite graph.json when it already exists.",
+      "Do not write graph-force.json in this task."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_publish_graph.py -q"
+    ]
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "id": "GRAPH-042",
+  "type": "task",
+  "summary": "Recursively scan nested Robot and Python files",
+  "dependsOn": [
+    "GRAPH-015"
+  ],
+  "description": "scan_fixtures walks subdirectories under root so a real Robot repository produces nodes, not only files sitting directly in tests/fixtures.",
+  "scope": [
+    "Change scan_fixtures in src/living_graph/scan.py to walk nested folders",
+    "Parse .robot, .resource, and .py files found in subdirectories",
+    "A tiny nested fixture file must appear in the returned graph"
+  ],
+  "acceptanceCriteria": "scan_fixtures on a temp root that contains nested/dir/deep.robot includes a node sourced from that nested path.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not add work beyond this task.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not change ForceGraph3D styling.",
+    "Do not start a watch loop."
+  ],
+  "verification": [
+    "python -m pytest tests/test_scan_recursive.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-042.1",
+      "title": "Walk subdirectories when scanning",
+      "summary": "rglob or walk. Tiny nested .robot fixture. No 3D.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "scan_fixtures",
+        "module": "src/living_graph/scan.py",
+        "test": "tests/test_scan_recursive.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "src/living_graph/scan.py",
+          "purpose": "GRAPH-015 currently uses Path.iterdir() on the top folder only."
+        }
+      ],
+      "scope": [
+        "Change scan_fixtures in src/living_graph/scan.py to walk nested folders",
+        "Parse .robot, .resource, and .py files found in subdirectories",
+        "A tiny nested fixture file must appear in the returned graph"
+      ],
+      "dataExamples": [
+        "Temp root has nested/suite.robot with test case Deep Call calling Helper.",
+        "Returned node ids include a path containing nested/suite.robot.",
+        "Top-level files such as tests/fixtures/simple_test.robot still scan."
+      ],
+      "businessRules": [
+        "Skip directories named __pycache__, .git, .venv, venv, node_modules.",
+        "Keep source_path forward slashes.",
+        "Do not parse files other than .robot, .resource, and .py."
+      ],
+      "verification": [
+        "python -m pytest tests/test_scan_recursive.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_scan_recursive.py first.",
+        "Run python -m pytest tests/test_scan_recursive.py -q and confirm failure against the current iterdir-only scan.",
+        "Change only scan_fixtures to walk nested folders.",
+        "Run python -m pytest tests/test_scan_recursive.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/scan.py"
+    ],
+    "businessRules": [
+      "Skip directories named __pycache__, .git, .venv, venv, node_modules.",
+      "Keep source_path forward slashes.",
+      "Do not parse files other than .robot, .resource, and .py."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_scan_recursive.py -q"
+    ]
+  }
+}

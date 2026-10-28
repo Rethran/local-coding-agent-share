@@ -1,0 +1,60 @@
+{
+  "taskId": "CTX-004",
+  "status": "DONE",
+  "attempt": 5,
+  "startedAt": "2026-10-05T15:48:39+00:00",
+  "updatedAt": "2026-10-05T17:58:00+00:00",
+  "summary": "All CTX-004 subtasks are complete. Duplicate tool messages keep the latest copy; a single copy stays unchanged.",
+  "filesTouched": [
+    "src/context_mgmt/rules.py",
+    "tests/test_ctx_004_1_dedupe.py",
+    "tests/test_ctx_004_2_single.py"
+  ],
+  "blockers": [],
+  "verificationResult": {
+    "ok": true,
+    "commands": [
+      "python -m pytest tests/test_ctx_004_1_dedupe.py -q -k CTX_004_1",
+      "python -m pytest tests/test_ctx_004_2_single.py -q -k CTX_004_2"
+    ]
+  },
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [
+    "src/context_mgmt/rules.py",
+    "tests/test_ctx_004_1_dedupe.py",
+    "tests/test_ctx_004_2_single.py"
+  ],
+  "progressSummary": "CTX-004 is complete. Resume at CTX-005.",
+  "completedScopeItems": [
+    "Remove earlier messages that share dedupe_key with a later message.",
+    "Keep the later message.",
+    "Return none when a key appears once and R1 and R2 do not match."
+  ],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [
+    "Tests passed: python -m pytest tests/test_ctx_004_1_dedupe.py -q -k CTX_004_1",
+    "Tests passed: python -m pytest tests/test_ctx_004_2_single.py -q -k CTX_004_2"
+  ],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": "Resume from CTX-005.",
+  "subtasks": [
+    {
+      "id": "CTX-004.1",
+      "title": "Keep the latest duplicate",
+      "status": "DONE",
+      "summary": "Two tool messages with the same dedupe_key keep the later content and count the earlier token_count as saved."
+    },
+    {
+      "id": "CTX-004.2",
+      "title": "Leave a single copy unchanged",
+      "status": "DONE",
+      "summary": "DUPLICATE: one unique dedupe_key is already covered by the existing decide() implementation.",
+      "completionKind": "duplicate"
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

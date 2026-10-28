@@ -1,0 +1,77 @@
+{
+  "id": "GRAPH-017",
+  "type": "task",
+  "summary": "Detect which fixture files changed since last scan",
+  "dependsOn": [
+    "GRAPH-016"
+  ],
+  "description": "Compare current file modification timestamps or content hashes against a stored last-scanned record and return the paths that changed.",
+  "scope": [
+    "Add changed_files(last_scan, current_stamps) in src/living_graph/scan.py",
+    "Inputs are in-memory dicts of path -> mtime or hash, not a live watcher",
+    "Return a list of paths whose values differ or are new",
+    "Return an empty list when every path matches"
+  ],
+  "acceptanceCriteria": "changed_files(record, current) returns tests/fixtures/simple_test.robot when only that file's stamp differs, and returns [] when stamps match.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-018.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not apply incremental node updates yet.",
+    "Do not start a real filesystem watcher."
+  ],
+  "verification": [
+    "python -m pytest tests/test_changed_files.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-017.1",
+      "title": "Return paths whose stamps differ",
+      "summary": "Pure dict compare. No watcher. No graph rewrite.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "changed_files",
+        "module": "src/living_graph/scan.py",
+        "test": "tests/test_changed_files.py"
+      },
+      "relatedArtifacts": [],
+      "scope": [
+        "Add changed_files(last_scan, current_stamps) in src/living_graph/scan.py",
+        "Inputs are in-memory dicts of path -> mtime or hash, not a live watcher",
+        "Return a list of paths whose values differ or are new",
+        "Return an empty list when every path matches"
+      ],
+      "dataExamples": [
+        "last_scan: tests/fixtures/simple_test.robot -> 1, tests/fixtures/simple_library.py -> 1.",
+        "current: simple_test.robot -> 2, simple_library.py -> 1.",
+        "Result: [tests/fixtures/simple_test.robot]."
+      ],
+      "businessRules": [
+        "A missing path in last_scan counts as changed.",
+        "Equal stamps are not changed."
+      ],
+      "verification": [
+        "python -m pytest tests/test_changed_files.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_changed_files.py first.",
+        "Run python -m pytest tests/test_changed_files.py -q and confirm failure.",
+        "Implement only changed_files in src/living_graph/scan.py.",
+        "Run python -m pytest tests/test_changed_files.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/scan.py"
+    ],
+    "businessRules": [
+      "A missing path in last_scan counts as changed.",
+      "Equal stamps are not changed."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_changed_files.py -q"
+    ]
+  }
+}

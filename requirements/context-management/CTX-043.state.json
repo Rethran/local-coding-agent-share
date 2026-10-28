@@ -1,0 +1,38 @@
+{
+  "taskId": "CTX-043",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-06T21:08:21+00:00",
+  "updatedAt": "2026-10-06T21:15:34+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "CTX-043.1",
+      "title": "Fail when a route has no role",
+      "status": "DONE",
+      "summary": "Writing failing tests for assert_routes_declared missing-role behavior."
+    },
+    {
+      "id": "CTX-043.2",
+      "title": "Enforce the role and plane table",
+      "status": "DONE",
+      "summary": "Starting implementation of access_allowed in src/context_mgmt/authz.py"
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

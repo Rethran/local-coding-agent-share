@@ -1,0 +1,91 @@
+{
+  "id": "GRAPH-046",
+  "type": "task",
+  "summary": "Resolve Robot calls to keywords defined in another scanned file",
+  "dependsOn": [
+    "GRAPH-005",
+    "GRAPH-015"
+  ],
+  "description": "Same-file unresolved callees stay unresolved. After a full scan, if exactly one user_keyword in the graph has that callee name, rewrite the edge to that node and set resolved true. Do not guess when zero or two-plus definitions exist.",
+  "scope": [
+    "Add tests/fixtures/cross_call.robot with test Login calling Open Session",
+    "Add tests/fixtures/cross_keywords.resource defining keyword Open Session with an empty or Log-free body",
+    "Add resolve_cross_file_calls(edges, nodes) or apply the same logic inside scan_fixtures",
+    "Assert the Login -> Open Session edge is resolved and callee_id is tests/fixtures/cross_keywords.resource::Open Session"
+  ],
+  "acceptanceCriteria": "scan_fixtures on tests/fixtures yields a resolved edge from cross_call.robot::Login to cross_keywords.resource::Open Session. Missing Keyword from unresolved_call.robot stays resolved false.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-047.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not change GRAPH-005 Missing Keyword behavior.",
+    "Do not parse Resource import settings; match by unique keyword name only."
+  ],
+  "verification": [
+    "python -m pytest tests/test_cross_file_resolve.py tests/test_unresolved_calls.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-046.1",
+      "title": "Resolve unique cross-file keyword names",
+      "summary": "One definition of Open Session in a .resource file. Missing Keyword stays unresolved.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "resolve_cross_file_calls",
+        "module": "src/living_graph/scan.py",
+        "test": "tests/test_cross_file_resolve.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "src/living_graph/robot_extractor.py",
+          "purpose": "Same-file resolve only. Cross-file is a scan step."
+        },
+        {
+          "path": "tests/fixtures/unresolved_call.robot",
+          "purpose": "GRAPH-005 fixture must stay unresolved."
+        }
+      ],
+      "scope": [
+        "Add tests/fixtures/cross_call.robot with test Login calling Open Session",
+        "Add tests/fixtures/cross_keywords.resource defining keyword Open Session with an empty or Log-free body",
+        "Add resolve_cross_file_calls(edges, nodes) or apply the same logic inside scan_fixtures",
+        "Assert the Login -> Open Session edge is resolved and callee_id is tests/fixtures/cross_keywords.resource::Open Session"
+      ],
+      "dataExamples": [
+        "cross_call.robot test case Login calls Open Session.",
+        "cross_keywords.resource defines Open Session.",
+        "After scan, resolved is true.",
+        "callee_id is tests/fixtures/cross_keywords.resource::Open Session.",
+        "unresolved::Missing Keyword remains for GRAPH-005."
+      ],
+      "businessRules": [
+        "Resolve only when exactly one user_keyword node has that name.",
+        "Zero matches or two-plus matches stay unresolved::{name}.",
+        "Do not rewrite Python edges."
+      ],
+      "verification": [
+        "python -m pytest tests/test_cross_file_resolve.py tests/test_unresolved_calls.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_cross_file_resolve.py first.",
+        "Run python -m pytest tests/test_cross_file_resolve.py -q and confirm failure.",
+        "Implement only the cross-file resolve step and the two tiny fixtures.",
+        "Run python -m pytest tests/test_cross_file_resolve.py tests/test_unresolved_calls.py -q and stop when they pass."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/scan.py"
+    ],
+    "businessRules": [
+      "Resolve only when exactly one user_keyword node has that name.",
+      "Zero matches or two-plus matches stay unresolved::{name}.",
+      "Do not rewrite Python edges."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_cross_file_resolve.py tests/test_unresolved_calls.py -q"
+    ]
+  }
+}

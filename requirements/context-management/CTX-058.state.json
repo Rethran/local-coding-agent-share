@@ -1,0 +1,38 @@
+{
+  "taskId": "CTX-058",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-07T17:30:54+00:00",
+  "updatedAt": "2026-10-07T17:34:03+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "CTX-058.1",
+      "title": "Use the model divisor",
+      "status": "DONE",
+      "summary": "Writing failing tests for per-model divisor (CTX_058_1)."
+    },
+    {
+      "id": "CTX-058.2",
+      "title": "Use the model window",
+      "status": "DONE",
+      "summary": "Implementing context_pct in src/context_mgmt/tokenize.py"
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

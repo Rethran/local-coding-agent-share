@@ -1,0 +1,32 @@
+{
+  "taskId": "GRAPH-034",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-09-17T11:05:41+00:00",
+  "updatedAt": "2026-09-17T11:06:22+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "GRAPH-034.1",
+      "title": "Add 3d-force-graph script tag",
+      "status": "DONE",
+      "summary": "CDN script only. No canvas. No graphData."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

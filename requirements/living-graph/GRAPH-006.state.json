@@ -1,0 +1,35 @@
+{
+  "taskId": "GRAPH-006",
+  "status": "DONE",
+  "attempt": 0,
+  "startedAt": "2026-09-16T07:00:00+00:00",
+  "updatedAt": "2026-09-16T07:00:00+00:00",
+  "summary": "Reset after orchestrator collection-error fix. Retry GRAPH-006.1.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": "State reset after agent SyntaxError handshake fix. Do not start on the leftover uncollectable test without a test-writer rewrite.",
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "Ready to retry GRAPH-006.1 with collection-error gate, Python write compile check, and AST knowledge pack.",
+  "completedScopeItems": [],
+  "remainingScopeItems": [
+    "Write a collectable failing test in tests/test_python_extractor.py",
+    "Implement extract_python_edges for open_session -> connect"
+  ],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": "Run GRAPH-006.1 test-writer then implementer. Collection errors are not red TDD.",
+  "subtasks": [
+    {
+      "id": "GRAPH-006.1",
+      "title": "Parse one Python function call",
+      "status": "DONE",
+      "summary": "One same-file Python call. Return exactly one edge. No builtin filtering."
+    }
+  ],
+  "activeSubtaskId": "GRAPH-006.1",
+  "preflightStatus": null,
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

@@ -1,0 +1,32 @@
+{
+  "taskId": "GRAPH-015",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-09-16T19:54:30+00:00",
+  "updatedAt": "2026-09-16T20:00:18+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "GRAPH-015.1",
+      "title": "Combine fixture files in memory",
+      "status": "DONE",
+      "summary": "Folder scan to memory only. No JSON write. No watcher."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

@@ -1,0 +1,38 @@
+{
+  "taskId": "GRAPH-007",
+  "status": "DONE",
+  "attempt": 0,
+  "startedAt": "2026-09-16T19:27:00+00:00",
+  "updatedAt": "2026-09-16T19:27:00+00:00",
+  "summary": "Builtin calls are not edges; same-file function calls remain. Covered by GRAPH-006 same-file FunctionDef rule.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": "python -m pytest tests/test_python_builtins.py -q",
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [
+    "Add a tiny fixture or inline file where count_items calls len and connect",
+    "Assert no edge has callee len or print",
+    "Assert the connect edge is still present"
+  ],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [
+    "len() and print() are not edges; count_items -> connect remains"
+  ],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "GRAPH-007.1",
+      "title": "Drop builtin Python calls",
+      "status": "DONE",
+      "summary": "len() and print() are not edges. Same-file function calls remain edges."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": null,
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

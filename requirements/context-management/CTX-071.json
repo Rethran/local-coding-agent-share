@@ -1,0 +1,153 @@
+{
+  "id": "CTX-071",
+  "type": "task",
+  "summary": "Resolve a model profile without rejecting unknown ids",
+  "dependsOn": [
+    "CTX-058"
+  ],
+  "description": "DEP-12 and P3. A profile holds the served context window, the tokenizer divisor, the upstream URL, and the auth style. A known model id returns that profile. An unknown model id returns the default profile with token_source estimate and does not raise.",
+  "scope": [
+    "A known id keeps its served window and auth none",
+    "An unknown id uses the default profile and is not rejected"
+  ],
+  "acceptanceCriteria": "resolve_profile('qwen3:8b', profiles) returns model_id qwen3:8b, context_window 8192, and auth none. resolve_profile('missing', profiles) returns model_id default, context_window 32768, and token_source estimate. The missing call does not raise. DEP-12 P3.",
+  "constraints": [
+    "Do not reject a model id that has no profile.",
+    "Do not change estimate_tokens. A missing divisor there may still raise KeyError.",
+    "Do not treat the model's nominal maximum as the served window. The number in the profile is the window the server actually uses."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_071_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_071_1_known.py -q -k CTX_071_1",
+    "python -m pytest tests/test_ctx_071_2_default.py -q -k CTX_071_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-071.1",
+      "title": "Return the profile for a known model",
+      "summary": "qwen3:8b keeps context window 8192 and auth none.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/profiles.py",
+        "test": "tests/test_ctx_071_1_known.py",
+        "function": "resolve_profile"
+      },
+      "scope": [
+        "model_id qwen3:8b",
+        "context_window 8192",
+        "auth none"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_071_1_known.py -q -k CTX_071_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_071_1.",
+        "This subtask's only job: qwen3:8b keeps context window 8192 and auth none.",
+        "Touch only src/context_mgmt/profiles.py and tests/test_ctx_071_1_known.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "resolve_profile(model_id, profiles) copies the matching profile and sets model_id.",
+        "Allowed auth values are bearer, api-key, and none.",
+        "Run python -m pytest tests/test_ctx_071_1_known.py -q -k CTX_071_1."
+      ],
+      "dataExamples": [
+        {
+          "input": {
+            "model_id": "qwen3:8b",
+            "profiles": {
+              "qwen3:8b": {
+                "context_window": 8192,
+                "tokenizer_divisor": 4,
+                "upstream_url": "http://127.0.0.1:11434/v1",
+                "auth": "none"
+              },
+              "default": {
+                "context_window": 32768,
+                "tokenizer_divisor": 4,
+                "upstream_url": "http://127.0.0.1:11434/v1",
+                "auth": "bearer"
+              }
+            }
+          },
+          "output": {
+            "model_id": "qwen3:8b",
+            "context_window": 8192,
+            "auth": "none"
+          }
+        }
+      ],
+      "businessRules": [
+        "DEP-12: context_window is the served window, not the nominal maximum. auth is bearer, api-key, or none."
+      ]
+    },
+    {
+      "id": "CTX-071.2",
+      "title": "Fall back to the default profile",
+      "summary": "An unknown model id returns the default profile with token_source estimate and does not raise.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/profiles.py",
+        "test": "tests/test_ctx_071_2_default.py",
+        "function": "resolve_profile"
+      },
+      "scope": [
+        "model_id default",
+        "context_window 32768",
+        "token_source estimate",
+        "no exception"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_071_2_default.py -q -k CTX_071_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_071_2.",
+        "This subtask's only job: An unknown model id returns the default profile with token_source estimate and does not raise.",
+        "Touch only src/context_mgmt/profiles.py and tests/test_ctx_071_2_default.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Do not raise KeyError or ValueError for model_id missing.",
+        "Run python -m pytest tests/test_ctx_071_2_default.py -q -k CTX_071_2."
+      ],
+      "dataExamples": [
+        {
+          "input": {
+            "model_id": "missing",
+            "profiles": {
+              "default": {
+                "context_window": 32768,
+                "tokenizer_divisor": 4,
+                "upstream_url": "http://127.0.0.1:8000/v1",
+                "auth": "bearer"
+              }
+            }
+          },
+          "output": {
+            "model_id": "default",
+            "context_window": 32768,
+            "token_source": "estimate"
+          }
+        }
+      ],
+      "businessRules": [
+        "DEP-12 and P3: an unknown model id is never rejected. token_source is estimate."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/profiles.py"
+    ],
+    "businessRules": [
+      "Known ids return their profile. Unknown ids return profiles['default'] with token_source estimate."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_071_1_known.py -q -k CTX_071_1",
+      "python -m pytest tests/test_ctx_071_2_default.py -q -k CTX_071_2"
+    ]
+  }
+}

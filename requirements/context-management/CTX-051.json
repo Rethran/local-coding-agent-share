@@ -1,0 +1,122 @@
+{
+  "id": "CTX-051",
+  "type": "task",
+  "summary": "Hash API keys and compare them in constant time",
+  "dependsOn": [
+    "CTX-042"
+  ],
+  "description": "SEC-23 and SEC-27. API keys are stored as sha256 hashes. Comparison uses compare_digest. hmac_user_id is available for new seat code. hash_user_id stays the CTX-005 sha256 of salt, colon, and user id.",
+  "scope": [
+    "A stored key is the sha256 hex and compare_digest matches only equals",
+    "hmac_user_id differs from hash_user_id, which still matches the CTX-005 vector"
+  ],
+  "acceptanceCriteria": "hash_api_key('secret') is sha256 hex. secrets_equal is true for equal strings and false for secret and secret2. hmac_user_id('test-salt', 'alice') is not equal to hash_user_id('test-salt', 'alice'). hash_user_id('test-salt', 'alice') remains sha256 of the bytes test-salt:alice. SEC-23 SEC-27.",
+  "constraints": [
+    "Do not change hash_user_id.",
+    "Do not store raw API keys.",
+    "Do not compare secrets with the == operator in secrets_equal."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_051_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_051_1_keys.py -q -k CTX_051_1",
+    "python -m pytest tests/test_ctx_051_2_hmac.py -q -k CTX_051_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-051.1",
+      "title": "Store and compare key hashes",
+      "summary": "hash_api_key is sha256 hex and secrets_equal distinguishes secret from secret2.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/crypto_hygiene.py",
+        "test": "tests/test_ctx_051_1_keys.py",
+        "function": "hash_api_key"
+      },
+      "scope": [
+        "sha256 hex of secret",
+        "equal strings true",
+        "secret versus secret2 false"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_051_1_keys.py -q -k CTX_051_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_051_1.",
+        "This subtask's only job: hash_api_key is sha256 hex and secrets_equal distinguishes secret from secret2.",
+        "Touch only src/context_mgmt/crypto_hygiene.py and tests/test_ctx_051_1_keys.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Use hmac.compare_digest inside secrets_equal.",
+        "Run python -m pytest tests/test_ctx_051_1_keys.py -q -k CTX_051_1."
+      ],
+      "dataExamples": [
+        {
+          "left": "secret",
+          "right": "secret2"
+        }
+      ],
+      "businessRules": [
+        "SEC-23: API keys are stored only as hashes."
+      ]
+    },
+    {
+      "id": "CTX-051.2",
+      "title": "Leave the CTX-005 user hash in place",
+      "summary": "hash_user_id still matches sha256 of test-salt:alice, and hmac_user_id is different.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/crypto_hygiene.py",
+        "test": "tests/test_ctx_051_2_hmac.py",
+        "function": "hmac_user_id"
+      },
+      "scope": [
+        "hash_user_id matches the known sha256",
+        "hmac_user_id is a different hex string"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_051_2_hmac.py -q -k CTX_051_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_051_2.",
+        "This subtask's only job: hash_user_id still matches sha256 of test-salt:alice, and hmac_user_id is different.",
+        "Touch only src/context_mgmt/crypto_hygiene.py and tests/test_ctx_051_2_hmac.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Import hash_user_id from the events module. Do not edit its formula.",
+        "Run python -m pytest tests/test_ctx_051_2_hmac.py -q -k CTX_051_2."
+      ],
+      "dataExamples": [
+        {
+          "salt": "test-salt",
+          "user_id": "alice"
+        }
+      ],
+      "businessRules": [
+        "CTX-005 locks sha256(salt + ':' + user_id). Seat code that needs HMAC calls hmac_user_id."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/events.py",
+          "purpose": "hash_user_id must keep the CTX-005 digest."
+        }
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/crypto_hygiene.py"
+    ],
+    "businessRules": [
+      "SEC-27: license signatures stay on the Ed25519 path from CTX-024. No custom cipher."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_051_1_keys.py -q -k CTX_051_1",
+      "python -m pytest tests/test_ctx_051_2_hmac.py -q -k CTX_051_2"
+    ]
+  }
+}

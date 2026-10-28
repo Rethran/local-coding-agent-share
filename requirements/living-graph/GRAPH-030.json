@@ -1,0 +1,87 @@
+{
+  "id": "GRAPH-030",
+  "type": "task",
+  "summary": "Apply fan-in and fan-out before writing graph JSON",
+  "dependsOn": [
+    "GRAPH-011",
+    "GRAPH-012",
+    "GRAPH-016"
+  ],
+  "description": "write_graph must set fan_in and fan_out on nodes before serialize_graph so node size is not stuck at the fan-in 0 default.",
+  "scope": [
+    "Call compute_fan_in and compute_fan_out inside write_graph in src/living_graph/scan.py",
+    "Use write_graph on tests/fixtures",
+    "Happy Path fan_out is 2"
+  ],
+  "acceptanceCriteria": "JSON from write_graph('tests/fixtures', output) has Happy Path fan_out 2 and a node with fan_in greater than 0.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-031.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not reimplement fan-in or fan-out math.",
+    "Do not mount a 3D canvas."
+  ],
+  "verification": [
+    "python -m pytest tests/test_write_graph_metrics.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-030.1",
+      "title": "Write JSON with computed fan-in and fan-out",
+      "summary": "Reuse compute_fan_in and compute_fan_out. No new formula.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "write_graph",
+        "module": "src/living_graph/scan.py",
+        "test": "tests/test_write_graph_metrics.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "src/living_graph/metrics.py",
+          "purpose": "compute_fan_in and compute_fan_out from GRAPH-011 and GRAPH-012."
+        },
+        {
+          "path": "tests/fixtures/simple_test.robot",
+          "purpose": "Happy Path calls Open Application and Verify Dashboard."
+        }
+      ],
+      "scope": [
+        "Call compute_fan_in and compute_fan_out inside write_graph in src/living_graph/scan.py",
+        "Use write_graph on tests/fixtures",
+        "Happy Path fan_out is 2"
+      ],
+      "dataExamples": [
+        "Happy Path id: tests/fixtures/simple_test.robot::Happy Path.",
+        "Happy Path fan_out: 2.",
+        "Happy Path fan_in: 0.",
+        "unresolved::Open Application fan_in: 1."
+      ],
+      "businessRules": [
+        "Call existing metrics helpers. Do not copy their loops into write_graph.",
+        "Apply metrics before serialize_graph."
+      ],
+      "verification": [
+        "python -m pytest tests/test_write_graph_metrics.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_write_graph_metrics.py first.",
+        "Run python -m pytest tests/test_write_graph_metrics.py -q and confirm failure.",
+        "Implement only the write_graph metrics calls in src/living_graph/scan.py.",
+        "Run python -m pytest tests/test_write_graph_metrics.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/scan.py"
+    ],
+    "businessRules": [
+      "Call existing metrics helpers. Do not copy their loops into write_graph.",
+      "Apply metrics before serialize_graph."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_write_graph_metrics.py -q"
+    ]
+  }
+}

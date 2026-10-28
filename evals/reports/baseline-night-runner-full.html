@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8">
+  <title>Arvio — baseline / night-runner:latest</title>
+  <style>
+    @page { size: A4; margin: 14mm; }
+    body { font-family: Georgia, serif; margin: 2rem auto; max-width: 960px; line-height: 1.45; color: #1a1a1a; }
+    h1, h2, h3 { font-family: "Segoe UI", sans-serif; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border-bottom: 1px solid #ddd; text-align: left; padding: 0.4rem 0.6rem; vertical-align: top; }
+    th { font-family: "Segoe UI", sans-serif; font-weight: 600; }
+    .fail { background: #fdecea; }
+    .flaky { background: #fff4ce; }
+    .reliable { background: #e8f6ee; }
+    .cannot { background: #fdecea; }
+    .muted { color: #555; font-size: 0.95rem; }
+    .notice { background: #fff4ce; border-left: 4px solid #d9a600; padding: 0.6rem 0.8rem; }
+    .answer { font-size: 1.15rem; }
+    pre { white-space: pre-wrap; background: #f6f6f6; padding: 0.75rem; overflow-x: auto; }
+    code { font-family: Consolas, monospace; }
+    section { break-inside: avoid; }
+    @media print {
+      body { margin: 0; max-width: none; }
+      pre { font-size: 9pt; }
+      a { color: inherit; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Arvio</h1>
+  <p class="muted">
+    Variantti <code>baseline</code>
+    · malli <code>night-runner:latest</code>
+    · 2026-10-03T18:20:55+00:00
+  </p>
+  
+
+  <section>
+    <h2>Katselmoijalle</h2>
+    <p class="answer"><strong>Mihin tehtäviin tämän voi ohjata.</strong> 10 tehtävää onnistui kaikilla kolmella kerralla: Parse one test case direct keyword calls, Parse one Python function call, Count distinct callers, True on a two-node cycle, False on a chain, Resource callers are user_keyword, Reuse nodes_from_edges in incremental_update, Drop Robot builtin callees, Metrics on the in-memory scan graph, Zero the node z coordinate, Lock polar angle to the horizon. 1 onnistui vain joskus: Resolve unique cross-file keyword names (2/3). 1 tehtävää agentti ei osaa: Tag .py nodes library_keyword in nodes_from_edges (0/3).</p>
+    <p class="answer"><strong>Mitä yksi onnistuminen maksoi.</strong> 21,2 minuuttia per tehtävä, joka onnistui joka kerta. Epäonnistuneet ajot ovat mukana: 212,1 minuuttia yhteensä, 10 täysin onnistunutta tehtävää.</p>
+    <p class="answer"><strong>Muuttuiko tulos.</strong> Ero edelliseen on suurempi kuin satunnainen heitto, tämä on oikea muutos.</p>
+
+    
+    <h3>Tehtävät ryhmittäin</h3>
+    <table>
+      <thead><tr><th>Ryhmä</th><th>Tehtäviä</th><th>Merkitys</th></tr></thead>
+      <tbody>
+        <tr class="reliable"><td>Luotettava</td><td>10</td><td>Onnistui joka kokeilukerta.</td></tr>
+        <tr class="flaky"><td>Hauras</td><td>1</td><td>Onnistuu vain joskus.</td></tr>
+        <tr class="cannot"><td>Ei osaa</td><td>1</td><td>Testit eivät menneet kertaakaan.</td></tr>
+      </tbody>
+    </table>
+    
+      
+      <h4>Luotettava</h4>
+      <table>
+        <thead><tr><th>Tunnus</th><th>Otsikko</th><th>Onnistui</th></tr></thead>
+        <tbody>
+          
+          <tr>
+            <td><code>GRAPH-003.1</code></td>
+            <td>Parse one test case direct keyword calls</td>
+            <td>3/3</td>
+          </tr>
+          
+          <tr>
+            <td><code>GRAPH-006.1</code></td>
+            <td>Parse one Python function call</td>
+            <td>3/3</td>
+          </tr>
+          
+          <tr>
+            <td><code>GRAPH-011.1</code></td>
+            <td>Count distinct callers</td>
+            <td>3/3</td>
+          </tr>
+          
+          <tr>
+            <td><code>GRAPH-013.1</code></td>
+            <td>True on a two-node cycle, False on a chain</td>
+            <td>3/3</td>
+          </tr>
+          
+          <tr>
+            <td><code>GRAPH-047.1</code></td>
+            <td>Resource callers are user_keyword</td>
+            <td>3/3</td>
+          </tr>
+          
+          <tr>
+            <td><code>GRAPH-048.1</code></td>
+            <td>Reuse nodes_from_edges in incremental_update</td>
+            <td>3/3</td>
+          </tr>
+          
+          <tr>
+            <td><code>GRAPH-049.1</code></td>
+            <td>Drop Robot builtin callees</td>
+            <td>3/3</td>
+          </tr>
+          
+          <tr>
+            <td><code>GRAPH-050.1</code></td>
+            <td>Metrics on the in-memory scan graph</td>
+            <td>3/3</td>
+          </tr>
+          
+          <tr>
+            <td><code>GRAPH-052.1</code></td>
+            <td>Zero the node z coordinate</td>
+            <td>3/3</td>
+          </tr>
+          
+          <tr>
+            <td><code>GRAPH-054.1</code></td>
+            <td>Lock polar angle to the horizon</td>
+            <td>3/3</td>
+          </tr>
+          
+        </tbody>
+      </table>
+      
+    
+      
+      <h4>Hauras</h4>
+      <table>
+        <thead><tr><th>Tunnus</th><th>Otsikko</th><th>Onnistui</th></tr></thead>
+        <tbody>
+          
+          <tr>
+            <td><code>GRAPH-046.1</code></td>
+            <td>Resolve unique cross-file keyword names</td>
+            <td>2/3</td>
+          </tr>
+          
+        </tbody>
+      </table>
+      
+    
+      
+      <h4>Ei osaa</h4>
+      <table>
+        <thead><tr><th>Tunnus</th><th>Otsikko</th><th>Onnistui</th></tr></thead>
+        <tbody>
+          
+          <tr>
+            <td><code>GRAPH-031.1</code></td>
+            <td>Tag .py nodes library_keyword in nodes_from_edges</td>
+            <td>0/3</td>
+          </tr>
+          
+        </tbody>
+      </table>
+      
+    
+  </section>
+
+  <section>
+    <h2>Tekijälle</h2>
+    <p class="answer"><strong>Voiko valmis-merkintää uskoa.</strong> 3 kertaa 35:stä agentti merkitsi tehtävän valmiiksi, mutta vastaus oli väärä. Niissä valmis-merkintä ei riitä ilman ihmisen tarkistusta.</p>
+    <p class="answer"><strong>Onko odotusaika käyttökelpoinen.</strong> Tyypillinen tehtävä vei 2,8 minuuttia, hitain 40 minuuttia. Tyypillinen tehtävä käytti 9 askelta, eniten 44.</p>
+    <p class="answer"><strong>Mihin korjaus kohdistuu.</strong> Mukana on sekä vääriä vastauksia että prosessin katkeamisia. Korjauskohde on sekä malli tai prompti että työkalut.</p>
+
+    <h3>Aika ja askeleet</h3>
+    
+    
+    <table>
+      <thead><tr><th></th><th>Tyypillinen</th><th>Hitain</th><th>Kertoja</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Minuutteja</td>
+          <td>2.8</td>
+          <td>40.0</td>
+          <td>36</td>
+        </tr>
+        <tr>
+          <td>Askeleet</td>
+          <td>9.0</td>
+          <td>44.0</td>
+          <td>35</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Mihin ajot kaatuivat</h3>
+    <table>
+      <thead><tr><th>Syy</th><th>Ajot</th></tr></thead>
+      <tbody>
+        
+        <tr>
+          <td>aikakatkaisu</td>
+          <td>1</td>
+        </tr>
+        
+        <tr>
+          <td>silmukka</td>
+          <td>0</td>
+        </tr>
+        
+        <tr>
+          <td>työkaluvirheet</td>
+          <td>0</td>
+        </tr>
+        
+        <tr>
+          <td>askelbudjetti</td>
+          <td>0</td>
+        </tr>
+        
+        <tr>
+          <td>testit</td>
+          <td>3</td>
+        </tr>
+        
+        <tr>
+          <td>muu</td>
+          <td>0</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    <p class="muted">Epäonnistuneita ajoja 4.</p>
+
+    <h3>Läpäisy kriteereittäin</h3>
+    <table>
+      <thead>
+        <tr><th>Kriteeri</th><th>Osuus</th><th>Heitto</th><th>Kertoja</th><th>Ero edelliseen</th></tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td>Prosessiraja</td>
+          <td>100.0 %</td>
+          <td>± 0.0 prosenttiyksikköä</td>
+          <td>36</td>
+          <td>+31.6 prosenttiyksikköä</td>
+        </tr>
+        
+        <tr>
+          <td>Testit</td>
+          <td>88.9 %</td>
+          <td>± 5.2 prosenttiyksikköä</td>
+          <td>36</td>
+          <td>+67.8 prosenttiyksikköä</td>
+        </tr>
+        
+        <tr>
+          <td>Valmis-merkintä</td>
+          <td>97.2 %</td>
+          <td>± 2.7 prosenttiyksikköä</td>
+          <td>36</td>
+          <td>+76.2 prosenttiyksikköä</td>
+        </tr>
+        
+      </tbody>
+    </table>
+
+    <h3>Mitä arvioidaan</h3>
+    
+      <h4>Valmis-merkintä</h4>
+      <p>Agentti merkitsi tehtävän valmiiksi ja tarkistus hyväksyi sen.</p>
+      <p class="muted">Miksi: Sujuvakaan keskustelu ei riitä, jos tehtävää ei merkitä valmiiksi.</p>
+      <p class="muted">Miten: Luetaan tehtävän tila ajon jälkeen. Läpi vain, jos tila on valmis.</p>
+    
+      <h4>Testit</h4>
+      <p>Aiemmin hyväksytyn version testit menevät läpi agentin kirjoittamalla koodilla.</p>
+      <p class="muted">Miksi: Agentin omat testit voivat olla liian heikot. Nämä ovat regressiotestejä, eivät erillisiä piilotestejä.</p>
+      <p class="muted">Miten: Ajon jälkeen ajetaan hyväksytyn version testitiedostot.</p>
+    
+      <h4>Prosessiraja</h4>
+      <p>Agentti valmistui ilman silmukkaa, askelbudjetin loppumista tai työkaluvirheiden tulvaa.</p>
+      <p class="muted">Miksi: Paikallinen malli epäonnistuu usein tapaan tehdä työtä, ei vain vastauksen oikeellisuuteen.</p>
+      <p class="muted">Miten: Luetaan ajon yhteenveto. Hylätään, jos yrityksiä on yli 10, askeleita yli 160, sama työkalukutsu toistuu yli 5 kertaa, tai työkaluvirheiden osuus on yli 40%.</p>
+    
+
+    <h3>Epäonnistumiset ensin</h3>
+    
+    
+      <article class="fail">
+        <h4>GRAPH-031.1 kerta 1 — Tag .py nodes library_keyword in nodes_from_edges</h4>
+        <p><strong>Kriteeri:</strong> Testit</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-031.1: Tag .py nodes library_keyword in nodes_from_edges. Path suffix .py means library_keyword. Robot types stay as they are.</p>
+        <pre>Gold tests failed (exit 1).
+....F                                                                    [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+_______ test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1 ________
+tests\test_scan_python_node_type.py:89: in test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1
+    assert len(open_session) == 1, "open_session node not found in scanned graph"
+E   AssertionError: open_session node not found in scanned graph
+E   assert 2 == 1
+E    +  where 2 = len([<living_graph.model.Node object at 0x0000016258E435B0>, <living_graph.model.Node object at 0x0000016258E26BA0>])
+=========================== short test summary info ===========================
+FAILED tests/test_scan_python_node_type.py::test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1
+1 failed, 4 passed in 0.21s
+
+</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-031.1 kerta 2 — Tag .py nodes library_keyword in nodes_from_edges</h4>
+        <p><strong>Kriteeri:</strong> Testit</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-031.1: Tag .py nodes library_keyword in nodes_from_edges. Path suffix .py means library_keyword. Robot types stay as they are.</p>
+        <pre>Gold tests failed (exit 1).
+....F                                                                    [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+_______ test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1 ________
+tests\test_scan_python_node_type.py:89: in test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1
+    assert len(open_session) == 1, "open_session node not found in scanned graph"
+E   AssertionError: open_session node not found in scanned graph
+E   assert 2 == 1
+E    +  where 2 = len([<living_graph.model.Node object at 0x000002167FA775B0>, <living_graph.model.Node object at 0x000002167FA56BA0>])
+=========================== short test summary info ===========================
+FAILED tests/test_scan_python_node_type.py::test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1
+1 failed, 4 passed in 0.20s
+
+</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-031.1 kerta 3 — Tag .py nodes library_keyword in nodes_from_edges</h4>
+        <p><strong>Kriteeri:</strong> Testit</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-031.1: Tag .py nodes library_keyword in nodes_from_edges. Path suffix .py means library_keyword. Robot types stay as they are.</p>
+        <pre>Gold tests failed (exit 1).
+.F..F                                                                    [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+_____________ test_py_callee_node_is_library_keyword_GRAPH_031_1 ______________
+tests\test_scan_python_node_type.py:43: in test_py_callee_node_is_library_keyword_GRAPH_031_1
+    assert callee.type == "library_keyword", (
+E   AssertionError: Expected .py callee type 'library_keyword', got 'user_keyword'
+E   assert 'user_keyword' == 'library_keyword'
+E     
+E     - library_keyword
+E     + user_keyword
+_______ test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1 ________
+tests\test_scan_python_node_type.py:89: in test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1
+    assert len(open_session) == 1, "open_session node not found in scanned graph"
+E   AssertionError: open_session node not found in scanned graph
+E   assert 2 == 1
+E    +  where 2 = len([<living_graph.model.Node object at 0x000002150F0E7770>, <living_graph.model.Node object at 0x000002150F0D81B0>])
+=========================== short test summary info ===========================
+FAILED tests/test_scan_python_node_type.py::test_py_callee_node_is_library_keyword_GRAPH_031_1
+FAILED tests/test_scan_python_node_type.py::test_scan_fixtures_open_session_is_library_keyword_GRAPH_031_1
+2 failed, 3 passed in 0.20s
+
+</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-046.1 kerta 3 — Resolve unique cross-file keyword names</h4>
+        <p><strong>Kriteeri:</strong> Valmis-merkintä</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-046.1: Resolve unique cross-file keyword names. One definition of Open Session in a .resource file. Missing Keyword stays unresolved.</p>
+        <pre>Timed out after 2400s. Subtask GRAPH-046.1 status=IN_PROGRESS. Assistant stopped without tool call at step 77.</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>GRAPH-046.1 kerta 3 — Resolve unique cross-file keyword names</h4>
+        <p><strong>Kriteeri:</strong> Testit</p>
+        <p><strong>Syöte:</strong> Implement GRAPH-046.1: Resolve unique cross-file keyword names. One definition of Open Session in a .resource file. Missing Keyword stays unresolved.</p>
+        <pre>Gold tests failed (exit 1).
+F.                                                                       [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+_____________ test_cross_file_unique_keyword_resolved_GRAPH_046_1 _____________
+tests\test_cross_file_resolve.py:19: in test_cross_file_unique_keyword_resolved_GRAPH_046_1
+    assert edge.resolved is True
+E   assert False is True
+E    +  where False = <living_graph.model.Edge object at 0x00000212AE78DE80>.resolved
+=========================== short test summary info ===========================
+FAILED tests/test_cross_file_resolve.py::test_cross_file_unique_keyword_resolved_GRAPH_046_1
+1 failed, 1 passed in 0.21s
+
+</pre>
+      </article>
+    
+
+    <h3>Haurat tehtävät</h3>
+    <p class="muted">Sama tehtävä, eri kerrat. Nämä kannattaa lukea ensin.</p>
+    
+    <table>
+      
+      <tr class="flaky">
+        <td><code>GRAPH-046.1</code></td>
+        <td>Valmis-merkintä</td>
+        <td>2/3</td>
+      </tr>
+      
+    </table>
+  </section>
+</body>
+</html>

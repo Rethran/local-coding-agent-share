@@ -1,0 +1,87 @@
+{
+  "id": "GRAPH-050",
+  "type": "task",
+  "summary": "Apply fan-in and fan-out inside scan_fixtures",
+  "dependsOn": [
+    "GRAPH-011",
+    "GRAPH-012",
+    "GRAPH-015",
+    "GRAPH-030"
+  ],
+  "description": "write_graph already calls compute_fan_in and compute_fan_out. scan_fixtures still returns nodes with fan_in and fan_out 0, so any in-memory consumer including incremental paths sees flat sizes.",
+  "scope": [
+    "Call compute_fan_in and compute_fan_out inside scan_fixtures in src/living_graph/scan.py",
+    "Happy Path from tests/fixtures has fan_out 2 on the in-memory graph",
+    "Do not reimplement the metrics formulas"
+  ],
+  "acceptanceCriteria": "scan_fixtures('tests/fixtures') returns Happy Path with fan_out 2 and at least one node with fan_in greater than 0.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-051.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not copy fan-in loops into scan_fixtures.",
+    "Do not change write_graph beyond sharing the same helpers."
+  ],
+  "verification": [
+    "python -m pytest tests/test_scan_metrics.py tests/test_write_graph_metrics.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-050.1",
+      "title": "Metrics on the in-memory scan graph",
+      "summary": "Reuse compute_fan_in and compute_fan_out. No JSON write.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "scan_fixtures",
+        "module": "src/living_graph/scan.py",
+        "test": "tests/test_scan_metrics.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "src/living_graph/metrics.py",
+          "purpose": "GRAPH-011 and GRAPH-012 helpers."
+        },
+        {
+          "path": "tests/fixtures/simple_test.robot",
+          "purpose": "Happy Path calls two keywords."
+        }
+      ],
+      "scope": [
+        "Call compute_fan_in and compute_fan_out inside scan_fixtures in src/living_graph/scan.py",
+        "Happy Path from tests/fixtures has fan_out 2 on the in-memory graph",
+        "Do not reimplement the metrics formulas"
+      ],
+      "dataExamples": [
+        "Happy Path id tests/fixtures/simple_test.robot::Happy Path.",
+        "fan_out is 2.",
+        "fan_in is 0."
+      ],
+      "businessRules": [
+        "Call existing metrics helpers before returning Graph.",
+        "write_graph may keep its own calls; duplicate apply is acceptable."
+      ],
+      "verification": [
+        "python -m pytest tests/test_scan_metrics.py tests/test_write_graph_metrics.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_scan_metrics.py first.",
+        "Run python -m pytest tests/test_scan_metrics.py -q and confirm failure.",
+        "Implement only the metrics calls inside scan_fixtures.",
+        "Run python -m pytest tests/test_scan_metrics.py tests/test_write_graph_metrics.py -q and stop when they pass."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/scan.py"
+    ],
+    "businessRules": [
+      "Call existing metrics helpers before returning Graph.",
+      "write_graph may keep its own calls; duplicate apply is acceptable."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_scan_metrics.py tests/test_write_graph_metrics.py -q"
+    ]
+  }
+}

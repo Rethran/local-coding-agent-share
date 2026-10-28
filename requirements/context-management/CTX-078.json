@@ -1,0 +1,214 @@
+{
+  "id": "CTX-078",
+  "type": "task",
+  "summary": "Admit the MCP tool only for an active key and license",
+  "dependsOn": [
+    "CTX-077",
+    "CTX-048"
+  ],
+  "description": "The tool does not run when the license is off or the friend key is not active. The allowed result names check_context.",
+  "scope": [
+    "A blocked license denies an otherwise active key",
+    "An active key and an allowed license names check_context",
+    "An expired key is denied even when the license is allowed",
+    "mcp_http.py calls mcp_admission and check_context and does not print"
+  ],
+  "acceptanceCriteria": "mcp_admission with license_allowed false returns the access_denied dict. license_allowed true and an active key returns allowed true and tool check_context. license_allowed true and an expired key returns the same denial. mcp_http.py contains mcp_admission( and check_context and does not contain print(.",
+  "constraints": [
+    "Do not add a second tool.",
+    "Do not describe the license state in the denial.",
+    "Do not print to stdout."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_078_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_078_1_license.py -q -k CTX_078_1",
+    "python -m pytest tests/test_ctx_078_2_tool.py -q -k CTX_078_2",
+    "python -m pytest tests/test_ctx_078_3_source.py -q -k CTX_078_3"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-078.1",
+      "title": "Deny when the license is off",
+      "summary": "license_allowed false returns the denial even though the key is active.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/mcp_http.py",
+        "test": "tests/test_ctx_078_1_license.py",
+        "function": "mcp_admission"
+      },
+      "scope": [
+        "license_allowed false",
+        "active key",
+        "access_denied"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_078_1_license.py -q -k CTX_078_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_078_1.",
+        "This subtask's only job: license_allowed false returns the denial even though the key is active.",
+        "Touch only src/context_mgmt/mcp_http.py and tests/test_ctx_078_1_license.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Call authorize_bearer only when license_allowed is true. Otherwise return the same denial dict.",
+        "The test must call mcp_admission.",
+        "Run python -m pytest tests/test_ctx_078_1_license.py -q -k CTX_078_1."
+      ],
+      "dataExamples": [
+        {
+          "input": {
+            "authorization": "Bearer friend-key",
+            "stored_digest": "c3f39b05cd8145b99d7d26a9633ff6527dc2c635fabc25c738e31f2fe64a7834",
+            "user_id": "ann",
+            "expires_at": "2026-12-01T00:00:00Z",
+            "revoked": false,
+            "now": "2026-10-07T00:00:00Z",
+            "license_allowed": false
+          },
+          "output": {
+            "allowed": false,
+            "user_id": null,
+            "code": "access_denied",
+            "message": "Access to this service is not available. Contact your administrator."
+          }
+        }
+      ],
+      "businessRules": [
+        "A blocked license denies every friend key."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/friend_keys.py",
+          "purpose": "authorize_bearer for the key half of the check."
+        }
+      ]
+    },
+    {
+      "id": "CTX-078.2",
+      "title": "Name the tool for an active key",
+      "summary": "An allowed license and an active key returns check_context. An expired key is denied.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/mcp_http.py",
+        "test": "tests/test_ctx_078_2_tool.py",
+        "function": "mcp_admission"
+      },
+      "scope": [
+        "license allowed",
+        "active key",
+        "tool check_context",
+        "expired key denied"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_078_2_tool.py -q -k CTX_078_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_078_2.",
+        "This subtask's only job: An allowed license and an active key returns check_context. An expired key is denied.",
+        "Touch only src/context_mgmt/mcp_http.py and tests/test_ctx_078_2_tool.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Success is allowed true and tool check_context. Do not return the chat text.",
+        "The test must call mcp_admission.",
+        "Run python -m pytest tests/test_ctx_078_2_tool.py -q -k CTX_078_2."
+      ],
+      "dataExamples": [
+        {
+          "input": {
+            "authorization": "Bearer friend-key",
+            "stored_digest": "c3f39b05cd8145b99d7d26a9633ff6527dc2c635fabc25c738e31f2fe64a7834",
+            "user_id": "ann",
+            "expires_at": "2026-12-01T00:00:00Z",
+            "revoked": false,
+            "now": "2026-10-07T00:00:00Z",
+            "license_allowed": true
+          },
+          "output": {
+            "allowed": true,
+            "tool": "check_context"
+          }
+        },
+        {
+          "input": {
+            "authorization": "Bearer friend-key",
+            "stored_digest": "c3f39b05cd8145b99d7d26a9633ff6527dc2c635fabc25c738e31f2fe64a7834",
+            "user_id": "ann",
+            "expires_at": "2026-10-01T00:00:00Z",
+            "revoked": false,
+            "now": "2026-10-07T00:00:00Z",
+            "license_allowed": true
+          },
+          "output": {
+            "allowed": false,
+            "user_id": null,
+            "code": "access_denied",
+            "message": "Access to this service is not available. Contact your administrator."
+          }
+        }
+      ],
+      "businessRules": [
+        "The tool name is check_context. An expired key never reaches it."
+      ]
+    },
+    {
+      "id": "CTX-078.3",
+      "title": "Keep stdout clean",
+      "summary": "mcp_http.py calls mcp_admission and check_context and does not call print.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/mcp_http.py",
+        "test": "tests/test_ctx_078_3_source.py",
+        "function": "mcp_admission"
+      },
+      "scope": [
+        "source contains mcp_admission(",
+        "source contains check_context",
+        "source has no print("
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_078_3_source.py -q -k CTX_078_3"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_078_3.",
+        "This subtask's only job: mcp_http.py calls mcp_admission and check_context and does not call print.",
+        "Touch only src/context_mgmt/mcp_http.py and tests/test_ctx_078_3_source.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "The test must call mcp_admission. A NotImplementedError from mcp_admission fails the test.",
+        "The test also reads src/context_mgmt/mcp_http.py and asserts the required substrings and the absence of print(.",
+        "Run python -m pytest tests/test_ctx_078_3_source.py -q -k CTX_078_3."
+      ],
+      "dataExamples": [
+        {
+          "required": [
+            "mcp_admission(",
+            "check_context"
+          ],
+          "forbidden": [
+            "print("
+          ]
+        }
+      ],
+      "businessRules": [
+        "Stdio MCP cannot share stdout with print."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/mcp_http.py"
+    ],
+    "businessRules": [
+      "License off or key not active: the shared denial. Otherwise tool check_context."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_078_1_license.py -q -k CTX_078_1",
+      "python -m pytest tests/test_ctx_078_2_tool.py -q -k CTX_078_2",
+      "python -m pytest tests/test_ctx_078_3_source.py -q -k CTX_078_3"
+    ]
+  }
+}

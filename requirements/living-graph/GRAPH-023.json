@@ -1,0 +1,80 @@
+{
+  "id": "GRAPH-023",
+  "type": "task",
+  "summary": "Map fan-in to a clamped node size",
+  "dependsOn": [
+    "GRAPH-011"
+  ],
+  "description": "A pure function maps fan-in to a size between 4 and 24 inclusive. fan-in 0 is 4. A very large fan-in clamps to 24.",
+  "scope": [
+    "Add node_size(fan_in) in src/living_graph/render.py",
+    "size is min(24, max(4, 4 + fan_in * 2))",
+    "Assert 0 -> 4, 1 -> 6, 100 -> 24"
+  ],
+  "acceptanceCriteria": "node_size(0) is 4, node_size(1) is 6, and node_size(100) is 24.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-024.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not map colors.",
+    "Do not call a 3D library."
+  ],
+  "verification": [
+    "python -m pytest tests/test_node_size.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-023.1",
+      "title": "Clamp fan-in to size 4..24",
+      "summary": "Pure function. Formula 4 + 2*fan_in, clamped to 4 and 24.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "node_size",
+        "module": "src/living_graph/render.py",
+        "test": "tests/test_node_size.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "docs/data-contracts.md",
+          "purpose": "Node and Edge contract source of truth."
+        }
+      ],
+      "scope": [
+        "Add node_size(fan_in) in src/living_graph/render.py",
+        "size is min(24, max(4, 4 + fan_in * 2))",
+        "Assert 0 -> 4, 1 -> 6, 100 -> 24"
+      ],
+      "dataExamples": [
+        "fan_in 0 -> 4.",
+        "fan_in 1 -> 6.",
+        "fan_in 100 -> 24."
+      ],
+      "businessRules": [
+        "Minimum size is 4.",
+        "Maximum size is 24."
+      ],
+      "verification": [
+        "python -m pytest tests/test_node_size.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_node_size.py first.",
+        "Run python -m pytest tests/test_node_size.py -q and confirm failure.",
+        "Implement only node_size in src/living_graph/render.py.",
+        "Run python -m pytest tests/test_node_size.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/render.py"
+    ],
+    "businessRules": [
+      "Minimum size is 4.",
+      "Maximum size is 24."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_node_size.py -q"
+    ]
+  }
+}

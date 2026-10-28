@@ -1,0 +1,87 @@
+{
+  "id": "GRAPH-035",
+  "type": "task",
+  "summary": "Publish 3d-force-graph JSON beside the page",
+  "dependsOn": [
+    "GRAPH-024",
+    "GRAPH-032"
+  ],
+  "description": "Write to_force_graph output as graph-force.json in the static folder. The page can load {nodes, links} without transforming in the browser.",
+  "scope": [
+    "Add publish_force_graph(graph, static_dir) in src/living_graph/render.py",
+    "Write graph-force.json using to_force_graph",
+    "Assert keys are nodes and links"
+  ],
+  "acceptanceCriteria": "publish_force_graph(sample graph dict, tmp_static) creates tmp_static/graph-force.json whose parsed body has nodes and links.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-036.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not call ForceGraph3D().",
+    "Do not change to_force_graph field names."
+  ],
+  "verification": [
+    "python -m pytest tests/test_publish_force_graph.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-035.1",
+      "title": "Write static/graph-force.json",
+      "summary": "Reuse to_force_graph. One file. No canvas.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "publish_force_graph",
+        "module": "src/living_graph/render.py",
+        "test": "tests/test_publish_force_graph.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "src/living_graph/render.py",
+          "purpose": "to_force_graph from GRAPH-024."
+        },
+        {
+          "path": "tests/fixtures/sample_graph.json",
+          "purpose": "Tiny graph dict for the write test."
+        }
+      ],
+      "scope": [
+        "Add publish_force_graph(graph, static_dir) in src/living_graph/render.py",
+        "Write graph-force.json using to_force_graph",
+        "Assert keys are nodes and links"
+      ],
+      "dataExamples": [
+        "Output file name is graph-force.json.",
+        "Top-level keys are nodes and links.",
+        "No leftover edges key."
+      ],
+      "businessRules": [
+        "Create static_dir if it does not exist.",
+        "Overwrite graph-force.json when it already exists.",
+        "Call to_force_graph. Do not rebuild color or size here."
+      ],
+      "verification": [
+        "python -m pytest tests/test_publish_force_graph.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_publish_force_graph.py first.",
+        "Run python -m pytest tests/test_publish_force_graph.py -q and confirm failure.",
+        "Implement only publish_force_graph in src/living_graph/render.py.",
+        "Run python -m pytest tests/test_publish_force_graph.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/render.py"
+    ],
+    "businessRules": [
+      "Create static_dir if it does not exist.",
+      "Overwrite graph-force.json when it already exists.",
+      "Call to_force_graph. Do not rebuild color or size here."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_publish_force_graph.py -q"
+    ]
+  }
+}

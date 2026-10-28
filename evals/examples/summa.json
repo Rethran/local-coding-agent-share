@@ -1,0 +1,17 @@
+{
+  "model": "esimerkki",
+  "promptVariant": "summa",
+  "runStatus": "success",
+  "dryRun": false,
+  "trials": [
+    {"sampleId": "summa", "epoch": 1, "title": "summa", "input": "Laske 2 + 3. Vastaa pelkällä luvulla.", "wallSeconds": 60, "scores": {"subtask_done": {"ok": true, "explanation": "valmis"}, "reference_tests_pass": {"ok": true, "explanation": "oikein"}, "process_budget": {"ok": true, "explanation": "raja piti"}}},
+    {"sampleId": "summa", "epoch": 2, "title": "summa", "input": "Laske 2 + 3. Vastaa pelkällä luvulla.", "wallSeconds": 60, "scores": {"subtask_done": {"ok": true, "explanation": "valmis"}, "reference_tests_pass": {"ok": true, "explanation": "oikein"}, "process_budget": {"ok": true, "explanation": "raja piti"}}},
+    {"sampleId": "summa", "epoch": 3, "title": "summa", "input": "Laske 2 + 3. Vastaa pelkällä luvulla.", "wallSeconds": 60, "scores": {"subtask_done": {"ok": true, "explanation": "valmis"}, "reference_tests_pass": {"ok": true, "explanation": "oikein"}, "process_budget": {"ok": true, "explanation": "raja piti"}}},
+    {"sampleId": "erotus", "epoch": 1, "title": "erotus", "input": "Laske 5 - 2. Vastaa pelkällä luvulla.", "wallSeconds": 60, "scores": {"subtask_done": {"ok": true, "explanation": "valmis"}, "reference_tests_pass": {"ok": true, "explanation": "oikein"}, "process_budget": {"ok": true, "explanation": "raja piti"}}},
+    {"sampleId": "erotus", "epoch": 2, "title": "erotus", "input": "Laske 5 - 2. Vastaa pelkällä luvulla.", "wallSeconds": 60, "scores": {"subtask_done": {"ok": true, "explanation": "valmis"}, "reference_tests_pass": {"ok": true, "explanation": "oikein"}, "process_budget": {"ok": true, "explanation": "raja piti"}}},
+    {"sampleId": "erotus", "epoch": 3, "title": "erotus", "input": "Laske 5 - 2. Vastaa pelkällä luvulla.", "wallSeconds": 60, "scores": {"subtask_done": {"ok": true, "explanation": "valmis"}, "reference_tests_pass": {"ok": false, "explanation": "vastaus oli väärä"}, "process_budget": {"ok": true, "explanation": "raja piti"}}},
+    {"sampleId": "tulo", "epoch": 1, "title": "tulo", "input": "Laske 2 * 4. Vastaa pelkällä luvulla.", "wallSeconds": 60, "scores": {"subtask_done": {"ok": true, "explanation": "valmis"}, "reference_tests_pass": {"ok": false, "explanation": "vastaus oli väärä"}, "process_budget": {"ok": true, "explanation": "raja piti"}}},
+    {"sampleId": "tulo", "epoch": 2, "title": "tulo", "input": "Laske 2 * 4. Vastaa pelkällä luvulla.", "wallSeconds": 60, "scores": {"subtask_done": {"ok": true, "explanation": "valmis"}, "reference_tests_pass": {"ok": false, "explanation": "vastaus oli väärä"}, "process_budget": {"ok": true, "explanation": "raja piti"}}},
+    {"sampleId": "tulo", "epoch": 3, "title": "tulo", "input": "Laske 2 * 4. Vastaa pelkällä luvulla.", "wallSeconds": 60, "scores": {"subtask_done": {"ok": true, "explanation": "valmis"}, "reference_tests_pass": {"ok": false, "explanation": "vastaus oli väärä"}, "process_budget": {"ok": true, "explanation": "raja piti"}}}
+  ]
+}

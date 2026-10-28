@@ -1,0 +1,127 @@
+{
+  "id": "CTX-055",
+  "type": "task",
+  "summary": "Reject a release that leaks secrets or unpinned dependencies",
+  "dependsOn": [
+    "CTX-035"
+  ],
+  "description": "SEC-17, SEC-18, SEC-22, and T8-1. A scanner flags a private key, a source map, and a dependency with no hash. It records the release steps. It does not compile or scan a live container.",
+  "scope": [
+    "Private key text, a map file, and an unpinned requirement are problems",
+    "A hashed requirement is clean and the SBOM format is CycloneDX"
+  ],
+  "acceptanceCriteria": "scan_release reports a problem for BEGIN PRIVATE KEY, for a file named app.js.map, and for fastapi>=0.110. fastapi==0.110 --hash=sha256:abc is clean. sbom_format is CycloneDX. release_steps includes strip-debug, minify-dashboard, and sign-artifact. T8-1 SEC-17 SEC-18 SEC-22.",
+  "constraints": [
+    "Do not run Nuitka, docker, bandit, or pip-audit from the test.",
+    "Do not treat an unpinned dependency as clean.",
+    "Do not ignore a private key block."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_055_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_055_1_scan.py -q -k CTX_055_1",
+    "python -m pytest tests/test_ctx_055_2_steps.py -q -k CTX_055_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-055.1",
+      "title": "Flag secret and unpinned files",
+      "summary": "The private key, the map file, and the unpinned requirement are problems. The hashed line is not.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/release_check.py",
+        "test": "tests/test_ctx_055_1_scan.py",
+        "function": "scan_release"
+      },
+      "scope": [
+        "BEGIN PRIVATE KEY is a problem",
+        "app.js.map is a problem",
+        "fastapi>=0.110 is a problem",
+        "hashed line is clean"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_055_1_scan.py -q -k CTX_055_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_055_1.",
+        "This subtask's only job: The private key, the map file, and the unpinned requirement are problems. The hashed line is not.",
+        "Touch only src/context_mgmt/release_check.py and tests/test_ctx_055_1_scan.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Accept a dict of filename to text. Do not read the real disk unless the test passes that dict.",
+        "Run python -m pytest tests/test_ctx_055_1_scan.py -q -k CTX_055_1."
+      ],
+      "dataExamples": [
+        {
+          "bad": [
+            "BEGIN PRIVATE KEY",
+            "app.js.map",
+            "fastapi>=0.110"
+          ],
+          "good": "fastapi==0.110 --hash=sha256:abc"
+        }
+      ],
+      "businessRules": [
+        "T8-1 in this packet is the local checker, not a live SAST or container scan."
+      ]
+    },
+    {
+      "id": "CTX-055.2",
+      "title": "Name the SBOM and the release steps",
+      "summary": "sbom_format is CycloneDX and release_steps includes the three labels.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/release_check.py",
+        "test": "tests/test_ctx_055_2_steps.py",
+        "function": "release_steps"
+      },
+      "scope": [
+        "CycloneDX",
+        "strip-debug",
+        "minify-dashboard",
+        "sign-artifact"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_055_2_steps.py -q -k CTX_055_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_055_2.",
+        "This subtask's only job: sbom_format is CycloneDX and release_steps includes the three labels.",
+        "Touch only src/context_mgmt/release_check.py and tests/test_ctx_055_2_steps.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Return the labels. Do not shell out.",
+        "Run python -m pytest tests/test_ctx_055_2_steps.py -q -k CTX_055_2."
+      ],
+      "dataExamples": [
+        {
+          "sbom": "CycloneDX",
+          "steps": [
+            "strip-debug",
+            "minify-dashboard",
+            "sign-artifact"
+          ]
+        }
+      ],
+      "businessRules": [
+        "SEC-18 and SEC-22 are recorded as release checks the artifact scanner can see."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/release_check.py"
+    ],
+    "businessRules": [
+      "This task does not compile the license module. It checks the artifacts a release would contain."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_055_1_scan.py -q -k CTX_055_1",
+      "python -m pytest tests/test_ctx_055_2_steps.py -q -k CTX_055_2"
+    ]
+  }
+}

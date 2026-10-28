@@ -1,0 +1,181 @@
+{
+  "id": "CTX-015",
+  "type": "task",
+  "summary": "Add dashboard filters, baseline, and cost",
+  "dependsOn": [
+    "CTX-014"
+  ],
+  "description": "FR-C4-03 through FR-C4-06. The static page exposes a baseline date, date and team filters, the small-group message, and a price table for the optional cost view.",
+  "scope": [
+    "Baseline date input",
+    "From, to, and team filters",
+    "Hidden-group message and a model price table"
+  ],
+  "acceptanceCriteria": "The served HTML contains baseline-date, filter-from, filter-to, filter-team, the exact hidden-group sentence, cost-view, and a JSON price table for default-model. FR-C4-03 FR-C4-04 FR-C4-05 FR-C4-06.",
+  "constraints": [
+    "Do not add a user filter or a user table.",
+    "Do not fetch a price list from the network.",
+    "Do not add a build tool."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_015_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_015_1_baseline.py -q -k CTX_015_1",
+    "python -m pytest tests/test_ctx_015_2_filters.py -q -k CTX_015_2",
+    "python -m pytest tests/test_ctx_015_3_hidden_cost.py -q -k CTX_015_3"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-015.1",
+      "title": "Add the baseline date control",
+      "summary": "The page contains an input with id baseline-date.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "static/index.html",
+        "test": "tests/test_ctx_015_1_baseline.py"
+      },
+      "scope": [
+        "Add input id baseline-date",
+        "GET / body contains id=\"baseline-date\""
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_015_1_baseline.py -q -k CTX_015_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_015_1.",
+        "This subtask's only job: The page contains an input with id baseline-date.",
+        "Touch only static/index.html and tests/test_ctx_015_1_baseline.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Add the input to static/index.html.",
+        "Assert the id in the GET / response.",
+        "Run python -m pytest tests/test_ctx_015_1_baseline.py -q -k CTX_015_1."
+      ],
+      "dataExamples": [
+        {
+          "tag": "<input id=\"baseline-date\" type=\"date\">"
+        }
+      ],
+      "businessRules": [
+        "FR-C4-03: the operator sets the date rules were switched on."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/api.py",
+          "purpose": "Reporting API and static dashboard route."
+        }
+      ]
+    },
+    {
+      "id": "CTX-015.2",
+      "title": "Add date and team filters",
+      "summary": "The page contains filter-from, filter-to, and filter-team. It has no user filter.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "static/index.html",
+        "test": "tests/test_ctx_015_2_filters.py"
+      },
+      "scope": [
+        "input id filter-from",
+        "input id filter-to",
+        "input id filter-team"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_015_2_filters.py -q -k CTX_015_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_015_2.",
+        "This subtask's only job: The page contains filter-from, filter-to, and filter-team. It has no user filter.",
+        "Touch only static/index.html and tests/test_ctx_015_2_filters.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Add the three inputs.",
+        "Assert filter-user is absent from the HTML.",
+        "Run python -m pytest tests/test_ctx_015_2_filters.py -q -k CTX_015_2."
+      ],
+      "dataExamples": [
+        {
+          "ids": [
+            "filter-from",
+            "filter-to",
+            "filter-team"
+          ],
+          "absent": "filter-user"
+        }
+      ],
+      "businessRules": [
+        "FR-C4-04: date range and team. No per-user view."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/api.py",
+          "purpose": "Reporting API and static dashboard route."
+        }
+      ]
+    },
+    {
+      "id": "CTX-015.3",
+      "title": "Show the hidden-group message and price table",
+      "summary": "The page states the minimum-group sentence and embeds a per-model price.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "static/index.html",
+        "test": "tests/test_ctx_015_3_hidden_cost.py"
+      },
+      "scope": [
+        "Paragraph id hidden-group-message with the exact sentence",
+        "Element id cost-view",
+        "Script id price-table with the JSON object"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_015_3_hidden_cost.py -q -k CTX_015_3"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_015_3.",
+        "This subtask's only job: The page states the minimum-group sentence and embeds a per-model price.",
+        "Touch only static/index.html and tests/test_ctx_015_3_hidden_cost.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Use the exact sentence and JSON from dataExamples.",
+        "Assert both strings are in GET / text.",
+        "Run python -m pytest tests/test_ctx_015_3_hidden_cost.py -q -k CTX_015_3."
+      ],
+      "dataExamples": [
+        {
+          "message": "Hidden because the group has fewer than 5 users",
+          "price_table": {
+            "default-model": 2e-06
+          },
+          "script": "<script id=\"price-table\" type=\"application/json\">{\"default-model\": 0.000002}</script>"
+        }
+      ],
+      "businessRules": [
+        "FR-C4-05: the hidden-group sentence is visible in the page.",
+        "FR-C4-06: price table is config in the page, one model."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/api.py",
+          "purpose": "Reporting API and static dashboard route."
+        }
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "static/index.html"
+    ],
+    "businessRules": [
+      "Tests read GET / so the file served in CTX-014 stays the source.",
+      "Price is a static JSON script, not a calculation in Python."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_015_1_baseline.py -q -k CTX_015_1",
+      "python -m pytest tests/test_ctx_015_2_filters.py -q -k CTX_015_2",
+      "python -m pytest tests/test_ctx_015_3_hidden_cost.py -q -k CTX_015_3"
+    ]
+  }
+}

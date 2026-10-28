@@ -1,0 +1,119 @@
+{
+  "id": "CTX-025",
+  "type": "task",
+  "summary": "Evaluate the license against a clock high-water mark",
+  "dependsOn": [
+    "CTX-024"
+  ],
+  "description": "FR-C7-12. If the clock reads earlier than the latest timestamp already seen, evaluate the license at that high-water mark. The mark stays in memory in this task.",
+  "scope": [
+    "observe() advances the mark and never moves it backward",
+    "A rolled-back clock still expires a license the mark has passed"
+  ],
+  "acceptanceCriteria": "After observe('2026-10-09T00:00:00Z'), a clock now of 2026-10-02T00:00:00Z evaluates as expired for expires_at 2026-10-01T00:00:00Z and grace_days 7. The same now without the mark is grace. observe of an earlier timestamp does not lower the mark. FR-C7-12 T7.",
+  "constraints": [
+    "Do not write the mark to disk in this task.",
+    "Do not ignore the mark when the clock goes backward.",
+    "Do not move the mark backward."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_025_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_025_1_mark.py -q -k CTX_025_1",
+    "python -m pytest tests/test_ctx_025_2_rollback.py -q -k CTX_025_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-025.1",
+      "title": "Keep the latest timestamp",
+      "summary": "observe of an earlier time leaves the stored mark at the later time.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/license.py",
+        "test": "tests/test_ctx_025_1_mark.py",
+        "function": "HighWater"
+      },
+      "scope": [
+        "First observe 2026-10-09T00:00:00Z",
+        "Second observe 2026-10-01T00:00:00Z",
+        "Mark stays 2026-10-09T00:00:00Z"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_025_1_mark.py -q -k CTX_025_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_025_1.",
+        "This subtask's only job: observe of an earlier time leaves the stored mark at the later time.",
+        "Touch only src/context_mgmt/license.py and tests/test_ctx_025_1_mark.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Use an in-memory object. Do not create a file.",
+        "Run python -m pytest tests/test_ctx_025_1_mark.py -q -k CTX_025_1."
+      ],
+      "dataExamples": [
+        {
+          "first": "2026-10-09T00:00:00Z",
+          "second": "2026-10-01T00:00:00Z"
+        }
+      ],
+      "businessRules": [
+        "The mark is the maximum timestamp seen."
+      ]
+    },
+    {
+      "id": "CTX-025.2",
+      "title": "Expire against the mark after rollback",
+      "summary": "Clock 2026-10-02 with mark 2026-10-09 returns expired. The same clock with no mark returns grace.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/license.py",
+        "test": "tests/test_ctx_025_2_rollback.py",
+        "function": "license_state"
+      },
+      "scope": [
+        "expires_at 2026-10-01T00:00:00Z and grace_days 7",
+        "With the mark, state is expired",
+        "Without the mark, state is grace"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_025_2_rollback.py -q -k CTX_025_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_025_2.",
+        "This subtask's only job: Clock 2026-10-02 with mark 2026-10-09 returns expired. The same clock with no mark returns grace.",
+        "Touch only src/context_mgmt/license.py and tests/test_ctx_025_2_rollback.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Pass the mark into license_state. Do not read the system clock in the test.",
+        "Run python -m pytest tests/test_ctx_025_2_rollback.py -q -k CTX_025_2."
+      ],
+      "dataExamples": [
+        {
+          "now": "2026-10-02T00:00:00Z",
+          "mark": "2026-10-09T00:00:00Z",
+          "with_mark": "expired",
+          "without_mark": "grace"
+        }
+      ],
+      "businessRules": [
+        "FR-C7-12: evaluate against the mark when now is earlier."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/license.py"
+    ],
+    "businessRules": [
+      "Disk persistence of the mark is a later deployment task."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_025_1_mark.py -q -k CTX_025_1",
+      "python -m pytest tests/test_ctx_025_2_rollback.py -q -k CTX_025_2"
+    ]
+  }
+}

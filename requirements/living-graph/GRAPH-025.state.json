@@ -1,0 +1,32 @@
+{
+  "taskId": "GRAPH-025",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-09-16T20:16:40+00:00",
+  "updatedAt": "2026-09-16T20:18:28+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "GRAPH-025.1",
+      "title": "Return transitive callers",
+      "status": "DONE",
+      "summary": "Starting implementation of ancestors function. Tests already exist; need to create src/living_graph/query.py."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

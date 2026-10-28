@@ -1,0 +1,137 @@
+{
+  "id": "CTX-011",
+  "type": "task",
+  "summary": "Emit one event and keep serving if emit fails",
+  "dependsOn": [
+    "CTX-010"
+  ],
+  "description": "FR-C1-05 and FR-C1-06. The gateway calls the upstream before emit. If emit raises, the caller still receives the upstream status and assistant content.",
+  "scope": [
+    "Call order is upstream, then emit",
+    "emit runs once on success",
+    "A raising emit still returns HTTP 200 and the assistant content"
+  ],
+  "acceptanceCriteria": "A successful request calls emit once after the upstream post. When emit raises RuntimeError, the client still gets status 200 and assistant content ok. FR-C1-05 FR-C1-06.",
+  "constraints": [
+    "Do not call emit before the upstream request returns.",
+    "Do not turn an emit failure into an HTTP error.",
+    "Do not skip the upstream call when emit would fail."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_011_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_011_1_emit_order.py -q -k CTX_011_1",
+    "python -m pytest tests/test_ctx_011_2_emit_fails.py -q -k CTX_011_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-011.1",
+      "title": "Emit after the upstream call",
+      "summary": "The mock records upstream before emit. emit is called once.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/gateway.py",
+        "test": "tests/test_ctx_011_1_emit_order.py",
+        "function": "create_gateway"
+      },
+      "scope": [
+        "A shared list records the strings upstream and emit",
+        "Order is upstream then emit",
+        "Event action is none for a short prompt"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_011_1_emit_order.py -q -k CTX_011_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_011_1.",
+        "This subtask's only job: The mock records upstream before emit. emit is called once.",
+        "Touch only src/context_mgmt/gateway.py and tests/test_ctx_011_1_emit_order.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Append 'upstream' inside the transport and 'emit' inside emit.",
+        "Assert the list equals ['upstream', 'emit'].",
+        "Run python -m pytest tests/test_ctx_011_1_emit_order.py -q -k CTX_011_1."
+      ],
+      "dataExamples": [
+        {
+          "order": [
+            "upstream",
+            "emit"
+          ],
+          "calls": 1
+        }
+      ],
+      "businessRules": [
+        "FR-C1-05: one event after the upstream response is available."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/gateway.py",
+          "purpose": "OpenAI-compatible proxy."
+        }
+      ]
+    },
+    {
+      "id": "CTX-011.2",
+      "title": "Return the upstream body when emit raises",
+      "summary": "emit raises RuntimeError. The chat response is still 200 and content ok.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/gateway.py",
+        "test": "tests/test_ctx_011_2_emit_fails.py",
+        "function": "create_gateway"
+      },
+      "scope": [
+        "emit raises RuntimeError('c3 down')",
+        "Status 200",
+        "Assistant content ok"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_011_2_emit_fails.py -q -k CTX_011_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_011_2.",
+        "This subtask's only job: emit raises RuntimeError. The chat response is still 200 and content ok.",
+        "Touch only src/context_mgmt/gateway.py and tests/test_ctx_011_2_emit_fails.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Do not catch the error inside the test by expecting a 500.",
+        "Assert response.json()['choices'][0]['message']['content'] == 'ok'.",
+        "Run python -m pytest tests/test_ctx_011_2_emit_fails.py -q -k CTX_011_2."
+      ],
+      "dataExamples": [
+        {
+          "emit": "raise RuntimeError",
+          "status": 200,
+          "content": "ok"
+        }
+      ],
+      "businessRules": [
+        "FR-C1-06: reporting failure is fail-open."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/gateway.py",
+          "purpose": "OpenAI-compatible proxy."
+        }
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/gateway.py"
+    ],
+    "businessRules": [
+      "Swallow exceptions from emit only.",
+      "The response body is the upstream JSON for non-streaming calls."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_011_1_emit_order.py -q -k CTX_011_1",
+      "python -m pytest tests/test_ctx_011_2_emit_fails.py -q -k CTX_011_2"
+    ]
+  }
+}

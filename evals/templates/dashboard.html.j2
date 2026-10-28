@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8">
+  <title>TDD-koodarin arviot — ajon eteneminen</title>
+  <style>
+    body { font-family: Georgia, serif; margin: 2rem auto; max-width: 1100px; line-height: 1.45; color: #1a1a1a; }
+    h1, h2, h3 { font-family: "Segoe UI", sans-serif; }
+    .muted { color: #555; font-size: 0.95rem; }
+    .run { border: 1px solid #ddd; border-radius: 6px; padding: 1rem 1.2rem; margin: 1rem 0; }
+    .run.started { border-color: #d9a600; }
+    .run.success { border-color: #2e8b57; }
+    .run.cancelled, .run.error { border-color: #c0392b; }
+    .bar { background: #eee; height: 12px; border-radius: 6px; overflow: hidden; margin: 0.4rem 0; }
+    .bar > span { display: block; height: 100%; background: #2e8b57; }
+    .run.started .bar > span { background: #d9a600; }
+    table { border-collapse: collapse; width: 100%; margin: 0.6rem 0; }
+    th, td { border-bottom: 1px solid #eee; text-align: left; padding: 0.25rem 0.5rem; white-space: nowrap; }
+    th { font-family: "Segoe UI", sans-serif; font-weight: 600; }
+    code { font-family: Consolas, monospace; }
+    .ok { color: #2e8b57; }
+    .fail { color: #c0392b; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.6rem 1.2rem; }
+    .dry { opacity: 0.6; }
+    .answer { font-size: 1.05rem; }
+    details { margin-top: 0.6rem; }
+    .notice { background: #fff4ce; border-left: 4px solid #d9a600; padding: 0.5rem 0.7rem; }
+  </style>
+</head>
+<body>
+  <h1>Ajon eteneminen</h1>
+  <p class="muted">
+    Lokit <code>{{ snapshot.logsDir }}</code> · raportit <code>{{ snapshot.reportsDir }}</code>
+    · viimeisin luku <span id="lastPoll">{{ snapshot.lastPoll }}</span>
+    · sivu päivittyy 5 s välein. Transkriptit: <code>inspect view</code>.
+  </p>
+  <div id="runs"></div>
+  <h2>Raportit</h2>
+  <p class="muted">Sama lista kuin <a href="/reports/index.html">index.html</a>.</p>
+  <div id="reports"></div>
+
+  <script id="initial" type="application/json">{{ snapshot | tojson }}</script>
+  <script>
+    function pct(x) { return x === null || x === undefined ? "—" : (x * 100).toFixed(1) + "%"; }
+    function secs(s) {
+      if (s === null || s === undefined) return "—";
+      if (s < 90) return Math.round(s) + " s";
+      var m = Math.round(s / 60);
+      if (m < 120) return m + " min";
+      return (m / 60).toFixed(1) + " h";
+    }
+    function esc(x) { return String(x === null || x === undefined ? "" : x).replace(/[&<>"]/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+
+    function renderRun(run) {
+      var p = run.progress;
+      var cls = "run " + esc(p.status) + (run.dryRun ? " dry" : "");
+      var html = '<div class="' + cls + '">';
+      var statusFi = {started: "kesken", success: "valmis", cancelled: "keskeytetty", error: "virhe"}[p.status] || p.status;
+      html += '<h3><code>' + esc(run.model) + '</code> · <code>' + esc(run.promptVariant) + '</code> · ' + esc(statusFi) + (run.dryRun ? ' · kuivaharjoitus' : '') + '</h3>';
+      html += '<p class="muted">' + esc(run.name) + ' · alkoi ' + esc(run.startedAt || run.createdAt) + (run.completedAt ? ' · päättyi ' + esc(run.completedAt) : '') + '</p>';
+      var total = p.total;
+      html += '<div><strong>' + p.done + '</strong>' + (total ? ' / ' + total : '') + ' ajoa valmiina' + (p.percent !== null ? ' (' + p.percent + '%)' : '') + '</div>';
+      if (p.percent !== null) html += '<div class="bar"><span style="width:' + Math.min(100, p.percent) + '%"></span></div>';
+      if (p.status === "started") html += '<p class="notice">Kesken — luvut muuttuvat kun ajo etenee.</p>';
+      if (p.brief) {
+        html += '<p class="answer"><strong>Mihin tehtäviin agentin voi laittaa.</strong> ' + esc(p.brief.assign) + '</p>';
+        html += '<p class="answer"><strong>Paljonko yksi täysi onnistuminen maksoi.</strong> ' + esc(p.brief.cost) + '</p>';
+        html += '<p class="answer"><strong>Paraniko tulos edellisestä.</strong> ' + esc(p.brief.trend) + '</p>';
+      }
+      html += '<div class="grid">';
+      html += '<div>Tyypillinen aika per ajo: ' + secs(p.medianWallSeconds) + '</div>';
+      html += '<div>Arvio jäljellä: ' + (p.status === "started" ? secs(p.etaSeconds) : "—") + '</div>';
+      if (p.current) {
+        html += '<div>Käynnissä: <code>' + esc(p.current.sampleId) + '</code>, kerta ' + esc(p.current.epoch) + ', ' + secs(p.current.elapsedSeconds) + '</div>';
+      } else if (p.status === "started") {
+        html += '<div class="muted">Käynnissä olevaa tehtävää ei ole kirjattu.</div>';
+      }
+      html += '</div>';
+      html += '<details><summary>Tekijälle</summary>';
+      if (p.brief) {
+        html += '<p>' + esc(p.brief.trust) + '</p>';
+        html += '<p>' + esc(p.brief.time) + '</p>';
+        html += '<p>' + esc(p.brief.fix) + '</p>';
+      }
+      var labels = {subtask_done: "Valmis-merkintä", reference_tests_pass: "Testit", process_budget: "Prosessiraja"};
+      var scorers = Object.keys(p.scorers || {});
+      if (scorers.length) {
+        html += '<table><thead><tr><th>Kriteeri</th><th>Osuus</th><th>Kertoja</th></tr></thead><tbody>';
+        scorers.forEach(function (name) { html += '<tr><td>' + esc(labels[name] || name) + '</td><td>' + pct(p.scorers[name].passRate) + '</td><td>' + p.scorers[name].n + '</td></tr>'; });
+        html += '</tbody></table>';
+      }
+      var ft = p.failureTypes || {};
+      var ftLabels = p.failureLabels || {};
+      var ftKeys = Object.keys(ft).filter(function (k) { return ft[k] > 0; });
+      if (ftKeys.length) html += '<div class="muted">Virheet: ' + ftKeys.map(function (k) { return esc(ftLabels[k] || k) + ' ' + ft[k]; }).join(' · ') + '</div>';
+      html += '</details>';
+      if (p.recent && p.recent.length) {
+        html += '<table><thead><tr><th>Viimeisimmät</th><th>Kerta</th><th>Aika</th><th>Tulokset</th></tr></thead><tbody>';
+        var scoreLabels = {subtask_done: "Valmis-merkintä", reference_tests_pass: "Testit", process_budget: "Prosessiraja"};
+        p.recent.forEach(function (t) {
+          var marks = Object.keys(t.scores).map(function (k) { return '<span class="' + (t.scores[k] ? 'ok' : 'fail') + '">' + esc(scoreLabels[k] || k) + '</span>'; }).join(' ');
+          html += '<tr><td><code>' + esc(t.sampleId) + '</code></td><td>' + t.epoch + '</td><td>' + secs(t.wallSeconds) + '</td><td>' + marks + '</td></tr>';
+        });
+        html += '</tbody></table>';
+      }
+      var links = [];
+      if (run.report.html) links.push('<a href="/reports/' + encodeURIComponent(run.report.html) + '">HTML</a>');
+      if (run.report.pdf) links.push('<a href="/reports/' + encodeURIComponent(run.report.pdf) + '">PDF</a>');
+      if (run.report.json) links.push('<a href="/reports/' + encodeURIComponent(run.report.json) + '">JSON</a>');
+      if (links.length) html += '<div>Raportti: ' + links.join(' · ') + '</div>';
+      else if (p.status !== "started") html += '<div class="muted">Raporttia ei vielä kirjoitettu.</div>';
+      if (run.error) html += '<div class="fail">Lokia ei voitu lukea: ' + esc(run.error) + '</div>';
+      if (run.finalizeError) html += '<div class="fail">Raportin kirjoitus epäonnistui: ' + esc(run.finalizeError) + '</div>';
+      html += '</div>';
+      return html;
+    }
+
+    function renderReports(rows) {
+      if (!rows.length) return '<p>Ei raportteja vielä.</p>';
+      var html = '<table><thead><tr><th>Luotu</th><th>Malli</th><th>Kehote</th><th>Tila</th><th>Yhteenveto</th><th>Ajot</th><th>Tiedostot</th></tr></thead><tbody>';
+      var statusFi = {success: "valmis", cancelled: "keskeytetty", error: "virhe", started: "kesken"};
+      rows.forEach(function (r) {
+        var files = [];
+        if (r.html) files.push('<a href="/reports/' + encodeURIComponent(r.html) + '">HTML</a>');
+        if (r.pdf) files.push('<a href="/reports/' + encodeURIComponent(r.pdf) + '">PDF</a>');
+        files.push('<a href="/reports/' + encodeURIComponent(r.json) + '">JSON</a>');
+        html += '<tr class="' + (r.dryRun ? 'dry' : '') + '"><td>' + esc(r.createdAt) + '</td><td><code>' + esc(r.model) + '</code></td><td><code>' + esc(r.promptVariant) + '</code></td><td>' + (r.dryRun ? 'kuivaharjoitus' : esc(statusFi[r.runStatus] || r.runStatus)) + '</td><td>' + esc(r.headline || "") + '</td><td>' + esc(r.nTrials) + (r.plannedTrials ? '/' + r.plannedTrials : '') + '</td><td>' + files.join(' · ') + '</td></tr>';
+      });
+      return html + '</tbody></table>';
+    }
+
+    function render(snapshot) {
+      document.getElementById("lastPoll").textContent = snapshot.lastPoll || "—";
+      var runs = snapshot.runs || [];
+      document.getElementById("runs").innerHTML = runs.length ? runs.map(renderRun).join("") : '<p>Ei lokeja kansiossa.</p>';
+      document.getElementById("reports").innerHTML = renderReports(snapshot.reports || []);
+    }
+
+    render(JSON.parse(document.getElementById("initial").textContent));
+    setInterval(function () {
+      fetch("/api/runs", { cache: "no-store" }).then(function (r) { return r.json(); }).then(render).catch(function () {});
+    }, 5000);
+  </script>
+</body>
+</html>

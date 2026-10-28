@@ -1,0 +1,32 @@
+{
+  "taskId": "CTX-084",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-14T14:10:45+00:00",
+  "updatedAt": "2026-10-14T14:12:22+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "CTX-084.1",
+      "title": "Return the dev license claims",
+      "status": "DONE",
+      "summary": "Implementing dev_license_claims in src/context_mgmt/init_cmd.py"
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

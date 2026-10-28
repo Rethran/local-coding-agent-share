@@ -1,0 +1,140 @@
+{
+  "id": "CTX-082",
+  "type": "task",
+  "summary": "Recognize dev mode",
+  "dependsOn": [
+    "CTX-081"
+  ],
+  "description": "Dev mode is on only when the flag is the exact string 1.",
+  "scope": [
+    "flag 1 is true",
+    "0, true, blank, and null are false"
+  ],
+  "acceptanceCriteria": "is_dev_mode('1') is true. is_dev_mode('0'), is_dev_mode('true'), is_dev_mode(''), and is_dev_mode(None) are false.",
+  "constraints": [
+    "Do not treat the word true as on.",
+    "Do not strip spaces. ' 1' is false."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_082_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_082_1_on.py -q -k CTX_082_1",
+    "python -m pytest tests/test_ctx_082_2_off.py -q -k CTX_082_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-082.1",
+      "title": "Turn dev mode on for 1",
+      "summary": "The exact string 1 returns true.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/devmode.py",
+        "test": "tests/test_ctx_082_1_on.py",
+        "function": "is_dev_mode"
+      },
+      "scope": [
+        "flag 1",
+        "result true"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_082_1_on.py -q -k CTX_082_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_082_1.",
+        "This subtask's only job: The exact string 1 returns true.",
+        "Touch only src/context_mgmt/devmode.py and tests/test_ctx_082_1_on.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "is_dev_mode(flag) is flag == '1'.",
+        "The test must call is_dev_mode.",
+        "Run python -m pytest tests/test_ctx_082_1_on.py -q -k CTX_082_1."
+      ],
+      "dataExamples": [
+        {
+          "input": {
+            "flag": "1"
+          },
+          "output": true
+        }
+      ],
+      "businessRules": [
+        "Only the exact character 1 enables dev mode."
+      ]
+    },
+    {
+      "id": "CTX-082.2",
+      "title": "Leave dev mode off otherwise",
+      "summary": "0, true, a blank string, and null return false.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/devmode.py",
+        "test": "tests/test_ctx_082_2_off.py",
+        "function": "is_dev_mode"
+      },
+      "scope": [
+        "0",
+        "true",
+        "blank",
+        "null"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_082_2_off.py -q -k CTX_082_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_082_2.",
+        "This subtask's only job: 0, true, a blank string, and null return false.",
+        "Touch only src/context_mgmt/devmode.py and tests/test_ctx_082_2_off.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "None and every string other than '1' return false.",
+        "The test must call is_dev_mode.",
+        "Run python -m pytest tests/test_ctx_082_2_off.py -q -k CTX_082_2."
+      ],
+      "dataExamples": [
+        {
+          "input": {
+            "flag": "0"
+          },
+          "output": false
+        },
+        {
+          "input": {
+            "flag": "true"
+          },
+          "output": false
+        },
+        {
+          "input": {
+            "flag": ""
+          },
+          "output": false
+        },
+        {
+          "input": {
+            "flag": null
+          },
+          "output": false
+        }
+      ],
+      "businessRules": [
+        "Lookalike values stay off."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/devmode.py"
+    ],
+    "businessRules": [
+      "True only for the string 1."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_082_1_on.py -q -k CTX_082_1",
+      "python -m pytest tests/test_ctx_082_2_off.py -q -k CTX_082_2"
+    ]
+  }
+}

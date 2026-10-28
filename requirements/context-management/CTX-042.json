@@ -1,0 +1,119 @@
+{
+  "id": "CTX-042",
+  "type": "task",
+  "summary": "Derive identity from the API key",
+  "dependsOn": [
+    "CTX-041"
+  ],
+  "description": "SEC-06 and SEC-26. user_id and team_id come from the key directory. A client X-User-Id header is ignored. New keys have at least 128 bits and can be rotated.",
+  "scope": [
+    "Header bob does not override key alice",
+    "A rotated key replaces the old one and has at least 16 bytes"
+  ],
+  "acceptanceCriteria": "Key k-alice maps to user alice and team team-1 even when X-User-Id is bob. new_api_key returns at least 16 bytes of entropy. After rotate, the old key does not resolve and the new key returns alice. SEC-06 SEC-26.",
+  "constraints": [
+    "Do not trust a client-supplied user id header.",
+    "Do not accept a key shorter than 128 bits from new_api_key.",
+    "Do not leave a rotated key active."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_042_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_042_1_header.py -q -k CTX_042_1",
+    "python -m pytest tests/test_ctx_042_2_rotate.py -q -k CTX_042_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-042.1",
+      "title": "Ignore a spoofed user header",
+      "summary": "resolve_identity returns alice and team-1 when the header says bob.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/identity.py",
+        "test": "tests/test_ctx_042_1_header.py",
+        "function": "resolve_identity"
+      },
+      "scope": [
+        "Key k-alice",
+        "Header X-User-Id bob",
+        "Result user alice and team team-1"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_042_1_header.py -q -k CTX_042_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_042_1.",
+        "This subtask's only job: resolve_identity returns alice and team-1 when the header says bob.",
+        "Touch only src/context_mgmt/identity.py and tests/test_ctx_042_1_header.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "An unknown key raises ValueError.",
+        "Run python -m pytest tests/test_ctx_042_1_header.py -q -k CTX_042_1."
+      ],
+      "dataExamples": [
+        {
+          "key": "k-alice",
+          "header_user": "bob",
+          "user_id": "alice",
+          "team_id": "team-1"
+        }
+      ],
+      "businessRules": [
+        "SEC-06: identity comes from the key."
+      ]
+    },
+    {
+      "id": "CTX-042.2",
+      "title": "Rotate a 128-bit key",
+      "summary": "The new key resolves alice, the old key does not, and the token is at least 16 bytes.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/identity.py",
+        "test": "tests/test_ctx_042_2_rotate.py",
+        "function": "rotate_key"
+      },
+      "scope": [
+        "len(token) >= 16",
+        "old key fails",
+        "new key returns alice"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_042_2_rotate.py -q -k CTX_042_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_042_2.",
+        "This subtask's only job: The new key resolves alice, the old key does not, and the token is at least 16 bytes.",
+        "Touch only src/context_mgmt/identity.py and tests/test_ctx_042_2_rotate.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Use secrets.token_urlsafe or an equivalent 128-bit source.",
+        "Run python -m pytest tests/test_ctx_042_2_rotate.py -q -k CTX_042_2."
+      ],
+      "dataExamples": [
+        {
+          "min_bytes": 16,
+          "user_id": "alice"
+        }
+      ],
+      "businessRules": [
+        "SEC-26: keys rotate and carry at least 128 bits."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/identity.py"
+    ],
+    "businessRules": [
+      "Directory values hold user_id, team_id, and org_id."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_042_1_header.py -q -k CTX_042_1",
+      "python -m pytest tests/test_ctx_042_2_rotate.py -q -k CTX_042_2"
+    ]
+  }
+}

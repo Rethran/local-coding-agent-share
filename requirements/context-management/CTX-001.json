@@ -1,0 +1,120 @@
+{
+  "id": "CTX-001",
+  "type": "task",
+  "summary": "Create the package skeleton and config defaults",
+  "dependsOn": [],
+  "description": "Create a Python 3.11 package context_mgmt with documented org defaults. NFR-02, NFR-03, NFR-04, and NFR-05 start here. The 50 ms latency test, the 4-week seed, and the judge model are outside this set.",
+  "scope": [
+    "Create src/context_mgmt/__init__.py with __version__ 0.1.0",
+    "Create tests/conftest.py that adds src to sys.path",
+    "Create pyproject.toml for Python 3.11, fastapi, httpx, and uvicorn",
+    "Create src/context_mgmt/config.py with OrgConfig defaults"
+  ],
+  "acceptanceCriteria": "context_mgmt.__version__ is 0.1.0. pyproject.toml requires Python >=3.11 and lists fastapi and httpx. default_config() returns compact_threshold 0.60, tool_output_token_cap 4000, trim_head_chars 200, trim_tail_chars 200, min_group_size 5, retention_days 90, content_mode False, summarizer_model None, context_window 32768, and user_hash_salt empty. NFR-04 NFR-02.",
+  "constraints": [
+    "Do not implement rules, storage, HTTP routes, or a dashboard in this task.",
+    "Do not add a telemetry URL or any default that sends data off the machine.",
+    "Do not add a second service package. One package must be able to host gateway and reporting."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_001_1_package.py -q -k CTX_001_1",
+    "python -m pytest tests/test_ctx_001_2_config.py -q -k CTX_001_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-001.1",
+      "title": "Create the importable package",
+      "summary": "Package skeleton only. Expose __version__ and a pyproject that declares Python 3.11, fastapi, and httpx.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/__init__.py",
+        "test": "tests/test_ctx_001_1_package.py",
+        "function": "__version__"
+      },
+      "scope": [
+        "Write tests/conftest.py with the path snippet in dataExamples",
+        "Write pyproject.toml with the text in dataExamples",
+        "Set context_mgmt.__version__ to 0.1.0"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_001_1_package.py -q -k CTX_001_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_001_1.",
+        "Write tests/test_ctx_001_1_package.py first. Assert __version__ == '0.1.0'.",
+        "Read pyproject.toml as text and assert '>=3.11', 'fastapi', and 'httpx' are present.",
+        "Write tests/conftest.py and pyproject.toml exactly from dataExamples, then the package.",
+        "Run python -m pytest tests/test_ctx_001_1_package.py -q -k CTX_001_1."
+      ],
+      "dataExamples": [
+        {
+          "conftest.py": "import sys\nfrom pathlib import Path\n_SRC = Path(__file__).resolve().parents[1] / 'src'\nif str(_SRC) not in sys.path:\n    sys.path.insert(0, str(_SRC))\n",
+          "pyproject.toml": "[project]\nname = \"context-mgmt\"\nversion = \"0.1.0\"\nrequires-python = \">=3.11\"\ndependencies = [\"fastapi\", \"httpx\", \"uvicorn\"]\n\n[tool.pytest.ini_options]\npythonpath = [\"src\"]\n",
+          "version": "0.1.0"
+        }
+      ],
+      "businessRules": [
+        "NFR-04: Python 3.11 and FastAPI are declared here, not implemented yet."
+      ]
+    },
+    {
+      "id": "CTX-001.2",
+      "title": "Add org config defaults",
+      "summary": "Add OrgConfig and default_config() with the frozen MVP defaults. No I/O.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/config.py",
+        "test": "tests/test_ctx_001_2_config.py",
+        "function": "default_config"
+      },
+      "scope": [
+        "Add dataclass OrgConfig and function default_config",
+        "Assert each default listed in dataExamples",
+        "Assert OrgConfig has no telemetry_url attribute"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_001_2_config.py -q -k CTX_001_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_001_2.",
+        "Write the failing defaults test first.",
+        "Implement only src/context_mgmt/config.py.",
+        "Do not assert the full field set. Later tasks may add fields. Do not remove these fields.",
+        "Run python -m pytest tests/test_ctx_001_2_config.py -q -k CTX_001_2."
+      ],
+      "dataExamples": [
+        {
+          "compact_threshold": 0.6,
+          "tool_output_token_cap": 4000,
+          "trim_head_chars": 200,
+          "trim_tail_chars": 200,
+          "min_group_size": 5,
+          "retention_days": 90,
+          "content_mode": false,
+          "summarizer_model": null,
+          "context_window": 32768,
+          "user_hash_salt": ""
+        }
+      ],
+      "businessRules": [
+        "NFR-02: these defaults are the single documented source.",
+        "NFR-05: there is no telemetry endpoint field.",
+        "content_mode False means later tasks store metadata only."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/__init__.py",
+      "src/context_mgmt/config.py"
+    ],
+    "businessRules": [
+      "One importable package. No network calls in config.",
+      "Defaults are the MVP numbers from the requirements. Tests pass an explicit hash salt later."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_001_1_package.py -q -k CTX_001_1",
+      "python -m pytest tests/test_ctx_001_2_config.py -q -k CTX_001_2"
+    ]
+  }
+}

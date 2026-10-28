@@ -1,0 +1,122 @@
+{
+  "id": "CTX-033",
+  "type": "task",
+  "summary": "Report license status to managers",
+  "dependsOn": [
+    "CTX-032"
+  ],
+  "description": "FR-C7-15 and FR-C7-16. GET /license/status returns the verdict, days left, seats, and features. A warning is on from 30 days before expiry and during grace. The body has no user ids.",
+  "scope": [
+    "Manager key receives the status fields",
+    "Warning is on at 30 days and off at 31, and a service key is rejected"
+  ],
+  "acceptanceCriteria": "expires_at 2026-10-31 and now 2026-10-01 returns days_left 30, warning true, and the fields state, reason, expires_at, days_left, seats_used, max_users, features. days_left 31 returns warning false. Grace returns warning true. A service key gets 403. The JSON text does not contain alice. FR-C7-15 FR-C7-16.",
+  "constraints": [
+    "Do not return user ids or hashes.",
+    "Do not allow a service key to read status.",
+    "Do not show this route on the gateway app."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_033_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_033_1_status.py -q -k CTX_033_1",
+    "python -m pytest tests/test_ctx_033_2_warn.py -q -k CTX_033_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-033.1",
+      "title": "Return the status document",
+      "summary": "A manager key gets days_left 30 and the status fields, with no user id.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/license_admin.py",
+        "test": "tests/test_ctx_033_1_status.py",
+        "function": "license_status"
+      },
+      "scope": [
+        "days_left 30",
+        "seats_used 2",
+        "max_users 10",
+        "JSON does not contain alice"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_033_1_status.py -q -k CTX_033_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_033_1.",
+        "This subtask's only job: A manager key gets days_left 30 and the status fields, with no user id.",
+        "Touch only src/context_mgmt/license_admin.py and tests/test_ctx_033_1_status.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Include features from the claims. Do not add a user_ids key.",
+        "Run python -m pytest tests/test_ctx_033_1_status.py -q -k CTX_033_1."
+      ],
+      "dataExamples": [
+        {
+          "expires_at": "2026-10-31T00:00:00Z",
+          "now": "2026-10-01T00:00:00Z",
+          "days_left": 30,
+          "seats_used": 2
+        }
+      ],
+      "businessRules": [
+        "FR-C7-15 is management plane only."
+      ]
+    },
+    {
+      "id": "CTX-033.2",
+      "title": "Warn before expiry and hide status from service keys",
+      "summary": "warning is true at 30 days and during grace, false at 31 days. A service key gets 403.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/license_admin.py",
+        "test": "tests/test_ctx_033_2_warn.py",
+        "function": "expiry_warning"
+      },
+      "scope": [
+        "30 days warning true",
+        "31 days warning false",
+        "grace warning true",
+        "service key 403"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_033_2_warn.py -q -k CTX_033_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_033_2.",
+        "This subtask's only job: warning is true at 30 days and during grace, false at 31 days. A service key gets 403.",
+        "Touch only src/context_mgmt/license_admin.py and tests/test_ctx_033_2_warn.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Use TestClient for the service-key case.",
+        "Run python -m pytest tests/test_ctx_033_2_warn.py -q -k CTX_033_2."
+      ],
+      "dataExamples": [
+        {
+          "warn_days": 30,
+          "ok_days": 31,
+          "service_status": 403
+        }
+      ],
+      "businessRules": [
+        "FR-C7-16: developers see nothing until use is blocked."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/license_admin.py"
+    ],
+    "businessRules": [
+      "expiry_warning_days default is 30."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_033_1_status.py -q -k CTX_033_1",
+      "python -m pytest tests/test_ctx_033_2_warn.py -q -k CTX_033_2"
+    ]
+  }
+}

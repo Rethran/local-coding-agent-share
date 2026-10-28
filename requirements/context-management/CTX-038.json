@@ -1,0 +1,130 @@
+{
+  "id": "CTX-038",
+  "type": "task",
+  "summary": "Show spend against a budget",
+  "dependsOn": [
+    "CTX-008",
+    "CTX-015"
+  ],
+  "description": "FR-C4-07. Spend is tokens times the config price. The view shows the day, the cumulative total, and a projection from the average daily spend. A team under the minimum group size is omitted.",
+  "scope": [
+    "One day of 1000 tokens at 0.001 projects spend 10 across 10 days",
+    "A team of 4 users is hidden and the page has the spend elements"
+  ],
+  "acceptanceCriteria": "1000 tokens at price_per_token 0.001 is spend 1.0 and cumulative 1.0. period_days 10 projects 10.0. A team with 4 users is omitted and hidden_groups is 1. A team with 5 users is included. The HTML contains spend-daily, spend-cumulative, spend-projected, and budget-amount. FR-C4-07.",
+  "constraints": [
+    "Do not show a team with fewer than min_group_size users.",
+    "Do not fetch prices from the network.",
+    "Do not add a per-user spend table."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_038_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_038_1_project.py -q -k CTX_038_1",
+    "python -m pytest tests/test_ctx_038_2_page.py -q -k CTX_038_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-038.1",
+      "title": "Project end-of-period spend",
+      "summary": "1000 tokens at 0.001 over a 10-day budget of 10 projects 10.0 and hides a 4-user team.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/spend.py",
+        "test": "tests/test_ctx_038_1_project.py",
+        "function": "spend_view"
+      },
+      "scope": [
+        "day spend 1.0",
+        "projected 10.0",
+        "4-user team omitted",
+        "5-user team included"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_038_1_project.py -q -k CTX_038_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_038_1.",
+        "This subtask's only job: 1000 tokens at 0.001 over a 10-day budget of 10 projects 10.0 and hides a 4-user team.",
+        "Touch only src/context_mgmt/spend.py and tests/test_ctx_038_1_project.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Average daily spend is the mean of the included days. Days left are period_days minus days seen.",
+        "Run python -m pytest tests/test_ctx_038_1_project.py -q -k CTX_038_1."
+      ],
+      "dataExamples": [
+        {
+          "total_tokens": 1000,
+          "price_per_token": 0.001,
+          "budget_amount": 10,
+          "period_days": 10,
+          "spend": 1.0,
+          "projected": 10.0,
+          "hidden_users": 4,
+          "shown_users": 5
+        }
+      ],
+      "businessRules": [
+        "FR-C4-07 team splits obey the minimum group size of 5."
+      ]
+    },
+    {
+      "id": "CTX-038.2",
+      "title": "Add the spend elements",
+      "summary": "The page contains the four spend element ids.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "static/index.html",
+        "test": "tests/test_ctx_038_2_page.py"
+      },
+      "scope": [
+        "spend-daily",
+        "spend-cumulative",
+        "spend-projected",
+        "budget-amount"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_038_2_page.py -q -k CTX_038_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_038_2.",
+        "This subtask's only job: The page contains the four spend element ids.",
+        "Touch only static/index.html and tests/test_ctx_038_2_page.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Read GET / with TestClient. Do not start a socket server.",
+        "Run python -m pytest tests/test_ctx_038_2_page.py -q -k CTX_038_2."
+      ],
+      "dataExamples": [
+        {
+          "required": [
+            "spend-daily",
+            "spend-cumulative",
+            "spend-projected",
+            "budget-amount"
+          ]
+        }
+      ],
+      "businessRules": [
+        "No build step. Edit the static page."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/spend.py",
+      "static/index.html"
+    ],
+    "businessRules": [
+      "projected = cumulative + average_daily * days_left."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_038_1_project.py -q -k CTX_038_1",
+      "python -m pytest tests/test_ctx_038_2_page.py -q -k CTX_038_2"
+    ]
+  }
+}

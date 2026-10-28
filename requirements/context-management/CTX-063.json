@@ -1,0 +1,116 @@
+{
+  "id": "CTX-063",
+  "type": "task",
+  "summary": "Prove the access-control table",
+  "dependsOn": [
+    "CTX-043"
+  ],
+  "description": "T8-3 and T8. The access table denies a missing key, a wrong role, a cross-plane key, a service read, a cross-org id, and a spoofed user header.",
+  "scope": [
+    "Each denied case is false",
+    "The matching manager read is true and the spoofed header does not change the user"
+  ],
+  "acceptanceCriteria": "access_case returns false for no key, wrong role, data key on management, admin key on data, service read, and cross-org. It returns true for manager on stats. resolve_identity still returns alice when the header says bob. T8-3 T8.",
+  "constraints": [
+    "Do not allow a case the table marks denied.",
+    "Do not trust the spoofed header.",
+    "Do not add a route without a role."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_063_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_063_1_table.py -q -k CTX_063_1",
+    "python -m pytest tests/test_ctx_063_2_spoof.py -q -k CTX_063_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-063.1",
+      "title": "Deny the listed cases",
+      "summary": "The six denied cases are false and the manager stats case is true.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/authz.py",
+        "test": "tests/test_ctx_063_1_table.py",
+        "function": "access_case"
+      },
+      "scope": [
+        "Six denies",
+        "Manager stats allowed"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_063_1_table.py -q -k CTX_063_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_063_1.",
+        "This subtask's only job: The six denied cases are false and the manager stats case is true.",
+        "Touch only src/context_mgmt/authz.py and tests/test_ctx_063_1_table.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Drive the existing access_allowed helper. Do not copy a second role table.",
+        "Run python -m pytest tests/test_ctx_063_1_table.py -q -k CTX_063_1."
+      ],
+      "dataExamples": [
+        {
+          "denied": 6,
+          "manager_stats": true
+        }
+      ],
+      "businessRules": [
+        "T8-3. A new endpoint without an authorization result fails this table."
+      ]
+    },
+    {
+      "id": "CTX-063.2",
+      "title": "Ignore the spoofed user on the same case",
+      "summary": "The identity remains alice when X-User-Id is bob.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/identity.py",
+        "test": "tests/test_ctx_063_2_spoof.py",
+        "function": "resolve_identity"
+      },
+      "scope": [
+        "Header bob",
+        "User alice"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_063_2_spoof.py -q -k CTX_063_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_063_2.",
+        "This subtask's only job: The identity remains alice when X-User-Id is bob.",
+        "Touch only src/context_mgmt/identity.py and tests/test_ctx_063_2_spoof.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Use the CTX-042 directory. Do not add a header fallback.",
+        "Run python -m pytest tests/test_ctx_063_2_spoof.py -q -k CTX_063_2."
+      ],
+      "dataExamples": [
+        {
+          "header": "bob",
+          "user_id": "alice"
+        }
+      ],
+      "businessRules": [
+        "T8-3 includes the spoofed user_id header."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/authz.py",
+      "src/context_mgmt/identity.py"
+    ],
+    "businessRules": [
+      "Cross-org is denied even when the role would otherwise allow the route."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_063_1_table.py -q -k CTX_063_1",
+      "python -m pytest tests/test_ctx_063_2_spoof.py -q -k CTX_063_2"
+    ]
+  }
+}

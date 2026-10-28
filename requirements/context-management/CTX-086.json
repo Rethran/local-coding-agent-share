@@ -1,0 +1,107 @@
+{
+  "id": "CTX-086",
+  "type": "task",
+  "summary": "Expose check_context on stdio",
+  "dependsOn": [
+    "CTX-079",
+    "CTX-081"
+  ],
+  "description": "ctx mcp speaks MCP on stdio. The only tool is check_context, described by tool_description. Admission runs first.",
+  "scope": [
+    "mcp_tool_spec names check_context and the CTX-079 description",
+    "mcp_stdio.py calls mcp_admission and does not print"
+  ],
+  "acceptanceCriteria": "mcp_tool_spec() returns name check_context and description equal to tool_description(). mcp_stdio.py contains mcp_admission( and check_context and does not contain print(.",
+  "constraints": [
+    "The mcp package is the only new dependency. Pin the version pip resolves.",
+    "Do not print to stdout.",
+    "Call mcp_admission before the tool body. Return public_tool_result."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_086_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_086_1_spec.py -q -k CTX_086_1"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-086.1",
+      "title": "Name the stdio tool",
+      "summary": "mcp_tool_spec returns check_context and the fixed description, and the module calls mcp_admission.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/mcp_stdio.py",
+        "test": "tests/test_ctx_086_1_spec.py",
+        "function": "mcp_tool_spec"
+      },
+      "scope": [
+        "name check_context",
+        "tool description",
+        "mcp_admission("
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_086_1_spec.py -q -k CTX_086_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_086_1.",
+        "This subtask's only job: mcp_tool_spec returns check_context and the fixed description, and the module calls mcp_admission.",
+        "Touch src/context_mgmt/mcp_stdio.py, src/context_mgmt/cli.py, pyproject.toml, and tests/test_ctx_086_1_spec.py.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "mcp_tool_spec() returns name check_context and description equal to tool_description().",
+        "ctx mcp runs the MCP stdio server. Call mcp_admission before the tool. Return public_tool_result from mcp_server.py.",
+        "Add the mcp dependency to pyproject.toml, pinned to the version pip resolves now.",
+        "The test must call mcp_tool_spec.",
+        "Run python -m pytest tests/test_ctx_086_1_spec.py -q -k CTX_086_1."
+      ],
+      "dataExamples": [
+        {
+          "input": {},
+          "output": {
+            "name": "check_context",
+            "description": "Call check_context when the chat is long. Arguments are used_tokens, window_size, and last_tool_output_tokens. The result is only action and reason."
+          }
+        },
+        {
+          "required": [
+            "mcp_admission(",
+            "check_context"
+          ],
+          "forbidden": [
+            "print("
+          ]
+        }
+      ],
+      "businessRules": [
+        "One stdio tool. Admission before the body. No stdout prints."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/mcp_http.py",
+          "purpose": "tool_description and mcp_admission."
+        },
+        {
+          "path": "src/context_mgmt/mcp_server.py",
+          "purpose": "public_tool_result."
+        }
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/mcp_stdio.py",
+      "src/context_mgmt/cli.py",
+      "pyproject.toml"
+    ],
+    "businessRules": [
+      "stdio tool check_context. Description from tool_description. Gate with mcp_admission."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_086_1_spec.py -q -k CTX_086_1"
+    ]
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "taskId": "CTX-051",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-07T17:05:05+00:00",
+  "updatedAt": "2026-10-07T17:08:03+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "CTX-051.1",
+      "title": "Store and compare key hashes",
+      "status": "DONE",
+      "summary": "Creating src/context_mgmt/crypto_hygiene.py with hash_api_key and secrets_equal."
+    },
+    {
+      "id": "CTX-051.2",
+      "title": "Leave the CTX-005 user hash in place",
+      "status": "DONE",
+      "summary": "Implementing hmac_user_id in crypto_hygiene.py"
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

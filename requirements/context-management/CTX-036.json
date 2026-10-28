@@ -1,0 +1,130 @@
+{
+  "id": "CTX-036",
+  "type": "task",
+  "summary": "Remember removed tokens for the session",
+  "dependsOn": [
+    "CTX-011",
+    "CTX-022"
+  ],
+  "description": "FR-C1-10. A session is the hash of the API key plus the hash of the system text and the first user text. Removed-token totals stay in memory and are added into tokens_saved_est.",
+  "scope": [
+    "The same opening accumulates, a different opening does not",
+    "The gateway emits the cumulative saved total"
+  ],
+  "acceptanceCriteria": "Two adds of 10 and 4 on one session id emit 14 on the second event. A different first user message emits only that request's 4. The raw API key is not the session id. session.py does not import sqlite3 and does not call open. FR-C1-10.",
+  "constraints": [
+    "Do not write session totals to disk.",
+    "Do not put the raw API key in the session id or the event.",
+    "Do not share totals across different opening messages."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_036_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_036_1_memory.py -q -k CTX_036_1",
+    "python -m pytest tests/test_ctx_036_2_emit.py -q -k CTX_036_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-036.1",
+      "title": "Accumulate in memory for one opening",
+      "summary": "The same opening sums 10 and 4 to 14. A different opening stays at 4. The source does not open a file.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/session.py",
+        "test": "tests/test_ctx_036_1_memory.py",
+        "function": "SessionTotals"
+      },
+      "scope": [
+        "Same session cumulative 14",
+        "Other session cumulative 4",
+        "No sqlite3 and no open("
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_036_1_memory.py -q -k CTX_036_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_036_1.",
+        "This subtask's only job: The same opening sums 10 and 4 to 14. A different opening stays at 4. The source does not open a file.",
+        "Touch only src/context_mgmt/session.py and tests/test_ctx_036_1_memory.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Read session.py and assert sqlite3 and open( are absent.",
+        "Run python -m pytest tests/test_ctx_036_1_memory.py -q -k CTX_036_1."
+      ],
+      "dataExamples": [
+        {
+          "first_saved": 10,
+          "second_saved": 4,
+          "cumulative": 14,
+          "other": 4
+        }
+      ],
+      "businessRules": [
+        "FR-C1-10: the session key is a hash of the credential plus the opening messages."
+      ]
+    },
+    {
+      "id": "CTX-036.2",
+      "title": "Emit the cumulative saved total",
+      "summary": "Two gateway calls with the same key and opening emit tokens_saved_est 10 then 14.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/gateway.py",
+        "test": "tests/test_ctx_036_2_emit.py",
+        "function": "create_gateway"
+      },
+      "scope": [
+        "First event tokens_saved_est 10",
+        "Second event tokens_saved_est 14",
+        "API key value absent from the event"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_036_2_emit.py -q -k CTX_036_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_036_2.",
+        "This subtask's only job: Two gateway calls with the same key and opening emit tokens_saved_est 10 then 14.",
+        "Touch only src/context_mgmt/gateway.py and tests/test_ctx_036_2_emit.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Patch decide so the first call reports tokens_saved_est 10 and the second reports 4.",
+        "Use the same Authorization value and the same first user content.",
+        "Run python -m pytest tests/test_ctx_036_2_emit.py -q -k CTX_036_2."
+      ],
+      "dataExamples": [
+        {
+          "saved": [
+            10,
+            14
+          ]
+        }
+      ],
+      "businessRules": [
+        "Earlier removals count because that text would have been sent again."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/session.py",
+          "purpose": "In-memory totals."
+        }
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/session.py",
+      "src/context_mgmt/gateway.py"
+    ],
+    "businessRules": [
+      "Opening text is the system content plus the first user content."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_036_1_memory.py -q -k CTX_036_1",
+      "python -m pytest tests/test_ctx_036_2_emit.py -q -k CTX_036_2"
+    ]
+  }
+}

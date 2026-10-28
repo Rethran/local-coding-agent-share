@@ -1,0 +1,32 @@
+{
+  "taskId": "GRAPH-032",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-09-17T11:02:49+00:00",
+  "updatedAt": "2026-09-17T11:04:22+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "GRAPH-032.1",
+      "title": "Write static/graph.json",
+      "status": "DONE",
+      "summary": "Wrote failing tests in tests/test_publish_graph.py (slice GRAPH_032_1). Running verification to confirm failure."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

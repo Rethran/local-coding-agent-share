@@ -1,0 +1,79 @@
+{
+  "id": "GRAPH-034",
+  "type": "task",
+  "summary": "Include the 3d-force-graph script on the page",
+  "dependsOn": [
+    "GRAPH-033"
+  ],
+  "description": "index.html includes the 3d-force-graph UMD script so ForceGraph3D is available. Do not call ForceGraph3D yet.",
+  "scope": [
+    "Add a script tag in src/living_graph/static/index.html",
+    "src is https://unpkg.com/3d-force-graph",
+    "Do not call ForceGraph3D() in this task"
+  ],
+  "acceptanceCriteria": "index.html contains a script tag whose src is https://unpkg.com/3d-force-graph.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-035.",
+    "Do not add a watcher or CLI unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not call ForceGraph3D().",
+    "Do not add npm or a bundler."
+  ],
+  "verification": [
+    "python -m pytest tests/test_force_graph_script.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-034.1",
+      "title": "Add 3d-force-graph script tag",
+      "summary": "CDN script only. No canvas. No graphData.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "index.html",
+        "module": "src/living_graph/static/index.html",
+        "test": "tests/test_force_graph_script.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "src/living_graph/static/viewer.js",
+          "purpose": "GRAPH-033 fetch script. Do not mount the graph here yet."
+        }
+      ],
+      "scope": [
+        "Add a script tag in src/living_graph/static/index.html",
+        "src is https://unpkg.com/3d-force-graph",
+        "Do not call ForceGraph3D() in this task"
+      ],
+      "dataExamples": [
+        "index.html contains unpkg.com/3d-force-graph.",
+        "The tag is a script tag."
+      ],
+      "businessRules": [
+        "Use the UMD build from unpkg. No npm install.",
+        "The 3d-force-graph script tag must appear before viewer.js."
+      ],
+      "verification": [
+        "python -m pytest tests/test_force_graph_script.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_force_graph_script.py first.",
+        "Run python -m pytest tests/test_force_graph_script.py -q and confirm failure.",
+        "Add only the CDN script tag to index.html.",
+        "Run python -m pytest tests/test_force_graph_script.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/static/index.html"
+    ],
+    "businessRules": [
+      "Use the UMD build from unpkg. No npm install.",
+      "The 3d-force-graph script tag must appear before viewer.js."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_force_graph_script.py -q"
+    ]
+  }
+}

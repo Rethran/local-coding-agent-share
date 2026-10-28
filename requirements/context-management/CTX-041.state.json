@@ -1,0 +1,38 @@
+{
+  "taskId": "CTX-041",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-06T21:00:37+00:00",
+  "updatedAt": "2026-10-06T21:03:40+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "CTX-041.1",
+      "title": "Hide the exception",
+      "status": "DONE",
+      "summary": "Implementing generic_error in src/context_mgmt/errors.py to hide exception details."
+    },
+    {
+      "id": "CTX-041.2",
+      "title": "Echo a correlation id",
+      "status": "DONE",
+      "summary": "Starting implementation: add correlation_id to body and X-Correlation-Id header in generic_error."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

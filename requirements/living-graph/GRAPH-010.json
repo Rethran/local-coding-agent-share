@@ -1,0 +1,84 @@
+{
+  "id": "GRAPH-010",
+  "type": "task",
+  "summary": "Deduplicate nodes across edges",
+  "dependsOn": [
+    "GRAPH-009"
+  ],
+  "description": "If the same keyword name and source file appear in two edge entries, the node list contains only one node for that pair.",
+  "scope": [
+    "Add nodes_from_edges(edges) in src/living_graph/merge.py",
+    "Two edges sharing callee Open Application from tests/fixtures/simple_test.robot produce one node for that callee",
+    "Node id is tests/fixtures/simple_test.robot::Open Application"
+  ],
+  "acceptanceCriteria": "nodes_from_edges on two edges that share Open Application from the same file returns one Open Application node.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-011.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not compute fan-in.",
+    "Do not compute fan-out."
+  ],
+  "verification": [
+    "python -m pytest tests/test_dedupe_nodes.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-010.1",
+      "title": "One node per name and source file",
+      "summary": "Shared callee in two edges becomes one node. No fan-in math.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "nodes_from_edges",
+        "module": "src/living_graph/merge.py",
+        "test": "tests/test_dedupe_nodes.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "src/living_graph/model.py",
+          "purpose": "GRAPH-002 Node and Edge contracts."
+        },
+        {
+          "path": "docs/data-contracts.md",
+          "purpose": "Node and Edge contract source of truth."
+        }
+      ],
+      "scope": [
+        "Add nodes_from_edges(edges) in src/living_graph/merge.py",
+        "Two edges sharing callee Open Application from tests/fixtures/simple_test.robot produce one node for that callee",
+        "Node id is tests/fixtures/simple_test.robot::Open Application"
+      ],
+      "dataExamples": [
+        "Edge 1: Happy Path -> Open Application from tests/fixtures/simple_test.robot.",
+        "Edge 2: Another Case -> Open Application from tests/fixtures/simple_test.robot.",
+        "nodes_from_edges returns one node named Open Application."
+      ],
+      "businessRules": [
+        "Node identity is {source_path}::{name}.",
+        "Unresolved ids stay unresolved::{name}."
+      ],
+      "verification": [
+        "python -m pytest tests/test_dedupe_nodes.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_dedupe_nodes.py first.",
+        "Run python -m pytest tests/test_dedupe_nodes.py -q and confirm failure.",
+        "Implement only nodes_from_edges in src/living_graph/merge.py.",
+        "Run python -m pytest tests/test_dedupe_nodes.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/merge.py"
+    ],
+    "businessRules": [
+      "Node identity is {source_path}::{name}.",
+      "Unresolved ids stay unresolved::{name}."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_dedupe_nodes.py -q"
+    ]
+  }
+}

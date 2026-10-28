@@ -1,0 +1,253 @@
+{
+  "schema": "eval-report/v1",
+  "createdAt": "2026-10-03T18:25:46+00:00",
+  "sourceLog": "C:\\Users\\santt\\Desktop\\local-coding-agent\\evals\\logs\\2026-10-03T18-25-38-00-00_tdd-coder_XzQAQF6tuUgTu8JYgiwAio.eval",
+  "model": "night-runner:latest",
+  "promptVariant": "baseline",
+  "runStatus": "success",
+  "dryRun": false,
+  "plannedTrials": 3,
+  "criteria": {
+    "subtask_done": {
+      "what": "The orchestrator marked the pinned subtask DONE after the independent verifier passed.",
+      "why": "This is the outcome that matters: the agent's own declared verification succeeded and the coordinator agreed. A fluent transcript that never reaches DONE is still a failure.",
+      "how": "Code. Read the copied requirements <task_id>.state.json after the run. Pass iff the matching subtask status is DONE.",
+      "grader": "code"
+    },
+    "reference_tests_pass": {
+      "what": "Tests from the historically accepted commit still pass against the code the agent just wrote.",
+      "why": "The agent's own tests can be too weak or accidentally rewritten. Overlaying the accepted commit's test files is a cheap substitute for hidden tests. These are regression tests, not independently authored hidden tests.",
+      "how": "Code. After the agent finishes, overlay tests/ files from accepted_commit, then run pytest on those paths in the worktree.",
+      "grader": "code"
+    },
+    "process_budget": {
+      "what": "The agent finished without looping, blowing the step budget, or drowning in tool errors.",
+      "why": "Local models often fail on process before they fail on correctness. A pass that took 80 identical read_file calls is not a prompt you want to keep.",
+      "how": "Code, from run_summary.json. Fail if attempts > 10, steps > 160, any identical tool fingerprint repeats more than 5 times, or tool error rate > 40%.",
+      "grader": "code",
+      "thresholds": {
+        "max_attempts": 10,
+        "max_steps": 160,
+        "max_repeat_of_one_call": 5,
+        "max_tool_error_rate": 0.4
+      }
+    }
+  },
+  "summary": {
+    "scorers": {},
+    "p95WallSeconds": 0.0,
+    "meanWallSeconds": 0.0,
+    "totalTokens": 0,
+    "nTrials": 0,
+    "nSamples": 0
+  },
+  "review": {
+    "falseDone": {
+      "rate": null,
+      "stderr": null,
+      "falseDone": 0,
+      "claimedDone": 0
+    },
+    "consistency": {
+      "scorer": "reference_tests_pass",
+      "reliable": [],
+      "fragile": [],
+      "cannot": []
+    },
+    "cost": {
+      "gpuMinutes": 0.0,
+      "fullSuccesses": 0,
+      "minutesPerSuccess": null
+    },
+    "timing": {
+      "wallSeconds": {
+        "median": null,
+        "worst": null,
+        "n": 0
+      },
+      "steps": {
+        "median": null,
+        "worst": null,
+        "n": 0
+      }
+    },
+    "failureTypes": {
+      "counts": {
+        "timeout": 0,
+        "loop": 0,
+        "tool_errors": 0,
+        "step_budget": 0,
+        "reference_tests": 0,
+        "other": 0
+      },
+      "labels": {
+        "timeout": "aikakatkaisu",
+        "loop": "silmukka",
+        "tool_errors": "työkaluvirheet",
+        "step_budget": "askelbudjetti",
+        "reference_tests": "testit",
+        "other": "muu"
+      },
+      "order": [
+        "timeout",
+        "loop",
+        "tool_errors",
+        "step_budget",
+        "reference_tests",
+        "other"
+      ],
+      "failedTrials": 0
+    },
+    "referenceTests": {
+      "passRate": null,
+      "stderr": null,
+      "n": 0
+    },
+    "reliableShare": null,
+    "nSamples": 0,
+    "deltas": {
+      "referenceTestsPassRate": {
+        "delta": null,
+        "combinedStderr": null,
+        "noise": null
+      },
+      "falseDoneRate": {
+        "delta": null,
+        "combinedStderr": null,
+        "noise": null
+      },
+      "reliableShare": {
+        "delta": null,
+        "combinedStderr": null,
+        "noise": null
+      }
+    }
+  },
+  "brief": {
+    "assign": "Ei yhtään arvioitua tehtävää.",
+    "cost": "Ei yhtään tehtävää, joka onnistui joka kerta, joten minuuttia per onnistuminen ei jaeta. Yhteensä 0 minuuttia.",
+    "trend": "Ero edelliseen mahtuu satunnaiseen heittoon, älä tulkitse sitä muutokseksi.",
+    "trust": "Yksikään ajo ei merkinnyt tehtävää valmiiksi.",
+    "time": "Aikaa ei ole kirjattu. Askelmäärää ei ole tässä lokissa.",
+    "fix": "Yksikään ajo ei epäonnistunut.",
+    "headline": "0 luotettavaa, 0 haurasta, 0 ei osaa · ei täyttä onnistumista"
+  },
+  "failures": [],
+  "flaky": [],
+  "trend": [
+    {
+      "createdAt": "2026-09-30T19:59:49+00:00",
+      "promptVariant": "baseline",
+      "model": "night-runner:latest",
+      "scorers": {
+        "process_budget": 1.0,
+        "reference_tests_pass": 0.0,
+        "subtask_done": 0.0
+      },
+      "referenceTestsPassRate": 0.0,
+      "falseDoneRate": null,
+      "reliableCases": 0
+    },
+    {
+      "createdAt": "2026-09-30T20:00:21+00:00",
+      "promptVariant": "baseline",
+      "model": "night-runner:latest",
+      "scorers": {
+        "process_budget": 1.0,
+        "reference_tests_pass": 0.0,
+        "subtask_done": 0.0
+      },
+      "referenceTestsPassRate": 0.0,
+      "falseDoneRate": null,
+      "reliableCases": 0
+    },
+    {
+      "createdAt": "2026-10-02T08:14:47+00:00",
+      "promptVariant": "baseline",
+      "model": "night-runner:latest",
+      "scorers": {
+        "process_budget": 1.0,
+        "reference_tests_pass": 0.9048,
+        "subtask_done": 1.0
+      },
+      "referenceTestsPassRate": 0.9048,
+      "falseDoneRate": 0.0952,
+      "reliableCases": 11
+    },
+    {
+      "createdAt": "2026-10-02T21:45:28+00:00",
+      "promptVariant": "baseline",
+      "model": "qwen3:8b",
+      "scorers": {
+        "process_budget": 0.6842,
+        "reference_tests_pass": 0.2105,
+        "subtask_done": 0.2105
+      },
+      "referenceTestsPassRate": 0.2105,
+      "falseDoneRate": 0.25,
+      "reliableCases": 2
+    },
+    {
+      "createdAt": "2026-10-03T17:57:56+00:00",
+      "promptVariant": "baseline",
+      "model": "night-runner:latest",
+      "scorers": {
+        "process_budget": 1.0,
+        "reference_tests_pass": 0.0,
+        "subtask_done": 0.0
+      },
+      "referenceTestsPassRate": 0.0,
+      "falseDoneRate": null,
+      "reliableCases": 0
+    },
+    {
+      "createdAt": "2026-10-03T18:20:55+00:00",
+      "promptVariant": "baseline",
+      "model": "night-runner:latest",
+      "scorers": {
+        "process_budget": 1.0,
+        "reference_tests_pass": 0.8889,
+        "subtask_done": 0.9722
+      },
+      "referenceTestsPassRate": 0.8889,
+      "falseDoneRate": 0.0857,
+      "reliableCases": 10
+    },
+    {
+      "createdAt": "2026-10-03T18:20:56+00:00",
+      "promptVariant": "baseline",
+      "model": "qwen3:8b",
+      "scorers": {
+        "process_budget": 0.6842,
+        "reference_tests_pass": 0.2105,
+        "subtask_done": 0.2105
+      },
+      "referenceTestsPassRate": 0.2105,
+      "falseDoneRate": 0.25,
+      "reliableCases": 2
+    },
+    {
+      "createdAt": "2026-10-03T18:23:38+00:00",
+      "promptVariant": "summa",
+      "model": "esimerkki",
+      "scorers": {
+        "process_budget": 1.0,
+        "reference_tests_pass": 0.5556,
+        "subtask_done": 1.0
+      },
+      "referenceTestsPassRate": 0.5556,
+      "falseDoneRate": 0.4444,
+      "reliableCases": 1
+    },
+    {
+      "createdAt": "2026-10-03T18:25:46+00:00",
+      "promptVariant": "baseline",
+      "model": "night-runner:latest",
+      "scorers": {},
+      "referenceTestsPassRate": null,
+      "falseDoneRate": null,
+      "reliableCases": 0
+    }
+  ],
+  "trials": []
+}

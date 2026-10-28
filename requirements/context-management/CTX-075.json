@@ -1,0 +1,179 @@
+{
+  "id": "CTX-075",
+  "type": "task",
+  "summary": "Decide whether a friend key is active",
+  "dependsOn": [
+    "CTX-074"
+  ],
+  "description": "A friend key is active, expired, or revoked. Revoked wins over a future expiry. Times are ISO-8601 strings compared as strings.",
+  "scope": [
+    "A future expiry that is not revoked is active",
+    "Now at or after expires_at is expired",
+    "Revoked stays revoked while the expiry is still in the future"
+  ],
+  "acceptanceCriteria": "key_status('2026-12-01T00:00:00Z', False, '2026-10-07T00:00:00Z') is active. key_status('2026-10-07T00:00:00Z', False, '2026-10-07T00:00:00Z') is expired. key_status('2026-10-01T00:00:00Z', False, '2026-10-07T00:00:00Z') is expired. key_status('2026-12-01T00:00:00Z', True, '2026-10-07T00:00:00Z') is revoked.",
+  "constraints": [
+    "Compare the timestamp strings. Do not parse them with datetime.",
+    "Do not return a reason sentence.",
+    "Do not read a key file."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_075_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_075_1_active.py -q -k CTX_075_1",
+    "python -m pytest tests/test_ctx_075_2_expired.py -q -k CTX_075_2",
+    "python -m pytest tests/test_ctx_075_3_revoked.py -q -k CTX_075_3"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-075.1",
+      "title": "Accept a current key",
+      "summary": "A future expiry that is not revoked returns active.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/friend_keys.py",
+        "test": "tests/test_ctx_075_1_active.py",
+        "function": "key_status"
+      },
+      "scope": [
+        "future expiry",
+        "revoked false",
+        "result active"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_075_1_active.py -q -k CTX_075_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_075_1.",
+        "This subtask's only job: A future expiry that is not revoked returns active.",
+        "Touch only src/context_mgmt/friend_keys.py and tests/test_ctx_075_1_active.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "key_status(expires_at, revoked, now) compares the strings. revoked false and now < expires_at returns active.",
+        "The test must call key_status.",
+        "Run python -m pytest tests/test_ctx_075_1_active.py -q -k CTX_075_1."
+      ],
+      "dataExamples": [
+        {
+          "input": {
+            "expires_at": "2026-12-01T00:00:00Z",
+            "revoked": false,
+            "now": "2026-10-07T00:00:00Z"
+          },
+          "output": "active"
+        }
+      ],
+      "businessRules": [
+        "A key is active only while now is before expires_at and revoked is false."
+      ]
+    },
+    {
+      "id": "CTX-075.2",
+      "title": "Expire a key at the deadline",
+      "summary": "Now equal to expires_at, or later, returns expired.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/friend_keys.py",
+        "test": "tests/test_ctx_075_2_expired.py",
+        "function": "key_status"
+      },
+      "scope": [
+        "now equal to expires_at",
+        "now after expires_at",
+        "result expired"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_075_2_expired.py -q -k CTX_075_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_075_2.",
+        "This subtask's only job: Now equal to expires_at, or later, returns expired.",
+        "Touch only src/context_mgmt/friend_keys.py and tests/test_ctx_075_2_expired.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "revoked is false. now >= expires_at returns expired.",
+        "The test must call key_status.",
+        "Run python -m pytest tests/test_ctx_075_2_expired.py -q -k CTX_075_2."
+      ],
+      "dataExamples": [
+        {
+          "input": {
+            "expires_at": "2026-10-07T00:00:00Z",
+            "revoked": false,
+            "now": "2026-10-07T00:00:00Z"
+          },
+          "output": "expired"
+        },
+        {
+          "input": {
+            "expires_at": "2026-10-01T00:00:00Z",
+            "revoked": false,
+            "now": "2026-10-07T00:00:00Z"
+          },
+          "output": "expired"
+        }
+      ],
+      "businessRules": [
+        "The expiry instant itself is already expired."
+      ]
+    },
+    {
+      "id": "CTX-075.3",
+      "title": "Keep a revoked key revoked",
+      "summary": "Revoked true returns revoked even when expires_at is still in the future.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/friend_keys.py",
+        "test": "tests/test_ctx_075_3_revoked.py",
+        "function": "key_status"
+      },
+      "scope": [
+        "revoked true",
+        "future expiry",
+        "result revoked"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_075_3_revoked.py -q -k CTX_075_3"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_075_3.",
+        "This subtask's only job: Revoked true returns revoked even when expires_at is still in the future.",
+        "Touch only src/context_mgmt/friend_keys.py and tests/test_ctx_075_3_revoked.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Check revoked before comparing the timestamps.",
+        "The test must call key_status.",
+        "Run python -m pytest tests/test_ctx_075_3_revoked.py -q -k CTX_075_3."
+      ],
+      "dataExamples": [
+        {
+          "input": {
+            "expires_at": "2026-12-01T00:00:00Z",
+            "revoked": true,
+            "now": "2026-10-07T00:00:00Z"
+          },
+          "output": "revoked"
+        }
+      ],
+      "businessRules": [
+        "Revocation wins over a future expiry."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/friend_keys.py"
+    ],
+    "businessRules": [
+      "revoked, otherwise expired when now >= expires_at, otherwise active."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_075_1_active.py -q -k CTX_075_1",
+      "python -m pytest tests/test_ctx_075_2_expired.py -q -k CTX_075_2",
+      "python -m pytest tests/test_ctx_075_3_revoked.py -q -k CTX_075_3"
+    ]
+  }
+}

@@ -1,0 +1,130 @@
+{
+  "id": "CTX-062",
+  "type": "task",
+  "summary": "Switch topologies by configuration",
+  "dependsOn": [
+    "CTX-020",
+    "CTX-057"
+  ],
+  "description": "DEP-08, DEP-09, and T9. The local and cloud presets come from the same function. Their model endpoints differ from the public data bind. The observer is not on the request path.",
+  "scope": [
+    "Local and cloud presets both exist and use different model URLs",
+    "observer_on_request_path is false in both"
+  ],
+  "acceptanceCriteria": "deployment_preset local has model_host 127.0.0.1 and data_port different from model_port. deployment_preset cloud has model_url https://standin.example/v1 and management_public false. Both set observer_on_request_path false. The preset names are arguments, not separate modules. DEP-08 DEP-09 T9.",
+  "constraints": [
+    "Do not add a second gateway implementation for cloud.",
+    "Do not put the observer on the request path.",
+    "Do not make the cloud management plane public."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_062_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_062_1_ports.py -q -k CTX_062_1",
+    "python -m pytest tests/test_ctx_062_2_observer.py -q -k CTX_062_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-062.1",
+      "title": "Keep the model off the public bind",
+      "summary": "Local model and data ports differ. The cloud model URL is not the data host.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/deploy.py",
+        "test": "tests/test_ctx_062_1_ports.py",
+        "function": "deployment_preset"
+      },
+      "scope": [
+        "local model_port is not data_port",
+        "cloud model_url is https://standin.example/v1",
+        "management_public false"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_062_1_ports.py -q -k CTX_062_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_062_1.",
+        "This subtask's only job: Local model and data ports differ. The cloud model URL is not the data host.",
+        "Touch only src/context_mgmt/deploy.py and tests/test_ctx_062_1_ports.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Use one function for both names.",
+        "Run python -m pytest tests/test_ctx_062_1_ports.py -q -k CTX_062_1."
+      ],
+      "dataExamples": [
+        {
+          "local_model_port": 11434,
+          "local_data_port": 8080,
+          "cloud_model_url": "https://standin.example/v1"
+        }
+      ],
+      "businessRules": [
+        "T9. and DEP-08: moving presets needs no code change."
+      ]
+    },
+    {
+      "id": "CTX-062.2",
+      "title": "Keep the observer off the request path",
+      "summary": "Both presets set observer_on_request_path false.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/deploy.py",
+        "test": "tests/test_ctx_062_2_observer.py",
+        "function": "deployment_preset"
+      },
+      "scope": [
+        "local false",
+        "cloud false"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_062_2_observer.py -q -k CTX_062_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_062_2.",
+        "This subtask's only job: Both presets set observer_on_request_path false.",
+        "Touch only src/context_mgmt/deploy.py and tests/test_ctx_062_2_observer.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Do not register an observer route on the gateway in this task.",
+        "Run python -m pytest tests/test_ctx_062_2_observer.py -q -k CTX_062_2."
+      ],
+      "dataExamples": [
+        {
+          "input": {
+            "name": "local"
+          },
+          "output": {
+            "observer_on_request_path": false
+          }
+        },
+        {
+          "input": {
+            "name": "cloud"
+          },
+          "output": {
+            "observer_on_request_path": false
+          }
+        }
+      ],
+      "businessRules": [
+        "DEP-09: the observer never runs on the request path."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/deploy.py"
+    ],
+    "businessRules": [
+      "The T2 stand-ins remain the upstreams. This task only fixes the preset data."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_062_1_ports.py -q -k CTX_062_1",
+      "python -m pytest tests/test_ctx_062_2_observer.py -q -k CTX_062_2"
+    ]
+  }
+}

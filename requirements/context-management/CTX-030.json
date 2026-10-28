@@ -1,0 +1,128 @@
+{
+  "id": "CTX-030",
+  "type": "task",
+  "summary": "Reload a license without restarting",
+  "dependsOn": [
+    "CTX-024",
+    "CTX-029"
+  ],
+  "description": "FR-C7-11. Replacing a verified document updates the in-memory cache. POST /license/reload on the management app requires the admin key. The gateway app does not expose that route.",
+  "scope": [
+    "A new signed document changes the cache from expired to active",
+    "POST /license/reload with the admin key returns reloaded",
+    "The gateway returns 404 for that path"
+  ],
+  "acceptanceCriteria": "reload_document of an active signed license replaces an expired cache with active. POST /license/reload with header X-Api-Key admin-key returns 200 and status reloaded. A missing key is 401. The gateway POST /license/reload returns 404 and the body does not contain reloaded. FR-C7-11.",
+  "constraints": [
+    "Do not mount /license/reload on the gateway app.",
+    "Do not accept a bad signature during reload.",
+    "Do not require a process restart."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_030_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_030_1_reload.py -q -k CTX_030_1",
+    "python -m pytest tests/test_ctx_030_2_route.py -q -k CTX_030_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-030.1",
+      "title": "Swap the cached verdict from a new document",
+      "summary": "reload_document replaces expired with active for a test-signed license.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/license.py",
+        "test": "tests/test_ctx_030_1_reload.py",
+        "function": "reload_document"
+      },
+      "scope": [
+        "Cache starts expired",
+        "Signed claims expire in 2027",
+        "Cache state becomes active"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_030_1_reload.py -q -k CTX_030_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_030_1.",
+        "This subtask's only job: reload_document replaces expired with active for a test-signed license.",
+        "Touch only src/context_mgmt/license.py and tests/test_ctx_030_1_reload.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Sign with a test key. Do not embed that private key in source.",
+        "Run python -m pytest tests/test_ctx_030_1_reload.py -q -k CTX_030_1."
+      ],
+      "dataExamples": [
+        {
+          "before": "expired",
+          "expires_at": "2027-01-01T00:00:00Z",
+          "after": "active"
+        }
+      ],
+      "businessRules": [
+        "FR-C7-11: traffic can resume without a restart."
+      ]
+    },
+    {
+      "id": "CTX-030.2",
+      "title": "Reload on the management app only",
+      "summary": "The admin key reloads. A missing key is 401. The gateway path is 404.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/license_admin.py",
+        "test": "tests/test_ctx_030_2_route.py",
+        "function": "create_license_admin"
+      },
+      "scope": [
+        "Admin key returns 200 and status reloaded",
+        "Missing key returns 401",
+        "Gateway POST /license/reload returns 404"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_030_2_route.py -q -k CTX_030_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_030_2.",
+        "This subtask's only job: The admin key reloads. A missing key is 401. The gateway path is 404.",
+        "Touch only src/context_mgmt/license_admin.py and tests/test_ctx_030_2_route.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Use TestClient. Do not start a socket server.",
+        "You may also touch src/context_mgmt/gateway.py only to confirm the route is absent.",
+        "Run python -m pytest tests/test_ctx_030_2_route.py -q -k CTX_030_2."
+      ],
+      "dataExamples": [
+        {
+          "admin_key": "admin-key",
+          "status": "reloaded"
+        }
+      ],
+      "businessRules": [
+        "The reload route is management-plane only."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/gateway.py",
+          "purpose": "Data-plane app must not grow this route."
+        }
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/license.py",
+      "src/context_mgmt/license_admin.py"
+    ],
+    "businessRules": [
+      "Wrong or missing admin credentials do not reload."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_030_1_reload.py -q -k CTX_030_1",
+      "python -m pytest tests/test_ctx_030_2_route.py -q -k CTX_030_2"
+    ]
+  }
+}

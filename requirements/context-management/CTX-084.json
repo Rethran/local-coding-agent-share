@@ -1,0 +1,97 @@
+{
+  "id": "CTX-084",
+  "type": "task",
+  "summary": "Issue a dev license during init",
+  "dependsOn": [
+    "CTX-083"
+  ],
+  "description": "Dev mode writes a signed license for the local trial. A normal init writes no private key.",
+  "scope": [
+    "max_users 25",
+    "features gateway and mcp"
+  ],
+  "acceptanceCriteria": "dev_license_claims('demo-org') returns org_id demo-org, max_users 25, and features ['gateway', 'mcp']. Dev mode signs that document with keygen and issue_license. Dev mode off writes no private key.",
+  "constraints": [
+    "The private key stays under CTX_HOME.",
+    "Do not invent a second signature scheme. Call keygen and issue_license.",
+    "Without dev mode, write no license and no private key."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_084_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_084_1_claims.py -q -k CTX_084_1"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-084.1",
+      "title": "Return the dev license claims",
+      "summary": "dev_license_claims returns demo-org, max_users 25, and features gateway and mcp.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/init_cmd.py",
+        "test": "tests/test_ctx_084_1_claims.py",
+        "function": "dev_license_claims"
+      },
+      "scope": [
+        "org_id",
+        "max_users 25",
+        "gateway",
+        "mcp"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_084_1_claims.py -q -k CTX_084_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_084_1.",
+        "This subtask's only job: dev_license_claims returns demo-org, max_users 25, and features gateway and mcp.",
+        "Touch only src/context_mgmt/init_cmd.py and tests/test_ctx_084_1_claims.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "dev_license_claims(org_id) returns org_id, max_users 25, and features exactly ['gateway', 'mcp'].",
+        "When CTX_DEV_MODE is 1, ctx init writes license.json by calling keygen and issue_license from license_tool. When it is off, write no private key and no license.",
+        "The test must call dev_license_claims.",
+        "Run python -m pytest tests/test_ctx_084_1_claims.py -q -k CTX_084_1."
+      ],
+      "dataExamples": [
+        {
+          "input": {
+            "org_id": "demo-org"
+          },
+          "output": {
+            "org_id": "demo-org",
+            "max_users": 25,
+            "features": [
+              "gateway",
+              "mcp"
+            ]
+          }
+        }
+      ],
+      "businessRules": [
+        "The local trial license includes the gateway and the MCP tool."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/license_tool.py",
+          "purpose": "keygen and issue_license."
+        }
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/init_cmd.py"
+    ],
+    "businessRules": [
+      "Claims are org_id, max_users 25, features gateway and mcp. Sign only in dev mode."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_084_1_claims.py -q -k CTX_084_1"
+    ]
+  }
+}

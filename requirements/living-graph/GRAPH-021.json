@@ -1,0 +1,91 @@
+{
+  "id": "GRAPH-021",
+  "type": "task",
+  "summary": "HTML page reports node and edge counts from sample JSON",
+  "dependsOn": [
+    "GRAPH-014"
+  ],
+  "description": "A minimal HTML page loads a tiny fixed sample graph JSON and can report the correct node and edge counts. No 3D rendering.",
+  "scope": [
+    "Add tests/fixtures/sample_graph.json with one node and one edge",
+    "Add graph_counts(data) in src/living_graph/render.py returning (node_count, edge_count)",
+    "Add src/living_graph/static/index.html that references sample_graph.json",
+    "Assert counts are 1 and 1 and the HTML references sample_graph.json"
+  ],
+  "acceptanceCriteria": "tests/fixtures/sample_graph.json has 1 node and 1 edge, and src/living_graph/static/index.html references that file and exposes those counts.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-022.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not map colors.",
+    "Do not map sizes.",
+    "Do not call a 3D library."
+  ],
+  "verification": [
+    "python -m pytest tests/test_static_page.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-021.1",
+      "title": "Load sample JSON and report counts",
+      "summary": "No 3D. Count nodes and edges from sample_graph.json and reference it from HTML.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "graph_counts",
+        "module": "src/living_graph/render.py",
+        "test": "tests/test_static_page.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "tests/fixtures/sample_graph.json",
+          "purpose": "Fixed one-node one-edge JSON for the static page."
+        },
+        {
+          "path": "src/living_graph/static/index.html",
+          "purpose": "Minimal page that references the sample JSON. No 3D."
+        },
+        {
+          "path": "docs/data-contracts.md",
+          "purpose": "Node and Edge contract source of truth."
+        }
+      ],
+      "scope": [
+        "Add tests/fixtures/sample_graph.json with one node and one edge",
+        "Add graph_counts(data) in src/living_graph/render.py returning (node_count, edge_count)",
+        "Add src/living_graph/static/index.html that references sample_graph.json",
+        "Assert counts are 1 and 1 and the HTML references sample_graph.json"
+      ],
+      "dataExamples": [
+        "sample_graph.json nodes length is 1.",
+        "sample_graph.json edges length is 1.",
+        "HTML contains sample_graph.json."
+      ],
+      "businessRules": [
+        "graph_counts lives in src/living_graph/render.py so pytest can import it.",
+        "HTML must mention tests/fixtures/sample_graph.json or a copied static sample."
+      ],
+      "verification": [
+        "python -m pytest tests/test_static_page.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_static_page.py first.",
+        "Run python -m pytest tests/test_static_page.py -q and confirm failure.",
+        "Implement graph_counts in src/living_graph/render.py and add src/living_graph/static/index.html.",
+        "Run python -m pytest tests/test_static_page.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/render.py"
+    ],
+    "businessRules": [
+      "graph_counts lives in src/living_graph/render.py so pytest can import it.",
+      "HTML must mention tests/fixtures/sample_graph.json or a copied static sample."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_static_page.py -q"
+    ]
+  }
+}

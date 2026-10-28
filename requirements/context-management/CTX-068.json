@@ -1,0 +1,122 @@
+{
+  "id": "CTX-068",
+  "type": "task",
+  "summary": "Check a known synthetic traffic total",
+  "dependsOn": [
+    "CTX-039"
+  ],
+  "description": "T5. and NFR-06. Twenty users over two days produce a known request and token total. A group of four users is hidden. This is a pure calculation, not a four-week model run. T1. remains the rule-engine tests in CTX-002 through CTX-004.",
+  "scope": [
+    "20 users, 2 days, prompt 10 and completion 5 match the hand total",
+    "A 4-user group is hidden"
+  ],
+  "acceptanceCriteria": "simulate_traffic(20, 2, 10, 5) returns requests 40, total_tokens 600, and avg_prompt_tokens 10. A group of 4 users is hidden and a group of 5 is shown. No network call runs. T5. NFR-06 T1.",
+  "constraints": [
+    "Do not call a model or a sleep loop.",
+    "Do not show a group of 4.",
+    "Do not invent a different total."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_068_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_068_1_total.py -q -k CTX_068_1",
+    "python -m pytest tests/test_ctx_068_2_group.py -q -k CTX_068_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-068.1",
+      "title": "Match the hand total",
+      "summary": "20 users over 2 days return 40 requests and 600 total tokens.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/seed.py",
+        "test": "tests/test_ctx_068_1_total.py",
+        "function": "simulate_traffic"
+      },
+      "scope": [
+        "requests 40",
+        "total_tokens 600",
+        "avg_prompt_tokens 10",
+        "urlopen not called"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_068_1_total.py -q -k CTX_068_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_068_1.",
+        "This subtask's only job: 20 users over 2 days return 40 requests and 600 total tokens.",
+        "Touch only src/context_mgmt/seed.py and tests/test_ctx_068_1_total.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "requests = users * days. total_tokens = requests * (prompt_tokens + completion_tokens).",
+        "Run python -m pytest tests/test_ctx_068_1_total.py -q -k CTX_068_1."
+      ],
+      "dataExamples": [
+        {
+          "users": 20,
+          "days": 2,
+          "prompt_tokens": 10,
+          "completion_tokens": 5,
+          "requests": 40,
+          "total_tokens": 600
+        }
+      ],
+      "businessRules": [
+        "T5. The dashboard inputs must match this calculation. NFR-06: the test cites T5."
+      ]
+    },
+    {
+      "id": "CTX-068.2",
+      "title": "Hide a four-user group",
+      "summary": "A group of 4 is hidden and a group of 5 is shown.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/seed.py",
+        "test": "tests/test_ctx_068_2_group.py",
+        "function": "visible_group"
+      },
+      "scope": [
+        "4 hidden",
+        "5 shown"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_068_2_group.py -q -k CTX_068_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_068_2.",
+        "This subtask's only job: A group of 4 is hidden and a group of 5 is shown.",
+        "Touch only src/context_mgmt/seed.py and tests/test_ctx_068_2_group.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Use min_group_size 5.",
+        "Run python -m pytest tests/test_ctx_068_2_group.py -q -k CTX_068_2."
+      ],
+      "dataExamples": [
+        {
+          "hidden": 4,
+          "shown": 5,
+          "min_group_size": 5
+        }
+      ],
+      "businessRules": [
+        "The minimum group size still applies to synthetic traffic."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/seed.py"
+    ],
+    "businessRules": [
+      "T1. is already covered by the rule-engine packets. Do not reimplement decide here."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_068_1_total.py -q -k CTX_068_1",
+      "python -m pytest tests/test_ctx_068_2_group.py -q -k CTX_068_2"
+    ]
+  }
+}

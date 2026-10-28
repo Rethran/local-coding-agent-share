@@ -1,0 +1,38 @@
+{
+  "taskId": "CTX-025",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-06T18:15:31+00:00",
+  "updatedAt": "2026-10-06T18:19:36+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "CTX-025.1",
+      "title": "Keep the latest timestamp",
+      "status": "DONE",
+      "summary": "Implementing HighWater class in src/context_mgmt/license.py"
+    },
+    {
+      "id": "CTX-025.2",
+      "title": "Expire against the mark after rollback",
+      "status": "DONE",
+      "summary": "Implementing mark parameter in license_state for rollback evaluation."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

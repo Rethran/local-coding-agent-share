@@ -1,0 +1,203 @@
+{
+  "id": "CTX-002",
+  "type": "task",
+  "summary": "Add the pure decide function and compact rule",
+  "dependsOn": [
+    "CTX-001"
+  ],
+  "description": "Add decide(usage, config) in the rule engine. FR-C2-01, FR-C2-02, FR-C2-05, and FR-C2-06. It returns action, reason, tokens_saved_est, and messages. It performs no I/O. compact_recommended only reports. It does not summarize.",
+  "scope": [
+    "Add src/context_mgmt/rules.py",
+    "Return action none below the compact threshold",
+    "Return compact_recommended at or above the threshold",
+    "Read the threshold from config, not a hardcoded branch only"
+  ],
+  "acceptanceCriteria": "decide(usage, config) returns action, reason, tokens_saved_est, and messages. context_pct 0.59 with default config returns none and reason below_threshold. context_pct 0.60 returns compact_recommended, reason context_pct>=compact_threshold, tokens_saved_est 0. A config threshold of 0.80 keeps 0.70 at none. No file or HTTP call runs. FR-C2-01 FR-C2-02 FR-C2-05 FR-C2-06.",
+  "constraints": [
+    "Do not trim messages in this task.",
+    "Do not call a model, open a socket, or write a file from decide.",
+    "Do not add gateway routes."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement behavior from later subtasks early.",
+    "Every test function for a subtask must contain that slice token, for example CTX_002_2.",
+    "After writing or changing a test, always call the declared pytest command. Do not stop with only explanation text.",
+    "If the active subtask's verification already passes because an earlier attempt implemented it, run the declared command and mark the subtask done. Do not rewrite unrelated files."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_002_1_decide.py -q -k CTX_002_1",
+    "python -m pytest tests/test_ctx_002_2_r1.py -q -k CTX_002_2",
+    "python -m pytest tests/test_ctx_002_3_threshold.py -q -k CTX_002_3"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-002.1",
+      "title": "Add decide without I/O",
+      "summary": "Create decide. With context_pct 0.10 and no messages, return action none and echo messages. Calling it must not open files or HTTP.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/rules.py",
+        "test": "tests/test_ctx_002_1_decide.py",
+        "function": "decide"
+      },
+      "scope": [
+        "Signature decide(usage: dict, config) -> dict",
+        "Keys action, reason, tokens_saved_est, messages",
+        "Patch open and urllib.request.urlopen so a call fails the test"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_002_1_decide.py -q -k CTX_002_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_002_1.",
+        "Write the failing contract test first.",
+        "Missing messages means an empty list. Missing context_pct means 0.",
+        "Implement only the below-threshold none branch in src/context_mgmt/rules.py.",
+        "Do not add compact_recommended, trim, or duplicate-message behavior in CTX-002.1.",
+        "Run python -m pytest tests/test_ctx_002_1_decide.py -q -k CTX_002_1."
+      ],
+      "dataExamples": [
+        {
+          "input": {
+            "context_pct": 0.1,
+            "messages": []
+          },
+          "output": {
+            "action": "none",
+            "reason": "below_threshold",
+            "tokens_saved_est": 0,
+            "messages": []
+          }
+        }
+      ],
+      "businessRules": [
+        "FR-C2-01: pure function, no I/O.",
+        "For CTX-002.1 the only expected action is none. Later subtasks add other actions."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/config.py",
+          "purpose": "OrgConfig defaults used by later tasks."
+        }
+      ]
+    },
+    {
+      "id": "CTX-002.2",
+      "title": "Recommend compact at the default threshold",
+      "summary": "At context_pct 0.60 return compact_recommended. At 0.59 return none. Do not summarize.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/rules.py",
+        "test": "tests/test_ctx_002_2_r1.py",
+        "function": "decide"
+      },
+      "scope": [
+        "Boundary 0.60 uses the default compact_threshold",
+        "Reason strings match dataExamples exactly",
+        "Result has no summary key"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_002_2_r1.py -q -k CTX_002_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_002_2.",
+        "Write tests for 0.59 and 0.60 before changing rules.py.",
+        "Assert tokens_saved_est is 0 and urlopen is not called.",
+        "Keep the CTX-002.1 behavior for context_pct 0.10.",
+        "Do not implement trim or duplicate-message behavior in this subtask.",
+        "Run python -m pytest tests/test_ctx_002_2_r1.py -q -k CTX_002_2."
+      ],
+      "dataExamples": [
+        {
+          "input": {
+            "context_pct": 0.59,
+            "messages": []
+          },
+          "output": {
+            "action": "none",
+            "reason": "below_threshold",
+            "tokens_saved_est": 0
+          }
+        },
+        {
+          "input": {
+            "context_pct": 0.6,
+            "messages": []
+          },
+          "output": {
+            "action": "compact_recommended",
+            "reason": "context_pct>=compact_threshold",
+            "tokens_saved_est": 0
+          }
+        }
+      ],
+      "businessRules": [
+        "FR-C2-02: threshold is inclusive.",
+        "FR-C2-06: record only, no summarizer call."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/config.py",
+          "purpose": "OrgConfig defaults used by later tasks."
+        }
+      ]
+    },
+    {
+      "id": "CTX-002.3",
+      "title": "Read the compact threshold from config",
+      "summary": "When compact_threshold is 0.80, context_pct 0.70 stays none and 0.80 is compact_recommended.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/rules.py",
+        "test": "tests/test_ctx_002_3_threshold.py",
+        "function": "decide"
+      },
+      "scope": [
+        "Use config.compact_threshold for the comparison",
+        "Cover 0.70 and 0.80 with threshold 0.80"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_002_3_threshold.py -q -k CTX_002_3"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_002_3.",
+        "Build OrgConfig from default_config and set compact_threshold to 0.80 in the test.",
+        "Do not hardcode 0.60 as the only threshold.",
+        "Run python -m pytest tests/test_ctx_002_3_threshold.py -q -k CTX_002_3."
+      ],
+      "dataExamples": [
+        {
+          "config_compact_threshold": 0.8,
+          "at_0_70": "none",
+          "at_0_80": "compact_recommended"
+        }
+      ],
+      "businessRules": [
+        "FR-C2-05: per-call config overrides the default."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/config.py",
+          "purpose": "OrgConfig defaults used by later tasks."
+        }
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/rules.py"
+    ],
+    "businessRules": [
+      "This task implements only the none and compact_recommended decisions.",
+      "Later precedence is R3 duplicate, then R2 trim, then R1 compact/none.",
+      "R2 trim and R3 duplicate-message behavior are intentionally left for later tasks.",
+      "messages echoes usage messages when nothing is trimmed.",
+      "summarizer_model is ignored. tokens_saved_est is 0 for compact_recommended."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_002_1_decide.py -q -k CTX_002_1",
+      "python -m pytest tests/test_ctx_002_2_r1.py -q -k CTX_002_2",
+      "python -m pytest tests/test_ctx_002_3_threshold.py -q -k CTX_002_3"
+    ]
+  }
+}

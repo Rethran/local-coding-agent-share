@@ -1,0 +1,133 @@
+{
+  "id": "CTX-046",
+  "type": "task",
+  "summary": "Allow outbound calls only to configured URLs",
+  "dependsOn": [
+    "CTX-045"
+  ],
+  "description": "SEC-11 and P9. outbound_allowed is true only for a URL on the allow list. Link-local and private addresses are blocked unless that exact URL is configured. Owner responses cannot change config.",
+  "scope": [
+    "The configured upstream is allowed",
+    "Metadata, a private address, and an unknown host are blocked unless listed"
+  ],
+  "acceptanceCriteria": "http://127.0.0.1:11434/v1 is allowed when it is the only list entry. http://169.254.169.254/ and http://10.1.2.3/ and http://evil.example/ are false. If http://169.254.169.254/ is added to the list, that exact URL becomes true. SEC-11 P9.",
+  "constraints": [
+    "Do not allow a URL that is not on the list.",
+    "Do not derive an outbound URL from request text.",
+    "Do not treat a private address as allowed just because it is private."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_046_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_046_1_list.py -q -k CTX_046_1",
+    "python -m pytest tests/test_ctx_046_2_explicit.py -q -k CTX_046_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-046.1",
+      "title": "Allow only the configured upstream",
+      "summary": "The listed local URL is allowed and the three unlisted URLs are not.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/egress.py",
+        "test": "tests/test_ctx_046_1_list.py",
+        "function": "outbound_allowed"
+      },
+      "scope": [
+        "Listed 127.0.0.1 URL is true",
+        "Metadata, 10.1.2.3, and evil.example are false"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_046_1_list.py -q -k CTX_046_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_046_1.",
+        "This subtask's only job: The listed local URL is allowed and the three unlisted URLs are not.",
+        "Touch only src/context_mgmt/egress.py and tests/test_ctx_046_1_list.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Do not perform a DNS lookup or an HTTP call.",
+        "Run python -m pytest tests/test_ctx_046_1_list.py -q -k CTX_046_1."
+      ],
+      "dataExamples": [
+        {
+          "allow": [
+            "http://127.0.0.1:11434/v1"
+          ],
+          "blocked": [
+            "http://169.254.169.254/",
+            "http://10.1.2.3/",
+            "http://evil.example/"
+          ]
+        }
+      ],
+      "businessRules": [
+        "SEC-11: private and link-local ranges are blocked unless explicitly configured."
+      ]
+    },
+    {
+      "id": "CTX-046.2",
+      "title": "Allow an explicit metadata exception",
+      "summary": "The metadata URL is true only when that exact string is on the allow list.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/egress.py",
+        "test": "tests/test_ctx_046_2_explicit.py",
+        "function": "outbound_allowed"
+      },
+      "scope": [
+        "Unlisted metadata URL is false",
+        "Listed metadata URL is true"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_046_2_explicit.py -q -k CTX_046_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_046_2.",
+        "This subtask's only job: The metadata URL is true only when that exact string is on the allow list.",
+        "Touch only src/context_mgmt/egress.py and tests/test_ctx_046_2_explicit.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Compare the URL string to the list. Do not follow redirects.",
+        "Run python -m pytest tests/test_ctx_046_2_explicit.py -q -k CTX_046_2."
+      ],
+      "dataExamples": [
+        {
+          "input": {
+            "url": "http://169.254.169.254/",
+            "allow": []
+          },
+          "output": false
+        },
+        {
+          "input": {
+            "url": "http://169.254.169.254/",
+            "allow": [
+              "http://169.254.169.254/"
+            ]
+          },
+          "output": true
+        }
+      ],
+      "businessRules": [
+        "An explicit config entry is the only exception."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/egress.py"
+    ],
+    "businessRules": [
+      "P9: nothing in request content chooses an outbound URL."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_046_1_list.py -q -k CTX_046_1",
+      "python -m pytest tests/test_ctx_046_2_explicit.py -q -k CTX_046_2"
+    ]
+  }
+}

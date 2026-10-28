@@ -1,0 +1,87 @@
+{
+  "id": "GRAPH-040",
+  "type": "task",
+  "summary": "Write highlights.json and wire onNodeClick",
+  "dependsOn": [
+    "GRAPH-037",
+    "GRAPH-039"
+  ],
+  "description": "Publish highlights.json from highlight_payload and make viewer.js dim nodes outside the clicked node's highlight set.",
+  "scope": [
+    "Add publish_highlights(edges, node_ids, static_dir) in src/living_graph/query.py",
+    "Write highlights.json in static_dir",
+    "viewer.js fetches highlights.json and uses onNodeClick"
+  ],
+  "acceptanceCriteria": "publish_highlights writes highlights.json. viewer.js contains fetch('highlights.json') and onNodeClick.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not add work beyond this task.",
+    "Do not add a watcher unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not add npm or a bundler.",
+    "Do not start a watch loop."
+  ],
+  "verification": [
+    "python -m pytest tests/test_highlight_click.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-040.1",
+      "title": "Publish highlights.json and handle click",
+      "summary": "Python write plus JS onNodeClick string checks. No browser.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "publish_highlights",
+        "module": "src/living_graph/query.py",
+        "test": "tests/test_highlight_click.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "src/living_graph/static/viewer.js",
+          "purpose": "Must fetch highlights.json and call onNodeClick."
+        },
+        {
+          "path": "src/living_graph/query.py",
+          "purpose": "highlight_payload from GRAPH-039."
+        }
+      ],
+      "scope": [
+        "Add publish_highlights(edges, node_ids, static_dir) in src/living_graph/query.py",
+        "Write highlights.json in static_dir",
+        "viewer.js fetches highlights.json and uses onNodeClick"
+      ],
+      "dataExamples": [
+        "Output file name is highlights.json.",
+        "viewer.js contains fetch('highlights.json').",
+        "viewer.js contains onNodeClick.",
+        "Dim color for nodes outside the set is #8993A4."
+      ],
+      "businessRules": [
+        "Call highlight_payload. Do not recompute ancestors in JS beyond using the JSON map.",
+        "Tests read JS as text and json.load the written file. Do not use a browser."
+      ],
+      "verification": [
+        "python -m pytest tests/test_highlight_click.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_highlight_click.py first.",
+        "Run python -m pytest tests/test_highlight_click.py -q and confirm failure.",
+        "Implement publish_highlights and the onNodeClick strings in viewer.js.",
+        "Run python -m pytest tests/test_highlight_click.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/query.py",
+      "src/living_graph/static/viewer.js"
+    ],
+    "businessRules": [
+      "Call highlight_payload. Do not recompute ancestors in JS beyond using the JSON map.",
+      "Tests read JS as text and json.load the written file. Do not use a browser."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_highlight_click.py -q"
+    ]
+  }
+}

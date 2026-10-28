@@ -1,0 +1,140 @@
+{
+  "id": "CTX-013",
+  "type": "task",
+  "summary": "Keep prompt and response text out of storage",
+  "dependsOn": [
+    "CTX-011"
+  ],
+  "description": "FR-C1-08 and P6. Emitted events and the events table carry token counts and rule fields only. content_mode stays false. Prompt text and assistant text never land in the event or the table.",
+  "scope": [
+    "Event JSON has no content, prompt, or messages keys",
+    "Known secret strings are absent from the event",
+    "SQLite events table SQL has no content column"
+  ],
+  "acceptanceCriteria": "After a gateway call, the emitted event does not contain SECRET-PROMPT or SECRET-ANSWER and has no content key. The events table SQL does not contain the word content. FR-C1-08.",
+  "constraints": [
+    "Do not write prompts or completions to the database.",
+    "Do not enable content_mode.",
+    "Do not log the request body to a file."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_013_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_013_1_no_content.py -q -k CTX_013_1",
+    "python -m pytest tests/test_ctx_013_2_schema.py -q -k CTX_013_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-013.1",
+      "title": "Emit metadata without prompt text",
+      "summary": "SECRET-PROMPT and SECRET-ANSWER do not appear in the emitted event.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/gateway.py",
+        "test": "tests/test_ctx_013_1_no_content.py",
+        "function": "create_gateway"
+      },
+      "scope": [
+        "User content SECRET-PROMPT",
+        "Assistant content SECRET-ANSWER",
+        "Event has no content key and neither secret"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_013_1_no_content.py -q -k CTX_013_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_013_1.",
+        "This subtask's only job: SECRET-PROMPT and SECRET-ANSWER do not appear in the emitted event.",
+        "Touch only src/context_mgmt/gateway.py and tests/test_ctx_013_1_no_content.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Include provider usage so the event still has prompt_tokens.",
+        "Assert 'content' not in event and both secrets are absent from json.dumps(event).",
+        "Run python -m pytest tests/test_ctx_013_1_no_content.py -q -k CTX_013_1."
+      ],
+      "dataExamples": [
+        {
+          "user": "SECRET-PROMPT",
+          "assistant": "SECRET-ANSWER",
+          "forbidden_keys": [
+            "content",
+            "messages",
+            "prompt"
+          ]
+        }
+      ],
+      "businessRules": [
+        "FR-C1-08: metadata mode is the default."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/gateway.py",
+          "purpose": "OpenAI-compatible proxy."
+        }
+      ]
+    },
+    {
+      "id": "CTX-013.2",
+      "title": "Reject content columns and content keys",
+      "summary": "The events CREATE SQL has no content column. save raises ValueError if the dict has a content key.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/store.py",
+        "test": "tests/test_ctx_013_2_schema.py",
+        "function": "SqliteEventStore"
+      },
+      "scope": [
+        "Read sqlite_master sql for table events",
+        "Assert the substring content is absent",
+        "save({'content': 'x', 'org_id': 'org-a'}) raises ValueError"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_013_2_schema.py -q -k CTX_013_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_013_2.",
+        "This subtask's only job: The events CREATE SQL has no content column. save raises ValueError if the dict has a content key.",
+        "Touch only src/context_mgmt/store.py and tests/test_ctx_013_2_schema.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Use a temp database and read SELECT sql FROM sqlite_master WHERE name='events'.",
+        "Case-insensitive check for content.",
+        "Do not add a content column to satisfy a write.",
+        "Run python -m pytest tests/test_ctx_013_2_schema.py -q -k CTX_013_2."
+      ],
+      "dataExamples": [
+        {
+          "table": "events",
+          "forbidden_column": "content"
+        }
+      ],
+      "businessRules": [
+        "P6: the table stores counts and outcomes, not text."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/store.py",
+          "purpose": "SQLite event store scoped by org_id."
+        }
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/gateway.py",
+      "src/context_mgmt/store.py"
+    ],
+    "businessRules": [
+      "Stored columns stay the CTX-005 key list without user_id.",
+      "save already rejects a user_id key. Also reject a content key."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_013_1_no_content.py -q -k CTX_013_1",
+      "python -m pytest tests/test_ctx_013_2_schema.py -q -k CTX_013_2"
+    ]
+  }
+}

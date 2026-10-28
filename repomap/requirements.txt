@@ -1,0 +1,5 @@
+tree-sitter==0.26.0
+tree-sitter-python==0.25.0
+networkx>=3.0
+coverage>=7.0
+pytest>=8.0

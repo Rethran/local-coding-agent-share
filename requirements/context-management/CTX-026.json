@@ -1,0 +1,118 @@
+{
+  "id": "CTX-026",
+  "type": "task",
+  "summary": "Apply revocation only from a successful check",
+  "dependsOn": [
+    "CTX-025"
+  ],
+  "description": "FR-C7-09, FR-C7-10, P7, and OD-8. The revocation check is off when revocation_url is empty. A timeout or error does not change state. Only a successful body that says revoked does.",
+  "scope": [
+    "revocation_enabled is false when the URL is empty",
+    "A revoked true body sets state revoked",
+    "A timeout leaves the previous state"
+  ],
+  "acceptanceCriteria": "revocation_url None means the check is off. Body {revoked: true} changes active to revoked. A TimeoutError argument leaves active unchanged. The outbound body has only license_id and org_id. FR-C7-09 FR-C7-10 P7 OD-8.",
+  "constraints": [
+    "Do not block when the revocation server errors.",
+    "Do not send prompts, user ids, or token counts in the revocation body.",
+    "Do not turn the check on when revocation_url is empty."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_026_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_026_1_off.py -q -k CTX_026_1",
+    "python -m pytest tests/test_ctx_026_2_result.py -q -k CTX_026_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-026.1",
+      "title": "Leave the check off by default",
+      "summary": "revocation_enabled is false for default_config and the payload builder returns only license_id and org_id.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/license.py",
+        "test": "tests/test_ctx_026_1_off.py",
+        "function": "revocation_payload"
+      },
+      "scope": [
+        "default revocation_url is None",
+        "Payload keys are exactly license_id and org_id"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_026_1_off.py -q -k CTX_026_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_026_1.",
+        "This subtask's only job: revocation_enabled is false for default_config and the payload builder returns only license_id and org_id.",
+        "Touch only src/context_mgmt/license.py and tests/test_ctx_026_1_off.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Assert the key set is equal, not a superset.",
+        "Run python -m pytest tests/test_ctx_026_1_off.py -q -k CTX_026_1."
+      ],
+      "dataExamples": [
+        {
+          "license_id": "lic-1",
+          "org_id": "org-a"
+        }
+      ],
+      "businessRules": [
+        "P7: optional license infrastructure is not a reason to block."
+      ]
+    },
+    {
+      "id": "CTX-026.2",
+      "title": "Honor only a successful revoked body",
+      "summary": "revoked true sets revoked. A timeout returns the previous active state.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/license.py",
+        "test": "tests/test_ctx_026_2_result.py",
+        "function": "apply_revocation"
+      },
+      "scope": [
+        "Successful {revoked: true} yields state revoked",
+        "TimeoutError yields the input state unchanged",
+        "{revoked: false} leaves active"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_026_2_result.py -q -k CTX_026_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_026_2.",
+        "This subtask's only job: revoked true sets revoked. A timeout returns the previous active state.",
+        "Touch only src/context_mgmt/license.py and tests/test_ctx_026_2_result.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Do not perform a real HTTP call in this test. Pass the outcome in.",
+        "Run python -m pytest tests/test_ctx_026_2_result.py -q -k CTX_026_2."
+      ],
+      "dataExamples": [
+        {
+          "revoked": true,
+          "error": "timeout",
+          "unchanged": "active"
+        }
+      ],
+      "businessRules": [
+        "OD-8: an unreachable server never blocks."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/license.py"
+    ],
+    "businessRules": [
+      "apply_revocation(state, body, error) ignores body when error is set."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_026_1_off.py -q -k CTX_026_1",
+      "python -m pytest tests/test_ctx_026_2_result.py -q -k CTX_026_2"
+    ]
+  }
+}

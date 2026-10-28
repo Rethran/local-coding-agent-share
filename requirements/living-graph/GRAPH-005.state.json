@@ -1,0 +1,32 @@
+{
+  "taskId": "GRAPH-005",
+  "status": "DONE",
+  "attempt": 0,
+  "startedAt": "2026-09-15T20:08:08+00:00",
+  "updatedAt": "2026-09-15T20:08:08+00:00",
+  "summary": "Unresolved Robot keyword calls recorded without dropping the edge.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": "python -m pytest tests/test_unresolved_calls.py -q",
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "GRAPH-005.1",
+      "title": "Flag undefined Robot callees as unresolved",
+      "status": "DONE",
+      "summary": "Undefined callees keep the edge with resolved false and unresolved::{name} id."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": null,
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

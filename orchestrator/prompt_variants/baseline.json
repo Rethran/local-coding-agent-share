@@ -1,0 +1,4 @@
+{
+  "description": "Empty variant: every clause renders the hardcoded default text in orchestrator/prompts.py. Copy this file to create a new variant and override only the clauses you want to change.",
+  "clauses": {}
+}

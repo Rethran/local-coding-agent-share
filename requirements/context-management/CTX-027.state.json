@@ -1,0 +1,38 @@
+{
+  "taskId": "CTX-027",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-06T18:23:02+00:00",
+  "updatedAt": "2026-10-06T18:27:39+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "CTX-027.1",
+      "title": "Warn and keep serving",
+      "status": "DONE",
+      "summary": "Implementing seat_decision in src/context_mgmt/license.py for warn mode."
+    },
+    {
+      "id": "CTX-027.2",
+      "title": "Block only a new user",
+      "status": "DONE",
+      "summary": "Fixing denial message in seat_decision to match the generic SEC-05 sentence."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

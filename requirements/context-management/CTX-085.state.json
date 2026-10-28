@@ -1,0 +1,32 @@
+{
+  "taskId": "CTX-085",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-14T14:12:22+00:00",
+  "updatedAt": "2026-10-14T14:15:00+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "CTX-085.1",
+      "title": "Return the serve addresses",
+      "status": "DONE",
+      "summary": "Implementing serve_bind in src/context_mgmt/serve_cmd.py. Test file already exists."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

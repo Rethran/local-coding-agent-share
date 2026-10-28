@@ -1,0 +1,47 @@
+{
+  "taskId": "CTX-082",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-14T14:05:35+00:00",
+  "updatedAt": "2026-10-14T14:08:37+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "CTX-082.2: already_satisfied. Next: Existing implementation already satisfies the declared tests; the coordinator will mark the subtask DONE after the verifier.",
+  "completedScopeItems": [
+    "Reviewed src/context_mgmt/devmode.py: exists; is_dev_mode present"
+  ],
+  "remainingScopeItems": [
+    "src/context_mgmt/devmode.py missing or unreadable.",
+    "Tests still failing: Exit code: 1",
+    "Implementation missing or incomplete; tests fail."
+  ],
+  "verifiedBehaviors": [
+    "Tests passed: python -m pytest tests/test_ctx_082_1_on.py -q -k CTX_082_1",
+    "Tests passed: python -m pytest tests/test_ctx_082_2_off.py -q -k CTX_082_2"
+  ],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": "Existing implementation already satisfies the declared tests; the coordinator will mark the subtask DONE after the verifier.",
+  "subtasks": [
+    {
+      "id": "CTX-082.1",
+      "title": "Turn dev mode on for 1",
+      "status": "DONE",
+      "summary": "The exact string 1 returns true."
+    },
+    {
+      "id": "CTX-082.2",
+      "title": "Leave dev mode off otherwise",
+      "status": "DONE",
+      "summary": "DUPLICATE: existing implementation already covers this subtask."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

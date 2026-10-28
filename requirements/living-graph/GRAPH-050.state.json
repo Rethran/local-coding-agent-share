@@ -1,0 +1,32 @@
+{
+  "taskId": "GRAPH-050",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-09-17T12:54:04+00:00",
+  "updatedAt": "2026-09-17T13:10:05+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "GRAPH-050.1",
+      "title": "Metrics on the in-memory scan graph",
+      "status": "DONE",
+      "summary": "Resuming from handoff GRAPH-050-0009. Tests exist and fail. Implementing compute_fan_in/compute_fan_out calls in scan_fixtures."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

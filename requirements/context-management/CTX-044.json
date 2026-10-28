@@ -1,0 +1,80 @@
+{
+  "id": "CTX-044",
+  "type": "task",
+  "summary": "Keep developer keys off the upstream request",
+  "dependsOn": [
+    "CTX-043"
+  ],
+  "description": "SEC-07. The gateway sets the upstream Authorization header from its own secret. Client Authorization and X-Api-Key values are not forwarded.",
+  "scope": [
+    "The upstream Authorization is the gateway secret",
+    "The developer key and the client bearer token are absent"
+  ],
+  "acceptanceCriteria": "Client headers Authorization Bearer developer-key and X-Api-Key k-alice produce an upstream Authorization Bearer gateway-secret. The upstream header text does not contain developer-key or k-alice. SEC-07.",
+  "constraints": [
+    "Do not forward the client Authorization header.",
+    "Do not forward X-Api-Key upstream.",
+    "Do not log the upstream secret."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_044_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_044_1_headers.py -q -k CTX_044_1"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-044.1",
+      "title": "Replace client credentials",
+      "summary": "upstream_headers sends Bearer gateway-secret and drops the developer credentials.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/upstream.py",
+        "test": "tests/test_ctx_044_1_headers.py",
+        "function": "upstream_headers"
+      },
+      "scope": [
+        "Authorization Bearer gateway-secret",
+        "developer-key absent",
+        "k-alice absent"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_044_1_headers.py -q -k CTX_044_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_044_1.",
+        "This subtask's only job: upstream_headers sends Bearer gateway-secret and drops the developer credentials.",
+        "Touch only src/context_mgmt/upstream.py and tests/test_ctx_044_1_headers.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Build headers from the client map and the gateway secret. Do not call the network.",
+        "Run python -m pytest tests/test_ctx_044_1_headers.py -q -k CTX_044_1."
+      ],
+      "dataExamples": [
+        {
+          "client_authorization": "Bearer developer-key",
+          "client_key": "k-alice",
+          "upstream": "Bearer gateway-secret"
+        }
+      ],
+      "businessRules": [
+        "SEC-07: developer keys are never forwarded upstream."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/upstream.py"
+    ],
+    "businessRules": [
+      "The upstream secret stays in the gateway config."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_044_1_headers.py -q -k CTX_044_1"
+    ]
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "id": "GRAPH-044",
+  "type": "task",
+  "summary": "Show always-visible labels on graph nodes",
+  "dependsOn": [
+    "GRAPH-037",
+    "GRAPH-043"
+  ],
+  "description": "Each 3D node shows its name as a SpriteText label, not only on hover. Load three-spritetext from unpkg.",
+  "scope": [
+    "Add script src https://unpkg.com/three-spritetext in index.html before viewer.js",
+    "viewer.js calls new SpriteText, nodeThreeObject, and nodeThreeObjectExtend(true)",
+    "Keep graphData and onNodeClick"
+  ],
+  "acceptanceCriteria": "index.html includes three-spritetext. viewer.js contains SpriteText, nodeThreeObject, and nodeThreeObjectExtend.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-045.",
+    "Do not add a watcher or CLI unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not add npm or a bundler.",
+    "Do not remove the hover nodeLabel."
+  ],
+  "verification": [
+    "python -m pytest tests/test_node_labels.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-044.1",
+      "title": "SpriteText labels on every node",
+      "summary": "CDN plus nodeThreeObjectExtend. No browser.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "viewer.js",
+        "module": "src/living_graph/static/viewer.js",
+        "test": "tests/test_node_labels.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "src/living_graph/static/index.html",
+          "purpose": "Must load three-spritetext after 3d-force-graph and before viewer.js."
+        }
+      ],
+      "scope": [
+        "Add script src https://unpkg.com/three-spritetext in index.html before viewer.js",
+        "viewer.js calls new SpriteText, nodeThreeObject, and nodeThreeObjectExtend(true)",
+        "Keep graphData and onNodeClick"
+      ],
+      "dataExamples": [
+        "index.html contains three-spritetext.",
+        "viewer.js contains SpriteText.",
+        "viewer.js contains nodeThreeObjectExtend."
+      ],
+      "businessRules": [
+        "Tests read HTML/JS as text. Do not use a browser.",
+        "3d-force-graph script must still appear before viewer.js."
+      ],
+      "verification": [
+        "python -m pytest tests/test_node_labels.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_node_labels.py first.",
+        "Run python -m pytest tests/test_node_labels.py -q and confirm failure.",
+        "Add the CDN script and SpriteText object in viewer.js.",
+        "Run python -m pytest tests/test_node_labels.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/static/index.html",
+      "src/living_graph/static/viewer.js"
+    ],
+    "businessRules": [
+      "Tests read HTML/JS as text. Do not use a browser.",
+      "3d-force-graph script must still appear before viewer.js."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_node_labels.py -q"
+    ]
+  }
+}

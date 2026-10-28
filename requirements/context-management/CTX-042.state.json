@@ -1,0 +1,38 @@
+{
+  "taskId": "CTX-042",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-06T21:03:40+00:00",
+  "updatedAt": "2026-10-06T21:08:21+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "CTX-042.1",
+      "title": "Ignore a spoofed user header",
+      "status": "DONE",
+      "summary": "Implementer starting: creating src/context_mgmt/identity.py with resolve_identity that ignores spoofed headers."
+    },
+    {
+      "id": "CTX-042.2",
+      "title": "Rotate a 128-bit key",
+      "status": "DONE",
+      "summary": "Implementer starting: adding rotate_key to src/context_mgmt/identity.py."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

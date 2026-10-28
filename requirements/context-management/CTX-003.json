@@ -1,0 +1,212 @@
+{
+  "id": "CTX-003",
+  "type": "task",
+  "summary": "Trim oversized tool output",
+  "dependsOn": [
+    "CTX-002"
+  ],
+  "description": "Rule R2. FR-C2-03 and FR-C2-07. A tool message whose token_count exceeds tool_output_token_cap is trimmed to head and tail with the cut marker. The system message and the latest user message stay byte-for-byte. CTX-004 adds R3 duplicate-message handling later.",
+  "scope": [
+    "Trim role tool when token_count is greater than the cap",
+    "Keep token_count equal to the cap as action none when no other rule matches",
+    "Leave system content and the last user content unchanged"
+  ],
+  "acceptanceCriteria": "A tool message with token_count 4001 is rewritten to the first trim_head_chars, the marker, and the last trim_tail_chars. tokens_saved_est is token_count minus the cap. token_count 4000 with context_pct 0.10 returns none. System and latest user contents are unchanged even when their token_count is 9000. FR-C2-03 FR-C2-07.",
+  "constraints": [
+    "Do not alter the latest user message.",
+    "Do not alter any system message.",
+    "Do not drop CTX-002 behavior. context_pct 0.60 with no oversized tool still returns compact_recommended.",
+    "Do not implement CTX-004 duplicate-message behavior in this task. dedupe_key is inert here."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. CTX-003 is R2 trim only; do not implement CTX-004 R3 duplicate-message behavior here.",
+    "Every test function for a subtask must contain that slice token, for example CTX_003_2.",
+    "After writing or changing a test, always call the declared pytest command. Do not stop with only explanation text.",
+    "If the active subtask's verification already passes because CTX-003.1 used the strict greater-than boundary correctly, run the declared command and mark the subtask done. Do not invent extra code."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_003_1_trim.py -q -k CTX_003_1",
+    "python -m pytest tests/test_ctx_003_2_cap_boundary.py -q -k CTX_003_2",
+    "python -m pytest tests/test_ctx_003_3_preserve.py -q -k CTX_003_3"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-003.1",
+      "title": "Trim a tool message over the cap",
+      "summary": "token_count 4001 on a tool message returns trim, the cut marker, and tokens_saved_est 1.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/rules.py",
+        "test": "tests/test_ctx_003_1_trim.py",
+        "function": "decide"
+      },
+      "scope": [
+        "Use the 500-character content from dataExamples",
+        "Expected content is head 200 + marker + tail 200",
+        "Reason is tool_output_over_cap"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_003_1_trim.py -q -k CTX_003_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_003_1.",
+        "This subtask's only job: token_count 4001 on a tool message returns trim, the cut marker, and tokens_saved_est 1.",
+        "Touch only src/context_mgmt/rules.py and tests/test_ctx_003_1_trim.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Write the failing trim test first.",
+        "Slice content with config head and tail lengths. Do not tokenize the string.",
+        "Keep R1 tests conceptually intact for a low context_pct.",
+        "Use strictly greater than config.tool_output_token_cap. token_count equal to the cap is not trimmed.",
+        "Run python -m pytest tests/test_ctx_003_1_trim.py -q -k CTX_003_1."
+      ],
+      "dataExamples": [
+        {
+          "content_length": 500,
+          "content_pattern": "250 H then 250 T",
+          "token_count": 4001,
+          "context_pct": 0.1,
+          "marker": "\n[context-mgmt:trimmed]\n",
+          "tokens_saved_est": 1,
+          "reason": "tool_output_over_cap",
+          "action": "trim"
+        }
+      ],
+      "businessRules": [
+        "FR-C2-03: exceeds the cap. 4001 trims. Estimate saved tokens as token_count - cap.",
+        "Only role tool is eligible."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/config.py",
+          "purpose": "OrgConfig defaults used by later tasks."
+        },
+        {
+          "path": "src/context_mgmt/rules.py",
+          "purpose": "Pure decide function. Precedence R3, then R2, then R1."
+        }
+      ]
+    },
+    {
+      "id": "CTX-003.2",
+      "title": "Leave a tool message at the cap unchanged",
+      "summary": "token_count 4000 is not over the cap. With context_pct 0.10 the action stays none.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/rules.py",
+        "test": "tests/test_ctx_003_2_cap_boundary.py",
+        "function": "decide"
+      },
+      "scope": [
+        "Boundary is greater-than, not greater-or-equal",
+        "Content is echoed",
+        "tokens_saved_est is 0"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_003_2_cap_boundary.py -q -k CTX_003_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_003_2.",
+        "This subtask's only job: token_count 4000 is not over the cap. With context_pct 0.10 the action stays none.",
+        "Touch only src/context_mgmt/rules.py and tests/test_ctx_003_2_cap_boundary.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Assert the tool content is unchanged and the marker is absent.",
+        "Include dedupe_key tool:only only as inert input data. Do not add duplicate-message logic.",
+        "If this verification already passes, do not rewrite rules.py; record the pass and continue.",
+        "Run python -m pytest tests/test_ctx_003_2_cap_boundary.py -q -k CTX_003_2."
+      ],
+      "dataExamples": [
+        {
+          "token_count": 4000,
+          "context_pct": 0.1,
+          "action": "none",
+          "reason": "below_threshold"
+        }
+      ],
+      "businessRules": [
+        "The cap value is config.tool_output_token_cap."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/config.py",
+          "purpose": "OrgConfig defaults used by later tasks."
+        }
+      ]
+    },
+    {
+      "id": "CTX-003.3",
+      "title": "Preserve system and latest user text",
+      "summary": "A trim may rewrite the tool message only. System text SYS and latest user text LATEST stay exact.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/rules.py",
+        "test": "tests/test_ctx_003_3_preserve.py",
+        "function": "decide"
+      },
+      "scope": [
+        "Messages ordered system, tool, user",
+        "System and user token_count 9000 must not cause a trim of those roles",
+        "Tool token_count 4001 still trims"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_003_3_preserve.py -q -k CTX_003_3"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_003_3.",
+        "This subtask's only job: A trim may rewrite the tool message only. System text SYS and latest user text LATEST stay exact.",
+        "Touch only src/context_mgmt/rules.py and tests/test_ctx_003_3_preserve.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Assert system content is still SYS and the last user content is still LATEST.",
+        "Assert the tool content contains the marker.",
+        "Run python -m pytest tests/test_ctx_003_3_preserve.py -q -k CTX_003_3."
+      ],
+      "dataExamples": [
+        {
+          "messages": [
+            {
+              "role": "system",
+              "content": "SYS",
+              "token_count": 9000
+            },
+            {
+              "role": "tool",
+              "content": "see pattern",
+              "token_count": 4001,
+              "dedupe_key": "tool:a"
+            },
+            {
+              "role": "user",
+              "content": "LATEST",
+              "token_count": 9000
+            }
+          ],
+          "context_pct": 0.1
+        }
+      ],
+      "businessRules": [
+        "FR-C2-07: never rewrite system or the latest user message."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/rules.py",
+          "purpose": "Pure decide function. Precedence R3, then R2, then R1."
+        }
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/rules.py"
+    ],
+    "businessRules": [
+      "Marker is exactly newline [context-mgmt:trimmed] newline.",
+      "Head and tail lengths come from config.trim_head_chars and config.trim_tail_chars.",
+      "If a trim happens, action is trim even when context_pct is also over the compact threshold.",
+      "Do not remove or reorder duplicate dedupe_key messages in CTX-003. CTX-004 owns that behavior."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_003_1_trim.py -q -k CTX_003_1",
+      "python -m pytest tests/test_ctx_003_2_cap_boundary.py -q -k CTX_003_2",
+      "python -m pytest tests/test_ctx_003_3_preserve.py -q -k CTX_003_3"
+    ]
+  }
+}

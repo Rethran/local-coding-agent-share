@@ -1,0 +1,129 @@
+{
+  "id": "CTX-031",
+  "type": "task",
+  "summary": "Block the gateway on a denied license",
+  "dependsOn": [
+    "CTX-011",
+    "CTX-029",
+    "CTX-030"
+  ],
+  "description": "FR-C1-09, FR-C7-06, SEC-05, P2, and OD-5. A cached blocked state returns one generic 403 and does not call the upstream. Expired and revoked bodies match. The specific reason is only in the admin log, with a correlation id.",
+  "scope": [
+    "Blocked non-streaming request is 403 and the upstream is not called",
+    "Streaming is the same 403, and an active license still returns 200"
+  ],
+  "acceptanceCriteria": "States expired and revoked both return status 403, code access_denied, and the same message, and the upstream client is not called. The response body does not contain expired, revoked, or license. The admin log contains the reason and the correlation id from header X-Correlation-Id. An active cache still returns the upstream content with status 200. A stream true request while blocked is 403 and is not text/event-stream. FR-C1-09 FR-C7-06 SEC-05 P2 OD-5 T7.",
+  "constraints": [
+    "Do not forward a blocked request to the upstream.",
+    "Do not put the license reason in the response body.",
+    "Do not change the active-license success path into a denial."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_031_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_031_1_deny.py -q -k CTX_031_1",
+    "python -m pytest tests/test_ctx_031_2_stream.py -q -k CTX_031_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-031.1",
+      "title": "Deny expired and revoked with one body",
+      "summary": "Both blocked states return the same 403 body, skip the upstream, and log the reason.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/gateway.py",
+        "test": "tests/test_ctx_031_1_deny.py",
+        "function": "create_gateway"
+      },
+      "scope": [
+        "expired and revoked bodies are equal",
+        "Upstream call count is 0",
+        "Admin log has the reason and correlation id",
+        "Body does not contain expired or license"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_031_1_deny.py -q -k CTX_031_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_031_1.",
+        "This subtask's only job: Both blocked states return the same 403 body, skip the upstream, and log the reason.",
+        "Touch only src/context_mgmt/gateway.py and tests/test_ctx_031_1_deny.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Read the cache through cached_license_state.",
+        "The message is exactly: Access to this service is not available. Contact your administrator.",
+        "Run python -m pytest tests/test_ctx_031_1_deny.py -q -k CTX_031_1."
+      ],
+      "dataExamples": [
+        {
+          "status": 403,
+          "code": "access_denied",
+          "message": "Access to this service is not available. Contact your administrator."
+        }
+      ],
+      "businessRules": [
+        "OD-5: a blocked license is a hard block. P2: developers see only the generic denial."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/license.py",
+          "purpose": "Cached verdict. Request path does not recompute it."
+        }
+      ]
+    },
+    {
+      "id": "CTX-031.2",
+      "title": "Deny streaming and still pass an active license",
+      "summary": "stream true while blocked is 403. An active license returns upstream content ok and status 200.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/gateway.py",
+        "test": "tests/test_ctx_031_2_stream.py",
+        "function": "create_gateway"
+      },
+      "scope": [
+        "Blocked stream status 403",
+        "Content type is not text/event-stream",
+        "Active license status 200 and content ok"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_031_2_stream.py -q -k CTX_031_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_031_2.",
+        "This subtask's only job: stream true while blocked is 403. An active license returns upstream content ok and status 200.",
+        "Touch only src/context_mgmt/gateway.py and tests/test_ctx_031_2_stream.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Assert the active request still reaches the upstream.",
+        "Run python -m pytest tests/test_ctx_031_2_stream.py -q -k CTX_031_2."
+      ],
+      "dataExamples": [
+        {
+          "blocked_status": 403,
+          "active_status": 200,
+          "content": "ok"
+        }
+      ],
+      "businessRules": [
+        "FR-C7-06 covers streaming and non-streaming."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/gateway.py"
+    ],
+    "businessRules": [
+      "Call cached_license_state before decide and before the upstream."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_031_1_deny.py -q -k CTX_031_1",
+      "python -m pytest tests/test_ctx_031_2_stream.py -q -k CTX_031_2"
+    ]
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "id": "GRAPH-045",
+  "type": "task",
+  "summary": "Keep start/test-case nodes blue",
+  "dependsOn": [
+    "GRAPH-022",
+    "GRAPH-024",
+    "GRAPH-043"
+  ],
+  "description": "Start nodes are test_case nodes and must render as #4C9AFF. to_force_graph keeps type on each node. viewer.js forces test_case fill to that blue.",
+  "scope": [
+    "Keep node_color('test_case') as #4C9AFF",
+    "to_force_graph includes type on each node",
+    "viewer.js uses #4C9AFF when node.type is test_case"
+  ],
+  "acceptanceCriteria": "node_color('test_case') is #4C9AFF, to_force_graph copies type, and viewer.js contains both test_case and #4C9AFF.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not add work beyond this task.",
+    "Do not add a watcher or CLI unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not change the other type colors.",
+    "Do not add npm or a bundler."
+  ],
+  "verification": [
+    "python -m pytest tests/test_start_node_color.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-045.1",
+      "title": "Start nodes stay #4C9AFF",
+      "summary": "test_case is the start node. Blue fill. No new types.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "to_force_graph",
+        "module": "src/living_graph/render.py",
+        "test": "tests/test_start_node_color.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "src/living_graph/static/viewer.js",
+          "purpose": "Must force test_case fill to #4C9AFF."
+        }
+      ],
+      "scope": [
+        "Keep node_color('test_case') as #4C9AFF",
+        "to_force_graph includes type on each node",
+        "viewer.js uses #4C9AFF when node.type is test_case"
+      ],
+      "dataExamples": [
+        "Happy Path type test_case color #4C9AFF.",
+        "viewer.js contains test_case.",
+        "viewer.js contains #4C9AFF."
+      ],
+      "businessRules": [
+        "Start means type test_case, not a new node type.",
+        "Do not change user_keyword, library_keyword, or unresolved colors."
+      ],
+      "verification": [
+        "python -m pytest tests/test_start_node_color.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_start_node_color.py first.",
+        "Run python -m pytest tests/test_start_node_color.py -q and confirm failure.",
+        "Keep start blue in node_color, to_force_graph type, and viewer.js fill.",
+        "Run python -m pytest tests/test_start_node_color.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/render.py",
+      "src/living_graph/static/viewer.js"
+    ],
+    "businessRules": [
+      "Start means type test_case, not a new node type.",
+      "Do not change user_keyword, library_keyword, or unresolved colors."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_start_node_color.py -q"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "taskId": "GRAPH-042",
+  "status": "FAILED",
+  "attempt": 1,
+  "startedAt": "2026-09-17T12:19:28+00:00",
+  "updatedAt": "2026-09-17T12:21:43+00:00",
+  "summary": "Subtask GRAPH-042.1 completed, but auto commit/push failed.",
+  "filesTouched": [],
+  "blockers": [
+    "Refusing auto-commit because these subtask-touched paths were already dirty before the subtask attempt: docs/tdd-tasks.md, src/living_graph/scan.py"
+  ],
+  "verificationResult": null,
+  "lastFailureReason": "Refusing auto-commit because these subtask-touched paths were already dirty before the subtask attempt: docs/tdd-tasks.md, src/living_graph/scan.py",
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": "Resolve the git auto-commit/push failure for GRAPH-042.1, verify the completed work, then rerun the orchestrator.",
+  "subtasks": [
+    {
+      "id": "GRAPH-042.1",
+      "title": "Walk subdirectories when scanning",
+      "status": "DONE",
+      "summary": "Resuming from handoff GRAPH-042-0009: tests written and confirmed failing; now implementing recursive walk in scan_fixtures."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

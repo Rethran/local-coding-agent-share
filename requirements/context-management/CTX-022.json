@@ -1,0 +1,166 @@
+{
+  "id": "CTX-022",
+  "type": "task",
+  "summary": "Store potential tokens and event source",
+  "dependsOn": [
+    "CTX-005",
+    "CTX-021"
+  ],
+  "description": "Extend the event contract with tokens_potential_est and source. When a payload omits them, stored keys stay the CTX-005 set. Invalid values are rejected. Gateway and MCP tasks send the fields later.",
+  "scope": [
+    "Accept tokens_potential_est and source when both are present",
+    "Reject a bad source and a negative potential",
+    "A payload that omits both keeps the previous stored keys"
+  ],
+  "acceptanceCriteria": "A payload with tokens_potential_est 25 and source gateway stores both. source client and tokens_potential_est -1 raise ValueError. A payload that omits both stores the CTX-005 keys only, with no source key. ",
+  "constraints": [
+    "Do not add the new keys when the payload omits them.",
+    "Do not persist prompt text.",
+    "Do not change hash_user_id."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_022_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_022_1_fields.py -q -k CTX_022_1",
+    "python -m pytest tests/test_ctx_022_2_reject.py -q -k CTX_022_2",
+    "python -m pytest tests/test_ctx_022_3_omit.py -q -k CTX_022_3"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-022.1",
+      "title": "Store the new fields when they are present",
+      "summary": "to_stored_event keeps tokens_potential_est 25 and source gateway.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/events.py",
+        "test": "tests/test_ctx_022_1_fields.py",
+        "function": "to_stored_event"
+      },
+      "scope": [
+        "Payload includes tokens_potential_est 25 and source gateway",
+        "Stored dict contains both values",
+        "Raw user id is still absent"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_022_1_fields.py -q -k CTX_022_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_022_1.",
+        "This subtask's only job: to_stored_event keeps tokens_potential_est 25 and source gateway.",
+        "Touch only src/context_mgmt/events.py and tests/test_ctx_022_1_fields.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Start from a valid CTX-005 payload and add the two fields.",
+        "Assert the stored values. Do not require the new keys on older payloads in this test.",
+        "Run python -m pytest tests/test_ctx_022_1_fields.py -q -k CTX_022_1."
+      ],
+      "dataExamples": [
+        {
+          "tokens_potential_est": 25,
+          "source": "gateway"
+        }
+      ],
+      "businessRules": [
+        "source enum is gateway or mcp."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/events.py",
+          "purpose": "Event validation and hashing."
+        }
+      ]
+    },
+    {
+      "id": "CTX-022.2",
+      "title": "Reject a bad source or a negative potential",
+      "summary": "source client and tokens_potential_est -1 raise ValueError.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/events.py",
+        "test": "tests/test_ctx_022_2_reject.py",
+        "function": "to_stored_event"
+      },
+      "scope": [
+        "source client raises ValueError",
+        "tokens_potential_est -1 raises ValueError",
+        "source mcp is accepted"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_022_2_reject.py -q -k CTX_022_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_022_2.",
+        "This subtask's only job: source client and tokens_potential_est -1 raise ValueError.",
+        "Touch only src/context_mgmt/events.py and tests/test_ctx_022_2_reject.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Assert the exception type. Do not assert a message substring that names a file path.",
+        "Run python -m pytest tests/test_ctx_022_2_reject.py -q -k CTX_022_2."
+      ],
+      "dataExamples": [
+        {
+          "bad_source": "client",
+          "bad_potential": -1,
+          "ok_source": "mcp"
+        }
+      ],
+      "businessRules": [
+        "Unknown source values are invalid events."
+      ]
+    },
+    {
+      "id": "CTX-022.3",
+      "title": "Leave older payloads unchanged",
+      "summary": "A payload without the new fields stores the CTX-005 key set and no source key.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/events.py",
+        "test": "tests/test_ctx_022_3_omit.py",
+        "function": "to_stored_event"
+      },
+      "scope": [
+        "Payload matches the CTX-005 sample and omits the new fields",
+        "Stored keys do not include source or tokens_potential_est"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_022_3_omit.py -q -k CTX_022_3"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_022_3.",
+        "This subtask's only job: A payload without the new fields stores the CTX-005 key set and no source key.",
+        "Touch only src/context_mgmt/events.py and tests/test_ctx_022_3_omit.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Copy the CTX-005 valid payload. Assert source is not a stored key.",
+        "Run python -m pytest tests/test_ctx_022_3_omit.py -q -k CTX_022_3."
+      ],
+      "dataExamples": [
+        {
+          "omitted": [
+            "tokens_potential_est",
+            "source"
+          ]
+        }
+      ],
+      "businessRules": [
+        "CTX-005 tests compare the old key set. Do not force defaults into that dict."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/events.py"
+    ],
+    "businessRules": [
+      "Optional contract fields are stored only when the caller sends them."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_022_1_fields.py -q -k CTX_022_1",
+      "python -m pytest tests/test_ctx_022_2_reject.py -q -k CTX_022_2",
+      "python -m pytest tests/test_ctx_022_3_omit.py -q -k CTX_022_3"
+    ]
+  }
+}

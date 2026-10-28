@@ -1,0 +1,123 @@
+{
+  "id": "CTX-027",
+  "type": "task",
+  "summary": "Count seats and enforce the configured mode",
+  "dependsOn": [
+    "CTX-026"
+  ],
+  "description": "FR-C7-13 and OD-7. Distinct user hashes over the caller-supplied set are the seat count. warn records overage and still allows. block_new denies a user who is not already counted and leaves existing users allowed.",
+  "scope": [
+    "warn allows the new user and reports overage",
+    "block_new denies the new user and allows a known user"
+  ],
+  "acceptanceCriteria": "max_users 2 and known hashes h1 and h2. Mode warn and user h3 returns allowed true, seats_used 3, overage 1. Mode block_new and user h3 returns allowed false and reason seats, and the known set stays h1 and h2. Mode block_new and user h1 returns allowed true. The denial message is the generic SEC-05 sentence. FR-C7-13 OD-7.",
+  "constraints": [
+    "Do not deny existing users in block_new.",
+    "Do not store raw user ids in the seat set.",
+    "Do not default seat_enforcement to block_new."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_027_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_027_1_warn.py -q -k CTX_027_1",
+    "python -m pytest tests/test_ctx_027_2_block.py -q -k CTX_027_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-027.1",
+      "title": "Warn and keep serving",
+      "summary": "warn with a third hash returns allowed true, seats_used 3, and overage 1.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/license.py",
+        "test": "tests/test_ctx_027_1_warn.py",
+        "function": "seat_decision"
+      },
+      "scope": [
+        "max_users 2",
+        "known h1 and h2",
+        "user h3",
+        "mode warn"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_027_1_warn.py -q -k CTX_027_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_027_1.",
+        "This subtask's only job: warn with a third hash returns allowed true, seats_used 3, and overage 1.",
+        "Touch only src/context_mgmt/license.py and tests/test_ctx_027_1_warn.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Assert the known set includes h3 after warn.",
+        "Run python -m pytest tests/test_ctx_027_1_warn.py -q -k CTX_027_1."
+      ],
+      "dataExamples": [
+        {
+          "mode": "warn",
+          "allowed": true,
+          "seats_used": 3,
+          "overage": 1
+        }
+      ],
+      "businessRules": [
+        "OD-7 default is warn. This subtask passes the mode in."
+      ]
+    },
+    {
+      "id": "CTX-027.2",
+      "title": "Block only a new user",
+      "summary": "block_new denies h3 with the generic denial and still allows h1.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/license.py",
+        "test": "tests/test_ctx_027_2_block.py",
+        "function": "seat_decision"
+      },
+      "scope": [
+        "h3 allowed false and reason seats",
+        "known set remains h1 and h2",
+        "h1 allowed true",
+        "message equals the generic denial sentence"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_027_2_block.py -q -k CTX_027_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_027_2.",
+        "This subtask's only job: block_new denies h3 with the generic denial and still allows h1.",
+        "Touch only src/context_mgmt/license.py and tests/test_ctx_027_2_block.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Use this exact message: Access to this service is not available. Contact your administrator.",
+        "Run python -m pytest tests/test_ctx_027_2_block.py -q -k CTX_027_2."
+      ],
+      "dataExamples": [
+        {
+          "mode": "block_new",
+          "new_user": "h3",
+          "known_user": "h1",
+          "message": "Access to this service is not available. Contact your administrator."
+        }
+      ],
+      "businessRules": [
+        "FR-C7-13: existing users are unaffected."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/license.py"
+    ],
+    "businessRules": [
+      "Seat identity is a hash, never a raw user id."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_027_1_warn.py -q -k CTX_027_1",
+      "python -m pytest tests/test_ctx_027_2_block.py -q -k CTX_027_2"
+    ]
+  }
+}

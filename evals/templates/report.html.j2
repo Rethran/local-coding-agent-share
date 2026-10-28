@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8">
+  <title>Arvio — {{ report.promptVariant }} / {{ report.model }}</title>
+  <style>
+    @page { size: A4; margin: 14mm; }
+    body { font-family: Georgia, serif; margin: 2rem auto; max-width: 960px; line-height: 1.45; color: #1a1a1a; }
+    h1, h2, h3 { font-family: "Segoe UI", sans-serif; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border-bottom: 1px solid #ddd; text-align: left; padding: 0.4rem 0.6rem; vertical-align: top; }
+    th { font-family: "Segoe UI", sans-serif; font-weight: 600; }
+    .fail { background: #fdecea; }
+    .flaky { background: #fff4ce; }
+    .reliable { background: #e8f6ee; }
+    .cannot { background: #fdecea; }
+    .muted { color: #555; font-size: 0.95rem; }
+    .notice { background: #fff4ce; border-left: 4px solid #d9a600; padding: 0.6rem 0.8rem; }
+    .answer { font-size: 1.15rem; }
+    pre { white-space: pre-wrap; background: #f6f6f6; padding: 0.75rem; overflow-x: auto; }
+    code { font-family: Consolas, monospace; }
+    section { break-inside: avoid; }
+    @media print {
+      body { margin: 0; max-width: none; }
+      pre { font-size: 9pt; }
+      a { color: inherit; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Arvio</h1>
+  <p class="muted">
+    Kehote <code>{{ report.promptVariant }}</code>
+    · malli <code>{{ report.model }}</code>
+    · {{ report.createdAt|fi_aika }}
+  </p>
+  {% if report.runStatus and report.runStatus != "success" %}
+  <p class="notice">
+    Ajo ei valmistunut.
+    Luvut kattavat {{ report.summary.nTrials }}{% if report.plannedTrials %}/{{ report.plannedTrials }}{% endif %} valmistunutta ajoa.
+    Luokittelu ja kustannus eivät ole vertailukelpoisia täyden ajon kanssa.
+  </p>
+  {% elif report.dryRun %}
+  <p class="notice">Kuivaharjoitus: mallia ei ajettu. Tulos kertoo vain, että ajo käynnistyy.</p>
+  {% endif %}
+
+  <section>
+    <h2>Katselmoijalle</h2>
+    <p class="answer"><strong>Mihin tehtäviin agentin voi laittaa.</strong> {{ report.brief.assign }}</p>
+    <p class="answer"><strong>Paljonko yksi täysi onnistuminen maksoi.</strong> {{ report.brief.cost }}</p>
+    <p class="answer"><strong>Paraniko tulos edellisestä.</strong> {{ report.brief.trend }}</p>
+
+    {% set buckets = report.review.consistency %}
+    <h3>Tehtävät ryhmittäin</h3>
+    <table>
+      <thead><tr><th>Ryhmä</th><th>Tehtäviä</th><th>Merkitys</th></tr></thead>
+      <tbody>
+        <tr class="reliable"><td>Luotettava</td><td>{{ buckets.reliable|length }}</td><td>Testit menivät läpi joka kerralla.</td></tr>
+        <tr class="flaky"><td>Hauras</td><td>{{ buckets.fragile|length }}</td><td>Testit menivät läpi vain osalla kerroista.</td></tr>
+        <tr class="cannot"><td>Ei osaa</td><td>{{ buckets.cannot|length }}</td><td>Testit eivät menneet läpi kertaakaan.</td></tr>
+      </tbody>
+    </table>
+    {% for label, rows in [("Luotettava", buckets.reliable), ("Hauras", buckets.fragile), ("Ei osaa", buckets.cannot)] %}
+      {% if rows %}
+      <h4>{{ label }}</h4>
+      <table>
+        <thead><tr><th>Tunnus</th><th>Nimi</th><th>Läpi</th></tr></thead>
+        <tbody>
+          {% for row in rows %}
+          <tr>
+            <td><code>{{ row.sampleId }}</code></td>
+            <td>{{ row.title }}</td>
+            <td>{{ row.passed }}/{{ row.epochs }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+    {% endfor %}
+  </section>
+
+  <section>
+    <h2>Tekijälle</h2>
+    <p class="answer"><strong>Voiko valmis-merkintään luottaa.</strong> {{ report.brief.trust }}</p>
+    <p class="answer"><strong>Onko odotusaika käyttökelpoinen.</strong> {{ report.brief.time }}</p>
+    <p class="answer"><strong>Mihin korjaus kuuluu.</strong> {{ report.brief.fix }}</p>
+
+    <h3>Aika ja askeleet</h3>
+    {% set wall = report.review.timing.wallSeconds %}
+    {% set steps = report.review.timing.steps %}
+    <table>
+      <thead><tr><th></th><th>Tyypillinen</th><th>Hitain</th><th>Kertoja</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Aika</td>
+          <td>{% if wall.median is none %}—{% else %}{{ wall.median|fi_kesto }}{% endif %}</td>
+          <td>{% if wall.worst is none %}—{% else %}{{ wall.worst|fi_kesto }}{% endif %}</td>
+          <td>{{ wall.n }}</td>
+        </tr>
+        <tr>
+          <td>Askeleet</td>
+          <td>{% if steps.n == 0 %}ei kirjattu{% else %}{{ steps.median }}{% endif %}</td>
+          <td>{% if steps.n == 0 %}—{% else %}{{ steps.worst }}{% endif %}</td>
+          <td>{{ steps.n }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Mihin ajot kaatuivat</h3>
+    <table>
+      <thead><tr><th>Syy</th><th>Ajot</th></tr></thead>
+      <tbody>
+        {% for name in report.review.failureTypes.order %}
+        <tr>
+          <td>{{ report.review.failureTypes.labels[name] }}</td>
+          <td>{{ report.review.failureTypes.counts[name] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <p class="muted">Epäonnistuneita ajoja {{ report.review.failureTypes.failedTrials }}.</p>
+
+    <h3>Läpäisy kriteereittäin</h3>
+    <table>
+      <thead>
+        <tr><th>Kriteeri</th><th>Osuus</th><th>Heitto</th><th>Kertoja</th><th>Ero edelliseen</th></tr>
+      </thead>
+      <tbody>
+        {% for name, row in report.summary.scorers.items() %}
+        <tr>
+          <td>{{ score_labels.get(name, name) }}</td>
+          <td>{{ "%.1f"|format(row.passRate * 100) }} %</td>
+          <td>± {{ "%.1f"|format(row.stderr * 100) }} prosenttiyksikköä</td>
+          <td>{{ row.n }}</td>
+          <td>{% if row.delta is none %}—{% else %}{{ "%+.1f"|format(row.delta * 100) }} prosenttiyksikköä{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <h3>Mitä arvioidaan</h3>
+    {% for name, text in criteria_fi.items() %}
+      <h4>{{ text.otsikko }}</h4>
+      <p>{{ text.mita }}</p>
+      <p class="muted">Miksi: {{ text.miksi }}</p>
+      <p class="muted">Miten: {{ text.miten }}</p>
+    {% endfor %}
+
+    <h3>Epäonnistumiset ensin</h3>
+    {% if not report.failures %}
+      <p>Ei epäonnistuneita ajoja.</p>
+    {% endif %}
+    {% for row in report.failures %}
+      <article class="fail">
+        <h4>{{ row.sampleId }} kerta {{ row.epoch }} — {{ row.title }}</h4>
+        <p><strong>Kriteeri:</strong> {{ score_labels.get(row.criterion, row.criterion) }}</p>
+        <p><strong>Syöte:</strong> {{ row.input }}</p>
+        <pre>{{ row.explanation }}</pre>
+      </article>
+    {% endfor %}
+
+    <h3>Hauraat tehtävät</h3>
+    <p class="muted">Sama tehtävä, eri kerrat. Nämä kannattaa lukea ensin.</p>
+    {% if not report.flaky %}
+      <p>Ei tehtäviä, joiden tulos vaihteli kertojen välillä.</p>
+    {% endif %}
+    <table>
+      {% for row in report.flaky %}
+      <tr class="flaky">
+        <td><code>{{ row.sampleId }}</code></td>
+        <td>{{ score_labels.get(row.scorer, row.scorer) }}</td>
+        <td>{{ row.passed }}/{{ row.epochs }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </section>
+</body>
+</html>

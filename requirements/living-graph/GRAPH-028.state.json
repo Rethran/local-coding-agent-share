@@ -1,0 +1,32 @@
+{
+  "taskId": "GRAPH-028",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-09-16T20:24:37+00:00",
+  "updatedAt": "2026-09-16T20:28:54+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "GRAPH-028.1",
+      "title": "Exit 0 on success, non-zero on fatal parse error",
+      "status": "DONE",
+      "summary": "CLI wrapper only. Two cases. No watcher and no UI."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

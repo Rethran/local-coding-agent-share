@@ -1,0 +1,123 @@
+{
+  "id": "CTX-057",
+  "type": "task",
+  "summary": "Separate the owned GPU host from the cloud preset",
+  "dependsOn": [
+    "CTX-056"
+  ],
+  "description": "DEP-04, DEP-05, DEP-10, and DEP-11. gpu-server is the operator's own GPU host: the model is accepted only from the gateway, storage is SQLite, and model_owner is operator. cloud is a provider: public data, private management, Postgres, and model_owner is provider. Both are remote URL deployments, like each other, and unlike the developer workstation. The high-water mark is stored on a volume path. Reporting may be down.",
+  "scope": [
+    "gpu-server and cloud differ by ownership, public bind, and storage",
+    "The high-water file round-trips and gateway_requires_reporting is false"
+  ],
+  "acceptanceCriteria": "gpu-server has model_accepts gateway-only, tls true, storage sqlite, and model_owner operator. cloud has data_host 0.0.0.0, management_host 127.0.0.1, management_public false, tls true, storage postgres, and model_owner provider. save_high_water then load_high_water returns the timestamp. gateway_requires_reporting is false. DEP-04 DEP-05 DEP-10 DEP-11.",
+  "constraints": [
+    "Do not mark the cloud management plane public.",
+    "Do not set gpu-server model_owner to provider or to the developer workstation.",
+    "Do not require reporting to be up before the gateway starts.",
+    "Do not store prompts in the high-water file."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_057_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_057_1_shapes.py -q -k CTX_057_1",
+    "python -m pytest tests/test_ctx_057_2_volume.py -q -k CTX_057_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-057.1",
+      "title": "Contrast the owned GPU host and the cloud preset",
+      "summary": "gpu-server is the operator-owned GPU host with gateway-only SQLite. cloud is a provider with public data, private management, and Postgres.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/deploy.py",
+        "test": "tests/test_ctx_057_1_shapes.py",
+        "function": "deployment_preset"
+      },
+      "scope": [
+        "gpu-server model_accepts gateway-only",
+        "gpu-server model_owner operator",
+        "cloud management_public false",
+        "cloud storage postgres",
+        "cloud model_owner provider"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_057_1_shapes.py -q -k CTX_057_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_057_1.",
+        "This subtask's only job: gpu-server is the operator-owned GPU host with gateway-only SQLite. cloud is a provider with public data, private management, and Postgres.",
+        "Touch only src/context_mgmt/deploy.py and tests/test_ctx_057_1_shapes.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "tls is true for both presets.",
+        "Run python -m pytest tests/test_ctx_057_1_shapes.py -q -k CTX_057_1."
+      ],
+      "dataExamples": [
+        {
+          "gpu_storage": "sqlite",
+          "gpu_model_owner": "operator",
+          "cloud_data_host": "0.0.0.0",
+          "cloud_management_host": "127.0.0.1",
+          "cloud_model_owner": "provider",
+          "management_public": false
+        }
+      ],
+      "businessRules": [
+        "DEP-04 and DEP-05. gpu-server model_owner operator means the operator owns the GPU host. cloud model_owner provider means a cloud provider. DEP-10: the storage region is an explicit config field region."
+      ]
+    },
+    {
+      "id": "CTX-057.2",
+      "title": "Persist the high-water mark on a volume path",
+      "summary": "A timestamp written to the volume path loads back, and the gateway does not require reporting.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/deploy.py",
+        "test": "tests/test_ctx_057_2_volume.py",
+        "function": "save_high_water"
+      },
+      "scope": [
+        "round-trip 2026-10-09T00:00:00Z",
+        "gateway_requires_reporting false"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_057_2_volume.py -q -k CTX_057_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_057_2.",
+        "This subtask's only job: A timestamp written to the volume path loads back, and the gateway does not require reporting.",
+        "Touch only src/context_mgmt/deploy.py and tests/test_ctx_057_2_volume.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Use tmp_path in the test. Write only the timestamp text.",
+        "Run python -m pytest tests/test_ctx_057_2_volume.py -q -k CTX_057_2."
+      ],
+      "dataExamples": [
+        {
+          "timestamp": "2026-10-09T00:00:00Z",
+          "gateway_requires_reporting": false
+        }
+      ],
+      "businessRules": [
+        "DEP-11: the mark survives a restart on a mounted volume. The gateway still starts if reporting is down."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/deploy.py"
+    ],
+    "businessRules": [
+      "gpu-server model_owner is operator. cloud model_owner is provider. region is a required cloud preset string, for example eu-central."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_057_1_shapes.py -q -k CTX_057_1",
+      "python -m pytest tests/test_ctx_057_2_volume.py -q -k CTX_057_2"
+    ]
+  }
+}

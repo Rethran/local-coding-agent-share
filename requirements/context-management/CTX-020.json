@@ -1,0 +1,141 @@
+{
+  "id": "CTX-020",
+  "type": "task",
+  "summary": "Prove the gateway against two upstream shapes",
+  "dependsOn": [
+    "CTX-010",
+    "CTX-012"
+  ],
+  "description": "T2. A cloud stand-in and an Ollama stand-in both return OpenAI-style usage. The gateway records token_source provider for each and returns that stand-in's assistant text.",
+  "scope": [
+    "Add cloud_completion and ollama_completion",
+    "Both include usage.prompt_tokens and usage.completion_tokens",
+    "The gateway test posts once through each transport"
+  ],
+  "acceptanceCriteria": "cloud_completion returns assistant content cloud-ok and a usage object. ollama_completion returns ollama-ok and a usage object. A gateway in front of each returns that content with status 200 and emits token_source provider. T2.",
+  "constraints": [
+    "Do not call a real cloud or a real Ollama.",
+    "Do not special-case the provider name inside decide.",
+    "Do not drop the streaming path while adding these stand-ins."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_020_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_020_1_standin.py -q -k CTX_020_1",
+    "python -m pytest tests/test_ctx_020_2_contract.py -q -k CTX_020_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-020.1",
+      "title": "Return usage from both stand-ins",
+      "summary": "cloud_completion and ollama_completion return choices plus usage for the same request body.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/cloud_standin.py",
+        "test": "tests/test_ctx_020_1_standin.py",
+        "function": "cloud_completion"
+      },
+      "scope": [
+        "cloud_completion(body) content cloud-ok",
+        "ollama_completion(body) content ollama-ok",
+        "Both usage objects have prompt_tokens and completion_tokens as positive ints"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_020_1_standin.py -q -k CTX_020_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_020_1.",
+        "This subtask's only job: cloud_completion and ollama_completion return choices plus usage for the same request body.",
+        "Touch only src/context_mgmt/cloud_standin.py and tests/test_ctx_020_1_standin.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Use one messages list for both calls.",
+        "Assert the two assistant strings differ and both usage dicts are present.",
+        "Run python -m pytest tests/test_ctx_020_1_standin.py -q -k CTX_020_1."
+      ],
+      "dataExamples": [
+        {
+          "body": {
+            "model": "m",
+            "messages": [
+              {
+                "role": "user",
+                "content": "hi"
+              }
+            ]
+          },
+          "cloud": "cloud-ok",
+          "ollama": "ollama-ok"
+        }
+      ],
+      "businessRules": [
+        "P1: the stand-ins differ by assistant text, not by a private usage schema."
+      ]
+    },
+    {
+      "id": "CTX-020.2",
+      "title": "Run the gateway against both stand-ins",
+      "summary": "Each stand-in behind create_gateway returns its own assistant text and emits token_source provider.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/gateway.py",
+        "test": "tests/test_ctx_020_2_contract.py",
+        "function": "create_gateway"
+      },
+      "scope": [
+        "Two MockTransport handlers, each calling one stand-in",
+        "Both HTTP statuses are 200",
+        "Both emitted events have token_source provider"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_020_2_contract.py -q -k CTX_020_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_020_2.",
+        "This subtask's only job: Each stand-in behind create_gateway returns its own assistant text and emits token_source provider.",
+        "Touch only src/context_mgmt/gateway.py and tests/test_ctx_020_2_contract.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Do not start a socket server.",
+        "Assert response contents cloud-ok and ollama-ok.",
+        "Run python -m pytest tests/test_ctx_020_2_contract.py -q -k CTX_020_2."
+      ],
+      "dataExamples": [
+        {
+          "token_source": "provider",
+          "contents": [
+            "cloud-ok",
+            "ollama-ok"
+          ]
+        }
+      ],
+      "businessRules": [
+        "T2: the same gateway path accepts both upstreams."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/gateway.py",
+          "purpose": "OpenAI-compatible proxy."
+        }
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/cloud_standin.py",
+      "src/context_mgmt/gateway.py"
+    ],
+    "businessRules": [
+      "usage prompt_tokens is max(1, len(json.dumps(messages)) // 4).",
+      "completion_tokens is max(1, len(assistant_content) // 4)."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_020_1_standin.py -q -k CTX_020_1",
+      "python -m pytest tests/test_ctx_020_2_contract.py -q -k CTX_020_2"
+    ]
+  }
+}

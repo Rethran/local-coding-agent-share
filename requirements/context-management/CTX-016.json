@@ -1,0 +1,147 @@
+{
+  "id": "CTX-016",
+  "type": "task",
+  "summary": "Add a no-op observer over metadata",
+  "dependsOn": [
+    "CTX-006"
+  ],
+  "description": "FR-C5-01 and FR-C5-03. analyze(events) returns guidance. NoOpObserver returns an empty guidance string. The HTTP observer strips content unless content_mode is on.",
+  "scope": [
+    "NoOpObserver.analyze returns {guidance: empty string}",
+    "strip_content removes content, prompt, messages, and response keys",
+    "Default content_mode is false"
+  ],
+  "acceptanceCriteria": "NoOpObserver().analyze([]) returns {\"guidance\": \"\"}. strip_content removes a content field and leaves org_id. FR-C5-01 FR-C5-03.",
+  "constraints": [
+    "Do not call the observer from the gateway or the reporting request path.",
+    "Do not send prompt text when content_mode is false.",
+    "Do not fail the process when analyze has no events."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_016_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_016_1_noop.py -q -k CTX_016_1",
+    "python -m pytest tests/test_ctx_016_2_strip.py -q -k CTX_016_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-016.1",
+      "title": "Ship the no-op observer",
+      "summary": "NoOpObserver.analyze returns empty guidance and does not touch the store.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/observer.py",
+        "test": "tests/test_ctx_016_1_noop.py",
+        "function": "NoOpObserver"
+      },
+      "scope": [
+        "Class NoOpObserver with analyze(self, events) -> dict",
+        "Empty input returns guidance empty string",
+        "The class constructor takes no store argument"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_016_1_noop.py -q -k CTX_016_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_016_1.",
+        "This subtask's only job: NoOpObserver.analyze returns empty guidance and does not touch the store.",
+        "Touch only src/context_mgmt/observer.py and tests/test_ctx_016_1_noop.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Assert the result equals {\"guidance\": \"\"}.",
+        "Do not import the gateway in this test.",
+        "Run python -m pytest tests/test_ctx_016_1_noop.py -q -k CTX_016_1."
+      ],
+      "dataExamples": [
+        {
+          "input": [],
+          "output": {
+            "guidance": ""
+          }
+        }
+      ],
+      "businessRules": [
+        "FR-C5-01: analyze(events) -> guidance, async relative to the request path by not being called there."
+      ]
+    },
+    {
+      "id": "CTX-016.2",
+      "title": "Strip content from observer input",
+      "summary": "strip_content drops content, prompt, messages, and response keys and keeps org_id and prompt_tokens.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/observer.py",
+        "test": "tests/test_ctx_016_2_strip.py",
+        "function": "strip_content"
+      },
+      "scope": [
+        "Recursive strip on dicts and lists",
+        "org_id and prompt_tokens remain",
+        "The secret string is absent"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_016_2_strip.py -q -k CTX_016_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_016_2.",
+        "This subtask's only job: strip_content drops content, prompt, messages, and response keys and keeps org_id and prompt_tokens.",
+        "Touch only src/context_mgmt/observer.py and tests/test_ctx_016_2_strip.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Use the event in dataExamples.",
+        "Assert 'secret' not in json.dumps(strip_content(event)).",
+        "Run python -m pytest tests/test_ctx_016_2_strip.py -q -k CTX_016_2."
+      ],
+      "dataExamples": [
+        {
+          "event": {
+            "org_id": "org-a",
+            "prompt_tokens": 1,
+            "content": "secret",
+            "nested": [
+              {
+                "prompt": "secret"
+              }
+            ]
+          },
+          "keep": [
+            "org_id",
+            "prompt_tokens"
+          ],
+          "drop_keys": [
+            "content",
+            "prompt",
+            "messages",
+            "response"
+          ]
+        }
+      ],
+      "businessRules": [
+        "FR-C5-03: metadata only unless content_mode is explicitly true. This test covers the false path."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/observer.py",
+          "purpose": "Async observer implementations."
+        }
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/observer.py"
+    ],
+    "businessRules": [
+      "Guidance is a string on the key guidance.",
+      "strip_content walks dicts and lists."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_016_1_noop.py -q -k CTX_016_1",
+      "python -m pytest tests/test_ctx_016_2_strip.py -q -k CTX_016_2"
+    ]
+  }
+}

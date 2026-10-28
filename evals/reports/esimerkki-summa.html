@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8">
+  <title>Arvio — summa / esimerkki</title>
+  <style>
+    @page { size: A4; margin: 14mm; }
+    body { font-family: Georgia, serif; margin: 2rem auto; max-width: 960px; line-height: 1.45; color: #1a1a1a; }
+    h1, h2, h3 { font-family: "Segoe UI", sans-serif; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border-bottom: 1px solid #ddd; text-align: left; padding: 0.4rem 0.6rem; vertical-align: top; }
+    th { font-family: "Segoe UI", sans-serif; font-weight: 600; }
+    .fail { background: #fdecea; }
+    .flaky { background: #fff4ce; }
+    .reliable { background: #e8f6ee; }
+    .cannot { background: #fdecea; }
+    .muted { color: #555; font-size: 0.95rem; }
+    .notice { background: #fff4ce; border-left: 4px solid #d9a600; padding: 0.6rem 0.8rem; }
+    .answer { font-size: 1.15rem; }
+    pre { white-space: pre-wrap; background: #f6f6f6; padding: 0.75rem; overflow-x: auto; }
+    code { font-family: Consolas, monospace; }
+    section { break-inside: avoid; }
+    @media print {
+      body { margin: 0; max-width: none; }
+      pre { font-size: 9pt; }
+      a { color: inherit; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Arvio</h1>
+  <p class="muted">
+    Kehote <code>summa</code>
+    · malli <code>esimerkki</code>
+    · 3.10.2026 klo 21.43
+  </p>
+  
+
+  <section>
+    <h2>Katselmoijalle</h2>
+    <p class="answer"><strong>Mihin tehtäviin agentin voi laittaa.</strong> Summa onnistui kaikilla kolmella kerralla. Erotus onnistui vain joskus, 2 kertaa 3 kerrasta. Tulo ei onnistunut kertaakaan.</p>
+    <p class="answer"><strong>Paljonko yksi täysi onnistuminen maksoi.</strong> Yksi tehtävä onnistui joka kerralla. Yhtä sellaista tehtävää kohti kului 0,6 minuuttia, kun epäonnistuneetkin ajot lasketaan mukaan. Koko ajo vei 0,6 minuuttia.</p>
+    <p class="answer"><strong>Paraniko tulos edellisestä.</strong> Ero edelliseen ajoon on niin pieni, että se voi johtua sattumasta. Älä pidä sitä muutoksena.</p>
+
+    
+    <h3>Tehtävät ryhmittäin</h3>
+    <table>
+      <thead><tr><th>Ryhmä</th><th>Tehtäviä</th><th>Merkitys</th></tr></thead>
+      <tbody>
+        <tr class="reliable"><td>Luotettava</td><td>1</td><td>Testit menivät läpi joka kerralla.</td></tr>
+        <tr class="flaky"><td>Hauras</td><td>1</td><td>Testit menivät läpi vain osalla kerroista.</td></tr>
+        <tr class="cannot"><td>Ei osaa</td><td>1</td><td>Testit eivät menneet läpi kertaakaan.</td></tr>
+      </tbody>
+    </table>
+    
+      
+      <h4>Luotettava</h4>
+      <table>
+        <thead><tr><th>Tunnus</th><th>Nimi</th><th>Läpi</th></tr></thead>
+        <tbody>
+          
+          <tr>
+            <td><code>summa</code></td>
+            <td>summa</td>
+            <td>3/3</td>
+          </tr>
+          
+        </tbody>
+      </table>
+      
+    
+      
+      <h4>Hauras</h4>
+      <table>
+        <thead><tr><th>Tunnus</th><th>Nimi</th><th>Läpi</th></tr></thead>
+        <tbody>
+          
+          <tr>
+            <td><code>erotus</code></td>
+            <td>erotus</td>
+            <td>2/3</td>
+          </tr>
+          
+        </tbody>
+      </table>
+      
+    
+      
+      <h4>Ei osaa</h4>
+      <table>
+        <thead><tr><th>Tunnus</th><th>Nimi</th><th>Läpi</th></tr></thead>
+        <tbody>
+          
+          <tr>
+            <td><code>tulo</code></td>
+            <td>tulo</td>
+            <td>0/3</td>
+          </tr>
+          
+        </tbody>
+      </table>
+      
+    
+  </section>
+
+  <section>
+    <h2>Tekijälle</h2>
+    <p class="answer"><strong>Voiko valmis-merkintään luottaa.</strong> Agentti merkitsi tehtävän valmiiksi 4 kertaa 9 kerrasta, vaikka testit eivät menneet läpi. Niissä merkintää ei voi uskoa ilman ihmisen tarkistusta.</p>
+    <p class="answer"><strong>Onko odotusaika käyttökelpoinen.</strong> Tyypillinen ajo vei 4 sekuntia, hitain 5 sekuntia. Askeleita ei ole kirjattu.</p>
+    <p class="answer"><strong>Mihin korjaus kuuluu.</strong> Testit eivät menneet läpi. Korjaus kuuluu mallille tai sille ohjeelle, jonka malli sai.</p>
+
+    <h3>Aika ja askeleet</h3>
+    
+    
+    <table>
+      <thead><tr><th></th><th>Tyypillinen</th><th>Hitain</th><th>Kertoja</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Aika</td>
+          <td>4 sekuntia</td>
+          <td>5 sekuntia</td>
+          <td>9</td>
+        </tr>
+        <tr>
+          <td>Askeleet</td>
+          <td>ei kirjattu</td>
+          <td>—</td>
+          <td>0</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Mihin ajot kaatuivat</h3>
+    <table>
+      <thead><tr><th>Syy</th><th>Ajot</th></tr></thead>
+      <tbody>
+        
+        <tr>
+          <td>aikakatkaisu</td>
+          <td>0</td>
+        </tr>
+        
+        <tr>
+          <td>silmukka</td>
+          <td>0</td>
+        </tr>
+        
+        <tr>
+          <td>työkaluvirheet</td>
+          <td>0</td>
+        </tr>
+        
+        <tr>
+          <td>askelbudjetti</td>
+          <td>0</td>
+        </tr>
+        
+        <tr>
+          <td>testit</td>
+          <td>4</td>
+        </tr>
+        
+        <tr>
+          <td>muu</td>
+          <td>0</td>
+        </tr>
+        
+      </tbody>
+    </table>
+    <p class="muted">Epäonnistuneita ajoja 4.</p>
+
+    <h3>Läpäisy kriteereittäin</h3>
+    <table>
+      <thead>
+        <tr><th>Kriteeri</th><th>Osuus</th><th>Heitto</th><th>Kertoja</th><th>Ero edelliseen</th></tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td>Prosessiraja</td>
+          <td>100.0 %</td>
+          <td>± 0.0 prosenttiyksikköä</td>
+          <td>9</td>
+          <td>+0.0 prosenttiyksikköä</td>
+        </tr>
+        
+        <tr>
+          <td>Testit</td>
+          <td>55.6 %</td>
+          <td>± 16.6 prosenttiyksikköä</td>
+          <td>9</td>
+          <td>+0.0 prosenttiyksikköä</td>
+        </tr>
+        
+        <tr>
+          <td>Valmis-merkintä</td>
+          <td>100.0 %</td>
+          <td>± 0.0 prosenttiyksikköä</td>
+          <td>9</td>
+          <td>+0.0 prosenttiyksikköä</td>
+        </tr>
+        
+      </tbody>
+    </table>
+
+    <h3>Mitä arvioidaan</h3>
+    
+      <h4>Valmis-merkintä</h4>
+      <p>Agentti merkitsi tehtävän valmiiksi ja tarkistus hyväksyi sen.</p>
+      <p class="muted">Miksi: Sujuvakaan keskustelu ei riitä, jos tehtävää ei merkitä valmiiksi.</p>
+      <p class="muted">Miten: Luetaan tehtävän tila ajon jälkeen. Merkintä menee läpi vain, jos tila on valmis.</p>
+    
+      <h4>Testit</h4>
+      <p>Aiemmin hyväksytyn version testit menevät läpi agentin kirjoittamalla koodilla.</p>
+      <p class="muted">Miksi: Agentin omat testit voivat olla liian heikot. Nämä ovat aiemmin hyväksyttyjä testejä, eivät erillisiä salaisia testejä.</p>
+      <p class="muted">Miten: Ajon jälkeen ajetaan hyväksytyn version testitiedostot.</p>
+    
+      <h4>Prosessiraja</h4>
+      <p>Agentti valmistui ilman silmukkaa, askelbudjetin loppumista tai työkaluvirheiden tulvaa.</p>
+      <p class="muted">Miksi: Paikallinen malli epäonnistuu usein siinä, miten työ tehdään, ei vain siinä, onko vastaus oikein.</p>
+      <p class="muted">Miten: Luetaan ajon yhteenveto. Tulos hylätään, jos yrityksiä on yli 10, askeleita yli 160, sama työkalukutsu toistuu yli 5 kertaa, tai työkaluvirheiden osuus on yli 40%.</p>
+    
+
+    <h3>Epäonnistumiset ensin</h3>
+    
+    
+      <article class="fail">
+        <h4>erotus kerta 3 — erotus</h4>
+        <p><strong>Kriteeri:</strong> Testit</p>
+        <p><strong>Syöte:</strong> Laske 5 - 2. Vastaa pelkällä luvulla.</p>
+        <pre>  [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+_________________________________ test_erotus _________________________________
+tests\test_laskin.py:9: in test_erotus
+    assert erotus(5, 2) == 3
+E   assert 7 == 3
+E    +  where 7 = erotus(5, 2)
+=========================== short test summary info ===========================
+FAILED tests/test_laskin.py::test_erotus - assert 7 == 3
+1 failed, 2 deselected in 0.11s</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>tulo kerta 1 — tulo</h4>
+        <p><strong>Kriteeri:</strong> Testit</p>
+        <p><strong>Syöte:</strong> Laske 2 * 4. Vastaa pelkällä luvulla.</p>
+        <pre>         [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+__________________________________ test_tulo __________________________________
+tests\test_laskin.py:13: in test_tulo
+    assert tulo(2, 4) == 8
+E   assert 0 == 8
+E    +  where 0 = tulo(2, 4)
+=========================== short test summary info ===========================
+FAILED tests/test_laskin.py::test_tulo - assert 0 == 8
+1 failed, 2 deselected in 0.11s</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>tulo kerta 2 — tulo</h4>
+        <p><strong>Kriteeri:</strong> Testit</p>
+        <p><strong>Syöte:</strong> Laske 2 * 4. Vastaa pelkällä luvulla.</p>
+        <pre>         [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+__________________________________ test_tulo __________________________________
+tests\test_laskin.py:13: in test_tulo
+    assert tulo(2, 4) == 8
+E   assert 0 == 8
+E    +  where 0 = tulo(2, 4)
+=========================== short test summary info ===========================
+FAILED tests/test_laskin.py::test_tulo - assert 0 == 8
+1 failed, 2 deselected in 0.12s</pre>
+      </article>
+    
+      <article class="fail">
+        <h4>tulo kerta 3 — tulo</h4>
+        <p><strong>Kriteeri:</strong> Testit</p>
+        <p><strong>Syöte:</strong> Laske 2 * 4. Vastaa pelkällä luvulla.</p>
+        <pre>         [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+__________________________________ test_tulo __________________________________
+tests\test_laskin.py:13: in test_tulo
+    assert tulo(2, 4) == 8
+E   assert 0 == 8
+E    +  where 0 = tulo(2, 4)
+=========================== short test summary info ===========================
+FAILED tests/test_laskin.py::test_tulo - assert 0 == 8
+1 failed, 2 deselected in 0.11s</pre>
+      </article>
+    
+
+    <h3>Hauraat tehtävät</h3>
+    <p class="muted">Sama tehtävä, eri kerrat. Nämä kannattaa lukea ensin.</p>
+    
+      <p>Ei tehtäviä, joiden tulos vaihteli kertojen välillä.</p>
+    
+    <table>
+      
+    </table>
+  </section>
+</body>
+</html>

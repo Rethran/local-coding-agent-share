@@ -1,0 +1,32 @@
+{
+  "taskId": "GRAPH-038",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-09-17T11:09:59+00:00",
+  "updatedAt": "2026-09-17T11:13:09+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "GRAPH-038.1",
+      "title": "static_root and parse --serve",
+      "status": "DONE",
+      "summary": "Tests already exist and fail (missing static_root/parse_args). Implementing in src/living_graph/cli.py."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

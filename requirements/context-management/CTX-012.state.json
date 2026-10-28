@@ -1,0 +1,32 @@
+{
+  "taskId": "CTX-012",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-05T19:45:46+00:00",
+  "updatedAt": "2026-10-05T19:49:33+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "CTX-012.1",
+      "title": "Return upstream SSE bytes",
+      "status": "DONE",
+      "summary": "Implementing stream pass-through in gateway.py"
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

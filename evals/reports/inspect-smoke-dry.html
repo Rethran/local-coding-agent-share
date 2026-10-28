@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>TDD coder eval — baseline / night-runner:latest</title>
+  <style>
+    body { font-family: Georgia, serif; margin: 2rem auto; max-width: 960px; line-height: 1.45; color: #1a1a1a; }
+    h1, h2 { font-family: "Segoe UI", sans-serif; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border-bottom: 1px solid #ddd; text-align: left; padding: 0.4rem 0.6rem; vertical-align: top; }
+    th { font-family: "Segoe UI", sans-serif; font-weight: 600; }
+    .fail { background: #fdecea; }
+    .flaky { background: #fff4ce; }
+    .muted { color: #555; font-size: 0.95rem; }
+    pre { white-space: pre-wrap; background: #f6f6f6; padding: 0.75rem; overflow-x: auto; }
+    code { font-family: Consolas, monospace; }
+  </style>
+</head>
+<body>
+  <h1>TDD coder eval</h1>
+  <p class="muted">
+    Variant <code>baseline</code>
+    · model <code>night-runner:latest</code>
+    · 2026-09-30T19:59:49+00:00
+    · source <code>evals\logs\2026-09-30T19-59-12-00-00_tdd-coder_X8q6NmCMg2EBumAtqvVhXn.eval</code>
+  </p>
+
+  <h2>Summary</h2>
+  <table>
+    <thead>
+      <tr><th>Criterion</th><th>Pass rate</th><th>stderr</th><th>n</th><th>Δ previous</th></tr>
+    </thead>
+    <tbody>
+      
+      <tr>
+        <td><code>process_budget</code></td>
+        <td>100.0%</td>
+        <td>± 0.0%</td>
+        <td>3</td>
+        <td>
+          +0.0 pp
+        </td>
+      </tr>
+      
+      <tr>
+        <td><code>reference_tests_pass</code></td>
+        <td>0.0%</td>
+        <td>± 0.0%</td>
+        <td>3</td>
+        <td>
+          +0.0 pp
+        </td>
+      </tr>
+      
+      <tr>
+        <td><code>subtask_done</code></td>
+        <td>0.0%</td>
+        <td>± 0.0%</td>
+        <td>3</td>
+        <td>
+          +0.0 pp
+        </td>
+      </tr>
+      
+    </tbody>
+  </table>
+  <p class="muted">
+    3 samples,
+    3 trials,
+    p95 wall 2.626s,
+    0 tokens.
+  </p>
+
+  <h2>What is assessed</h2>
+  
+    <h3><code>subtask_done</code></h3>
+    <p>The orchestrator marked the pinned subtask DONE after the independent verifier passed.</p>
+    <p class="muted">Why: This is the outcome that matters: the agent's own declared verification succeeded and the coordinator agreed. A fluent transcript that never reaches DONE is still a failure.</p>
+    <p class="muted">How (code): Code. Read the copied requirements <task_id>.state.json after the run. Pass iff the matching subtask status is DONE.</p>
+  
+    <h3><code>reference_tests_pass</code></h3>
+    <p>Tests from the historically accepted commit still pass against the code the agent just wrote.</p>
+    <p class="muted">Why: The agent's own tests can be too weak or accidentally rewritten. Overlaying the accepted commit's test files is a cheap substitute for hidden tests. These are regression tests, not independently authored hidden tests.</p>
+    <p class="muted">How (code): Code. After the agent finishes, overlay tests/ files from accepted_commit, then run pytest on those paths in the worktree.</p>
+  
+    <h3><code>process_budget</code></h3>
+    <p>The agent finished without looping, blowing the step budget, or drowning in tool errors.</p>
+    <p class="muted">Why: Local models often fail on process before they fail on correctness. A pass that took 80 identical read_file calls is not a prompt you want to keep.</p>
+    <p class="muted">How (code): Code, from run_summary.json. Fail if attempts > 10, steps > 160, any identical tool fingerprint repeats more than 5 times, or tool error rate > 40%.</p>
+  
+
+  <h2>Failures first</h2>
+  
+  
+    <article class="fail">
+      <h3>GRAPH-011.1 epoch 1 — Count distinct callers</h3>
+      <p><strong>Failed:</strong> <code>subtask_done</code></p>
+      <p><strong>Input:</strong> Implement GRAPH-011.1: Count distinct callers. fan_in only. Distinct caller_id values. No fan-out.</p>
+      <pre>Subtask GRAPH-011.1 status=FAILED. dry_run</pre>
+    </article>
+  
+    <article class="fail">
+      <h3>GRAPH-011.1 epoch 1 — Count distinct callers</h3>
+      <p><strong>Failed:</strong> <code>reference_tests_pass</code></p>
+      <p><strong>Input:</strong> Implement GRAPH-011.1: Count distinct callers. fan_in only. Distinct caller_id values. No fan-out.</p>
+      <pre>Gold tests failed (exit 1).
+FFF                                                                      [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+___ TestComputeFanIn.test_callee_fan_in_counts_distinct_callers_GRAPH_011_1 ___
+tests\test_fan_in.py:30: in test_callee_fan_in_counts_distinct_callers_GRAPH_011_1
+    from src.living_graph.metrics import compute_fan_in
+E   ModuleNotFoundError: No module named 'src.living_graph.metrics'
+_ TestComputeFanIn.test_node_without_incoming_edges_has_fan_in_zero_GRAPH_011_1 _
+tests\test_fan_in.py:47: in test_node_without_incoming_edges_has_fan_in_zero_GRAPH_011_1
+    from src.living_graph.metrics import compute_fan_in
+E   ModuleNotFoundError: No module named 'src.living_graph.metrics'
+________ TestComputeFanIn.test_duplicate_edges_count_once_GRAPH_011_1 _________
+tests\test_fan_in.py:60: in test_duplicate_edges_count_once_GRAPH_011_1
+    from src.living_graph.metrics import compute_fan_in
+E   ModuleNotFoundError: No module named 'src.living_graph.metrics'
+=========================== short test summary info ===========================
+FAILED tests/test_fan_in.py::TestComputeFanIn::test_callee_fan_in_counts_distinct_callers_GRAPH_011_1
+FAILED tests/test_fan_in.py::TestComputeFanIn::test_node_without_incoming_edges_has_fan_in_zero_GRAPH_011_1
+FAILED tests/test_fan_in.py::TestComputeFanIn::test_duplicate_edges_count_once_GRAPH_011_1
+3 failed in 0.12s
+
+</pre>
+    </article>
+  
+    <article class="fail">
+      <h3>GRAPH-013.1 epoch 1 — True on a two-node cycle, False on a chain</h3>
+      <p><strong>Failed:</strong> <code>subtask_done</code></p>
+      <p><strong>Input:</strong> Implement GRAPH-013.1: True on a two-node cycle, False on a chain. One boolean function. Two tiny in-memory graphs. No serialization.</p>
+      <pre>Subtask GRAPH-013.1 status=FAILED. dry_run</pre>
+    </article>
+  
+    <article class="fail">
+      <h3>GRAPH-013.1 epoch 1 — True on a two-node cycle, False on a chain</h3>
+      <p><strong>Failed:</strong> <code>reference_tests_pass</code></p>
+      <p><strong>Input:</strong> Implement GRAPH-013.1: True on a two-node cycle, False on a chain. One boolean function. Two tiny in-memory graphs. No serialization.</p>
+      <pre>Gold tests failed (exit 1).
+FF                                                                       [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+__________ TestHasCycle.test_two_node_cycle_returns_true_GRAPH_013_1 __________
+tests\test_cycles.py:20: in test_two_node_cycle_returns_true_GRAPH_013_1
+    from src.living_graph.metrics import has_cycle
+E   ImportError: cannot import name 'has_cycle' from 'src.living_graph.metrics' (C:\Users\santt\AppData\Local\Temp\eval-GRAPH-013.1-work-r7p9dxqc\src\living_graph\metrics.py)
+_________ TestHasCycle.test_two_node_chain_returns_false_GRAPH_013_1 __________
+tests\test_cycles.py:30: in test_two_node_chain_returns_false_GRAPH_013_1
+    from src.living_graph.metrics import has_cycle
+E   ImportError: cannot import name 'has_cycle' from 'src.living_graph.metrics' (C:\Users\santt\AppData\Local\Temp\eval-GRAPH-013.1-work-r7p9dxqc\src\living_graph\metrics.py)
+=========================== short test summary info ===========================
+FAILED tests/test_cycles.py::TestHasCycle::test_two_node_cycle_returns_true_GRAPH_013_1
+FAILED tests/test_cycles.py::TestHasCycle::test_two_node_chain_returns_false_GRAPH_013_1
+2 failed in 0.13s
+
+</pre>
+    </article>
+  
+    <article class="fail">
+      <h3>GRAPH-047.1 epoch 1 — Resource callers are user_keyword</h3>
+      <p><strong>Failed:</strong> <code>subtask_done</code></p>
+      <p><strong>Input:</strong> Implement GRAPH-047.1: Resource callers are user_keyword. Suffix .resource means caller user_keyword. .robot callers stay test_case.</p>
+      <pre>Subtask GRAPH-047.1 status=FAILED. dry_run</pre>
+    </article>
+  
+    <article class="fail">
+      <h3>GRAPH-047.1 epoch 1 — Resource callers are user_keyword</h3>
+      <p><strong>Failed:</strong> <code>reference_tests_pass</code></p>
+      <p><strong>Input:</strong> Implement GRAPH-047.1: Resource callers are user_keyword. Suffix .resource means caller user_keyword. .robot callers stay test_case.</p>
+      <pre>Gold tests failed (exit 1).
+F..F                                                                     [100%]Running teardown with pytest sessionfinish...
+
+================================== FAILURES ===================================
+______________ test_resource_caller_is_user_keyword_GRAPH_047_1 _______________
+tests\test_resource_caller_type.py:37: in test_resource_caller_is_user_keyword_GRAPH_047_1
+    assert caller[0].type == "user_keyword"
+E   AssertionError: assert 'test_case' == 'user_keyword'
+E     
+E     - user_keyword
+E     + test_case
+_______ test_scan_fixtures_resource_caller_is_user_keyword_GRAPH_047_1 ________
+tests\test_resource_caller_type.py:86: in test_scan_fixtures_resource_caller_is_user_keyword_GRAPH_047_1
+    assert keyword_one[0].type == "user_keyword"
+E   AssertionError: assert 'test_case' == 'user_keyword'
+E     
+E     - user_keyword
+E     + test_case
+=========================== short test summary info ===========================
+FAILED tests/test_resource_caller_type.py::test_resource_caller_is_user_keyword_GRAPH_047_1
+FAILED tests/test_resource_caller_type.py::test_scan_fixtures_resource_caller_is_user_keyword_GRAPH_047_1
+2 failed, 2 passed in 0.22s
+
+</pre>
+    </article>
+  
+
+  <h2>Flaky cases</h2>
+  <p class="muted">Same sample, different epochs. These are usually the most informative trials.</p>
+  
+    <p>No mixed pass/fail samples (need epochs ≥ 2).</p>
+  
+  <table>
+    
+  </table>
+
+  <h2>Trend</h2>
+  
+  <table>
+    <thead>
+      <tr>
+        <th>When</th><th>Variant</th><th>Model</th>
+        
+        <th>process_budget</th>
+        
+        <th>reference_tests_pass</th>
+        
+        <th>subtask_done</th>
+        
+      </tr>
+    </thead>
+    <tbody>
+      
+      <tr>
+        <td>2026-09-30T19:57:06+00:00</td>
+        <td>baseline</td>
+        <td>night-runner:latest</td>
+        
+        <td>100%</td>
+        
+        <td>0%</td>
+        
+        <td>0%</td>
+        
+      </tr>
+      
+      <tr>
+        <td>2026-09-30T19:57:17+00:00</td>
+        <td>v2</td>
+        <td>night-runner:latest</td>
+        
+        <td>100%</td>
+        
+        <td>0%</td>
+        
+        <td>0%</td>
+        
+      </tr>
+      
+    </tbody>
+  </table>
+  
+</body>
+</html>

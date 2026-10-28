@@ -1,0 +1,121 @@
+{
+  "id": "CTX-043",
+  "type": "task",
+  "summary": "Require a declared role on every management route",
+  "dependsOn": [
+    "CTX-042"
+  ],
+  "description": "SEC-08, SEC-09, SEC-30, and P8. Routes declare admin, manager, or service. A missing declaration fails the check. Data-plane keys are rejected on the management plane and admin keys are rejected on the data plane.",
+  "scope": [
+    "An undeclared route fails the build check",
+    "The role and plane cases match the table"
+  ],
+  "acceptanceCriteria": "assert_routes_declared raises ValueError when a route has no role. manager may read stats and may not reload. service may post events and may not read stats. A data-plane key is denied on the management plane. An admin key is denied on the data plane. SEC-08 SEC-09 SEC-30 P8.",
+  "constraints": [
+    "Do not default a missing role to allow.",
+    "Do not accept a data-plane key on the management plane.",
+    "Do not accept an admin key on the data plane."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_043_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_043_1_declare.py -q -k CTX_043_1",
+    "python -m pytest tests/test_ctx_043_2_roles.py -q -k CTX_043_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-043.1",
+      "title": "Fail when a route has no role",
+      "summary": "A route without a role raises ValueError. A declared route does not.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/authz.py",
+        "test": "tests/test_ctx_043_1_declare.py",
+        "function": "assert_routes_declared"
+      },
+      "scope": [
+        "Missing role raises",
+        "Declared manager route passes"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_043_1_declare.py -q -k CTX_043_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_043_1.",
+        "This subtask's only job: A route without a role raises ValueError. A declared route does not.",
+        "Touch only src/context_mgmt/authz.py and tests/test_ctx_043_1_declare.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Treat a missing role as a programming error, not as anonymous access.",
+        "Run python -m pytest tests/test_ctx_043_1_declare.py -q -k CTX_043_1."
+      ],
+      "dataExamples": [
+        {
+          "missing": true,
+          "declared_role": "manager"
+        }
+      ],
+      "businessRules": [
+        "SEC-08: an endpoint without a declared role fails the build."
+      ]
+    },
+    {
+      "id": "CTX-043.2",
+      "title": "Enforce the role and plane table",
+      "summary": "The six access cases return the booleans in dataExamples.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/authz.py",
+        "test": "tests/test_ctx_043_2_roles.py",
+        "function": "access_allowed"
+      },
+      "scope": [
+        "manager reads stats",
+        "manager cannot reload",
+        "service cannot read stats",
+        "cross-plane keys are denied"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_043_2_roles.py -q -k CTX_043_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_043_2.",
+        "This subtask's only job: The six access cases return the booleans in dataExamples.",
+        "Touch only src/context_mgmt/authz.py and tests/test_ctx_043_2_roles.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Assert each case. Do not skip the cross-plane cases.",
+        "Run python -m pytest tests/test_ctx_043_2_roles.py -q -k CTX_043_2."
+      ],
+      "dataExamples": [
+        {
+          "manager_stats": true,
+          "manager_reload": false,
+          "service_events": true,
+          "service_stats": false,
+          "data_key_on_management": false,
+          "admin_key_on_data": false
+        }
+      ],
+      "businessRules": [
+        "P8 and SEC-09: authorization fails closed. SEC-30 is this table plus org scoping."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/authz.py"
+    ],
+    "businessRules": [
+      "Roles are admin, manager, and service."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_043_1_declare.py -q -k CTX_043_1",
+      "python -m pytest tests/test_ctx_043_2_roles.py -q -k CTX_043_2"
+    ]
+  }
+}

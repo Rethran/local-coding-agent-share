@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "scp/v1",
+  "title": "Subtask Continuity Protocol v1",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "taskId",
+    "subtaskId",
+    "attempt",
+    "status",
+    "objective",
+    "acceptance",
+    "constraints",
+    "decisions",
+    "artifactsReviewed",
+    "verifiedBehaviors",
+    "gaps",
+    "doNotRepeat",
+    "nextStep",
+    "evidence",
+    "blockers",
+    "stopReason",
+    "lastHandoffId",
+    "changedFiles",
+    "recommendedResumeStep"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "scp/v1" },
+    "taskId": { "type": "string", "minLength": 1 },
+    "subtaskId": { "type": "string", "minLength": 1 },
+    "attempt": { "type": "integer", "minimum": 1 },
+    "status": {
+      "type": "string",
+      "enum": ["in_progress", "failed", "handover", "blocked"]
+    },
+    "objective": { "type": "string", "minLength": 1 },
+    "acceptance": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "constraints": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "decisions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "artifactsReviewed": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "conclusion"],
+        "properties": {
+          "path": { "type": "string" },
+          "conclusion": { "type": "string" }
+        }
+      }
+    },
+    "verifiedBehaviors": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "gaps": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "doNotRepeat": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["action", "target", "reason"],
+        "properties": {
+          "action": { "type": "string" },
+          "target": { "type": "string" },
+          "reason": { "type": "string" }
+        }
+      }
+    },
+    "nextStep": { "type": "string", "minLength": 1 },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["kind"],
+        "properties": {
+          "kind": { "type": "string" },
+          "id": { "type": "string" },
+          "summary": { "type": "string" },
+          "command": { "type": "string" },
+          "exitCode": { "type": "integer" }
+        }
+      }
+    },
+    "blockers": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "stopReason": { "type": "string", "minLength": 1 },
+    "lastHandoffId": { "type": "string" },
+    "changedFiles": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "recommendedResumeStep": { "type": "string", "minLength": 1 },
+    "createdAt": { "type": "string" }
+  },
+  "additionalProperties": false
+}

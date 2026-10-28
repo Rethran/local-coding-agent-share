@@ -1,0 +1,82 @@
+{
+  "id": "GRAPH-043",
+  "type": "task",
+  "summary": "Show a color legend on the static page",
+  "dependsOn": [
+    "GRAPH-022",
+    "GRAPH-036"
+  ],
+  "description": "index.html includes a visible legend that maps node colors to meanings. Start/test case is blue. No 3D API changes.",
+  "scope": [
+    "Add ul#legend inside the HUD in src/living_graph/static/index.html",
+    "List Start (test case) #4C9AFF, User keyword #36B37E, Library keyword #FFAB00, Unresolved call #FF5630",
+    "Keep div#graph empty"
+  ],
+  "acceptanceCriteria": "index.html contains id=\"legend\" and the four color meanings with their hex codes.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-044.",
+    "Do not add a watcher or CLI unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not add npm or a bundler.",
+    "Do not put legend markup inside div#graph."
+  ],
+  "verification": [
+    "python -m pytest tests/test_legend.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-043.1",
+      "title": "HTML legend for node colors",
+      "summary": "Four rows. Start is blue. File-content tests only.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "index.html",
+        "module": "src/living_graph/static/index.html",
+        "test": "tests/test_legend.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "src/living_graph/render.py",
+          "purpose": "node_color hex codes from GRAPH-022."
+        }
+      ],
+      "scope": [
+        "Add ul#legend inside the HUD in src/living_graph/static/index.html",
+        "List Start (test case) #4C9AFF, User keyword #36B37E, Library keyword #FFAB00, Unresolved call #FF5630",
+        "Keep div#graph empty"
+      ],
+      "dataExamples": [
+        "Start (test case) uses #4C9AFF.",
+        "User keyword uses #36B37E.",
+        "Library keyword uses #FFAB00.",
+        "Unresolved call uses #FF5630."
+      ],
+      "businessRules": [
+        "Tests read HTML as text. Do not use a browser.",
+        "Legend lives outside div#graph so GRAPH-036 stays empty."
+      ],
+      "verification": [
+        "python -m pytest tests/test_legend.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_legend.py first.",
+        "Run python -m pytest tests/test_legend.py -q and confirm failure.",
+        "Add only the legend markup and swatch CSS to index.html.",
+        "Run python -m pytest tests/test_legend.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/static/index.html"
+    ],
+    "businessRules": [
+      "Tests read HTML as text. Do not use a browser.",
+      "Legend lives outside div#graph so GRAPH-036 stays empty."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_legend.py -q"
+    ]
+  }
+}

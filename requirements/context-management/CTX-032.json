@@ -1,0 +1,169 @@
+{
+  "id": "CTX-032",
+  "type": "task",
+  "summary": "Block reporting writes, MCP, and keep the dashboard readable",
+  "dependsOn": [
+    "CTX-007",
+    "CTX-014",
+    "CTX-018",
+    "CTX-031"
+  ],
+  "description": "FR-C7-07 and OD-6. A blocked license makes POST /events return 403 code license_inactive. check_context_or_deny returns the generic denial. GET /stats/daily stays 200 and the page contains a license banner.",
+  "scope": [
+    "POST /events is 403 license_inactive and GET /stats/daily stays 200",
+    "The MCP deny helper returns the generic message",
+    "The page contains the license banner sentence"
+  ],
+  "acceptanceCriteria": "With a blocked cache, POST /events returns 403 and code license_inactive, and GET /stats/daily returns 200. check_context_or_deny returns code access_denied and the generic message, and does not contain license_inactive. The served HTML contains id license-banner and the sentence The license needs attention. FR-C7-07 OD-6.",
+  "constraints": [
+    "Do not use the generic developer sentence for POST /events.",
+    "Do not hide historical stats when the license is blocked.",
+    "Do not change the check_context return value used by CTX-018."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_032_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_032_1_events.py -q -k CTX_032_1",
+    "python -m pytest tests/test_ctx_032_2_mcp.py -q -k CTX_032_2",
+    "python -m pytest tests/test_ctx_032_3_banner.py -q -k CTX_032_3"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-032.1",
+      "title": "Reject new events and keep stats readable",
+      "summary": "POST /events returns 403 license_inactive. GET /stats/daily returns 200.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/api.py",
+        "test": "tests/test_ctx_032_1_events.py",
+        "function": "create_app"
+      },
+      "scope": [
+        "Blocked cache",
+        "POST status 403 and code license_inactive",
+        "GET /stats/daily status 200"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_032_1_events.py -q -k CTX_032_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_032_1.",
+        "This subtask's only job: POST /events returns 403 license_inactive. GET /stats/daily returns 200.",
+        "Touch only src/context_mgmt/api.py and tests/test_ctx_032_1_events.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Use TestClient. Do not start a socket server.",
+        "Run python -m pytest tests/test_ctx_032_1_events.py -q -k CTX_032_1."
+      ],
+      "dataExamples": [
+        {
+          "post_code": "license_inactive",
+          "stats_status": 200
+        }
+      ],
+      "businessRules": [
+        "OD-6: historical data stays readable."
+      ]
+    },
+    {
+      "id": "CTX-032.2",
+      "title": "Deny check_context with the generic sentence",
+      "summary": "check_context_or_deny returns the generic denial and not license_inactive.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/mcp_server.py",
+        "test": "tests/test_ctx_032_2_mcp.py",
+        "function": "check_context_or_deny"
+      },
+      "scope": [
+        "Blocked state",
+        "code access_denied",
+        "message is the generic sentence",
+        "check_context is unchanged"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_032_2_mcp.py -q -k CTX_032_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_032_2.",
+        "This subtask's only job: check_context_or_deny returns the generic denial and not license_inactive.",
+        "Touch only src/context_mgmt/mcp_server.py and tests/test_ctx_032_2_mcp.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Do not put threshold numbers in mcp_server.py.",
+        "Run python -m pytest tests/test_ctx_032_2_mcp.py -q -k CTX_032_2."
+      ],
+      "dataExamples": [
+        {
+          "code": "access_denied",
+          "message": "Access to this service is not available. Contact your administrator."
+        }
+      ],
+      "businessRules": [
+        "C6 is developer-facing, so it uses the data-plane denial."
+      ]
+    },
+    {
+      "id": "CTX-032.3",
+      "title": "Show the license banner",
+      "summary": "GET / contains id license-banner and the attention sentence.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "static/index.html",
+        "test": "tests/test_ctx_032_3_banner.py"
+      },
+      "scope": [
+        "Element id license-banner",
+        "Sentence The license needs attention"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_032_3_banner.py -q -k CTX_032_3"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_032_3.",
+        "This subtask's only job: GET / contains id license-banner and the attention sentence.",
+        "Touch only static/index.html and tests/test_ctx_032_3_banner.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Read the page with TestClient GET /. Do not start a socket server.",
+        "You may add license_banner in src/context_mgmt/license.py. Active returns None. Blocked returns the sentence.",
+        "Run python -m pytest tests/test_ctx_032_3_banner.py -q -k CTX_032_3."
+      ],
+      "dataExamples": [
+        {
+          "required": [
+            "license-banner",
+            "The license needs attention. Contact your administrator."
+          ]
+        }
+      ],
+      "businessRules": [
+        "The banner does not name the expiry or the state."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/license.py",
+          "purpose": "license_banner(state) for the sentence."
+        }
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/api.py",
+      "src/context_mgmt/mcp_server.py",
+      "static/index.html"
+    ],
+    "businessRules": [
+      "Reads stay available. Writes and the developer tool do not."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_032_1_events.py -q -k CTX_032_1",
+      "python -m pytest tests/test_ctx_032_2_mcp.py -q -k CTX_032_2",
+      "python -m pytest tests/test_ctx_032_3_banner.py -q -k CTX_032_3"
+    ]
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "id": "GRAPH-002",
+  "type": "task",
+  "summary": "Define graph data contracts",
+  "dependsOn": [
+    "GRAPH-001"
+  ],
+  "description": "Define the small stable Node, Edge, unresolved-call, and graph JSON contracts that parser tasks will use.",
+  "scope": [
+    "Add src/living_graph/model.py with Node and Edge data structures",
+    "Add tests/test_model.py contract tests",
+    "Use docs/data-contracts.md as the source of truth",
+    "Keep contracts plain and serializable"
+  ],
+  "acceptanceCriteria": "Node and Edge contracts expose stable ids, names, source paths, types, and resolved flags; paths normalize to forward slashes; unresolved calls have a distinct unresolved node type.",
+  "constraints": [
+    "Do not parse Robot Framework files in this task.",
+    "Do not parse Python AST in this task.",
+    "Do not add graph rendering code.",
+    "Keep the implementation small and dependency-free."
+  ],
+  "verification": [
+    "python -m pytest tests/test_model.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-002.1",
+      "title": "Create Node and Edge contracts",
+      "summary": "Implement simple serializable Node and Edge contracts in src/living_graph/model.py.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/living_graph/model.py",
+        "test": "tests/test_model.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "docs/data-contracts.md",
+          "purpose": "Contract source of truth."
+        }
+      ],
+      "scope": [
+        "Define Node with id, name, type, source_path, fan_in default 0, fan_out default 0",
+        "Define Edge with caller_id, callee_id, caller_name, callee_name, source_path, resolved",
+        "Provide a to_dict helper or equivalent serialization method",
+        "Normalize source paths to forward slashes"
+      ],
+      "dataExamples": [
+        "Node id example: tests/fixtures/simple_test.robot::Happy Path.",
+        "Robot test case node type: test_case.",
+        "Robot user keyword node type: user_keyword.",
+        "Python library keyword node type: library_keyword.",
+        "Unresolved node type: unresolved."
+      ],
+      "verification": [
+        "python -m pytest tests/test_model.py -q"
+      ],
+      "instructions": [
+        "Write tests/test_model.py first using the examples from docs/data-contracts.md.",
+        "Run python -m pytest tests/test_model.py -q and confirm failure.",
+        "Implement only src/living_graph/model.py.",
+        "Run python -m pytest tests/test_model.py -q."
+      ]
+    },
+    {
+      "id": "GRAPH-002.2",
+      "title": "Represent unresolved calls",
+      "summary": "Add a tiny helper or constructor behavior for unresolved keyword call nodes and edges.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "unresolved_node_id",
+        "module": "src/living_graph/model.py",
+        "test": "tests/test_model.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "docs/data-contracts.md",
+          "purpose": "Contract source of truth."
+        }
+      ],
+      "scope": [
+        "Add unresolved_node_id(name) or equivalent",
+        "Ensure unresolved callee nodes use type unresolved",
+        "Ensure unresolved edges set resolved to false",
+        "Keep resolved Robot/Python edges resolved true"
+      ],
+      "dataExamples": [
+        "Unresolved Robot call Missing Keyword gets id unresolved::Missing Keyword.",
+        "Edge to Missing Keyword has resolved == false."
+      ],
+      "verification": [
+        "python -m pytest tests/test_model.py -q"
+      ],
+      "instructions": [
+        "Add the failing unresolved-call contract test first.",
+        "Run python -m pytest tests/test_model.py -q and confirm failure.",
+        "Implement only the minimal unresolved helper/behavior.",
+        "Run python -m pytest tests/test_model.py -q."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/model.py"
+    ],
+    "businessRules": [
+      "Use forward-slash project-relative paths in ids and source_path fields.",
+      "Node ids are stable strings formatted as {source_path}::{name}, except unresolved ids which use unresolved::{name}.",
+      "Keep contracts JSON-serializable without custom encoders."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_model.py -q"
+    ]
+  }
+}

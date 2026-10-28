@@ -1,0 +1,138 @@
+{
+  "id": "CTX-073",
+  "type": "task",
+  "summary": "Ask streaming upstreams for usage",
+  "dependsOn": [
+    "CTX-012"
+  ],
+  "description": "FR-C1-02. A streaming request sent upstream sets stream_options.include_usage when that upstream supports it. A non-streaming body, or an upstream that does not support usage chunks, is left without that flag. The SSE response is still passed through unchanged.",
+  "scope": [
+    "stream true and supports_usage true sets include_usage",
+    "supports_usage false does not add stream_options"
+  ],
+  "acceptanceCriteria": "with_stream_usage({stream: true, model: qwen3:8b}, True) returns stream_options.include_usage true and keeps model qwen3:8b. with_stream_usage of the same body and False has no stream_options key. FR-C1-02.",
+  "constraints": [
+    "Do not rewrite SSE response bytes.",
+    "Do not add include_usage when supports_usage is false.",
+    "Do not drop the model or the messages from the outbound body."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_073_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_073_1_usage.py -q -k CTX_073_1",
+    "python -m pytest tests/test_ctx_073_2_skip.py -q -k CTX_073_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-073.1",
+      "title": "Request usage on a stream",
+      "summary": "A supported stream sets include_usage true and keeps the model id.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/gateway.py",
+        "test": "tests/test_ctx_073_1_usage.py",
+        "function": "with_stream_usage"
+      },
+      "scope": [
+        "stream true",
+        "include_usage true",
+        "model qwen3:8b"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_073_1_usage.py -q -k CTX_073_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_073_1.",
+        "This subtask's only job: A supported stream sets include_usage true and keeps the model id.",
+        "Touch only src/context_mgmt/gateway.py and tests/test_ctx_073_1_usage.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "with_stream_usage(body, supports_usage) returns a new dict. Do not mutate the caller's body.",
+        "Run python -m pytest tests/test_ctx_073_1_usage.py -q -k CTX_073_1."
+      ],
+      "dataExamples": [
+        {
+          "input": {
+            "body": {
+              "stream": true,
+              "model": "qwen3:8b"
+            },
+            "supports_usage": true
+          },
+          "output": {
+            "stream": true,
+            "model": "qwen3:8b",
+            "stream_options": {
+              "include_usage": true
+            }
+          }
+        }
+      ],
+      "businessRules": [
+        "FR-C1-02: ask the upstream for usage in the final stream chunk when it supports that option."
+      ]
+    },
+    {
+      "id": "CTX-073.2",
+      "title": "Leave unsupported streams unchanged",
+      "summary": "supports_usage false does not add stream_options.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/gateway.py",
+        "test": "tests/test_ctx_073_2_skip.py",
+        "function": "with_stream_usage"
+      },
+      "scope": [
+        "stream true",
+        "supports_usage false",
+        "no stream_options key"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_073_2_skip.py -q -k CTX_073_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_073_2.",
+        "This subtask's only job: supports_usage false does not add stream_options.",
+        "Touch only src/context_mgmt/gateway.py and tests/test_ctx_073_2_skip.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Assert stream_options is absent. Also assert a stream false body is returned without stream_options.",
+        "Run python -m pytest tests/test_ctx_073_2_skip.py -q -k CTX_073_2."
+      ],
+      "dataExamples": [
+        {
+          "input": {
+            "body": {
+              "stream": true,
+              "model": "qwen3:8b"
+            },
+            "supports_usage": false
+          },
+          "output": {
+            "stream": true,
+            "model": "qwen3:8b"
+          }
+        }
+      ],
+      "businessRules": [
+        "FR-C1-02: include_usage is requested only when the upstream supports it."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/gateway.py"
+    ],
+    "businessRules": [
+      "Add stream_options.include_usage only when stream is true and supports_usage is true."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_073_1_usage.py -q -k CTX_073_1",
+      "python -m pytest tests/test_ctx_073_2_skip.py -q -k CTX_073_2"
+    ]
+  }
+}

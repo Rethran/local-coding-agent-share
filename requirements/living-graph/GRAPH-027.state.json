@@ -1,0 +1,32 @@
+{
+  "taskId": "GRAPH-027",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-09-16T20:19:55+00:00",
+  "updatedAt": "2026-09-16T20:24:37+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "GRAPH-027.1",
+      "title": "Union ancestors, target, descendants",
+      "status": "DONE",
+      "summary": "Implementer starting: tests already exist; adding highlight_set to query.py."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

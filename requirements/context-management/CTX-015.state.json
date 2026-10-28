@@ -1,0 +1,44 @@
+{
+  "taskId": "CTX-015",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-05T20:25:16+00:00",
+  "updatedAt": "2026-10-05T20:29:48+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "CTX-015.1",
+      "title": "Add the baseline date control",
+      "status": "DONE",
+      "summary": "Implementer starting: adding baseline-date input to static/index.html"
+    },
+    {
+      "id": "CTX-015.2",
+      "title": "Add date and team filters",
+      "status": "DONE",
+      "summary": "Implementer starting: adding filter-from, filter-to, filter-team inputs to static/index.html"
+    },
+    {
+      "id": "CTX-015.3",
+      "title": "Show the hidden-group message and price table",
+      "status": "DONE",
+      "summary": "Implementer starting: adding hidden-group-message paragraph, cost-view element, and price-table script to static/index.html"
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

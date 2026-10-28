@@ -1,0 +1,76 @@
+{
+  "name": "Living Graph",
+  "projectName": "Living Graph",
+  "workspaceRoot": "C:\\Users\\santt\\Desktop\\living-3d-graph",
+  "requirementsDir": "C:\\Users\\santt\\Desktop\\local-coding-agent\\requirements\\living-graph",
+  "taskPrefix": "GRAPH",
+  "defaultModel": "qwen3:8b",
+  "defaultFromId": "GRAPH-001",
+  "defaultToId": "GRAPH-003",
+  "autoPush": true,
+  "implementationPrefixes": [
+    "src/",
+    "tests/",
+    "docs/"
+  ],
+  "readFileAllowedPrefixes": [
+    "src/",
+    "tests/",
+    "docs/"
+  ],
+  "readFileAllowedSuffixes": [
+    ".py",
+    ".robot",
+    ".resource",
+    ".json",
+    ".md",
+    ".txt",
+    ".toml",
+    ".html",
+    ".js",
+    ".css"
+  ],
+  "legacyPrefixes": [],
+  "promptGuidance": "Implement exactly the active GRAPH subtask. Keep fixtures tiny, prefer pure functions, and do not add UI or watcher behavior unless the active task requires it.",
+  "taskPromptGuidance": [
+    {
+      "from": "GRAPH-003",
+      "to": "GRAPH-005",
+      "guidance": "Robot parser slice: keep fixtures tiny; extract raw caller/callee edges only."
+    },
+    {
+      "from": "GRAPH-006",
+      "to": "GRAPH-008",
+      "guidance": "Use ast.parse and ast.walk. A Call is often inside Expr, not a direct FunctionDef body statement. Copy Edge construction from extract_robot_edges: ids are {source_path}::{name}. Assert caller_name and callee_name; do not compare Edge objects with ==. Do not parse Robot files."
+    },
+    {
+      "from": "GRAPH-029",
+      "to": "GRAPH-031",
+      "guidance": "Data fixes for the 3D page. Keep Python helpers tiny. Do not add HTML, JS, or a canvas."
+    },
+    {
+      "from": "GRAPH-046",
+      "to": "GRAPH-051",
+      "guidance": "Bugfix slice. No HTML, JS, or canvas. Keep fixtures tiny. Do not reimplement GRAPH-029 through GRAPH-031; those data fixes are already in the tree."
+    },
+    {
+      "from": "GRAPH-052",
+      "to": "GRAPH-054",
+      "guidance": "Seasick camera slice. Product viewer.js still scatters node.z and leaves 3D orbit unlocked. Implement only the active packet. Tests read JS as text; no Playwright. Do not add npm."
+    }
+  ],
+  "knowledgePacks": [
+    {
+      "id": "python-ast-edges",
+      "from": "GRAPH-006",
+      "to": "GRAPH-008",
+      "path": "knowledge/python-ast-edges.md"
+    },
+    {
+      "id": "3d-force-graph-page",
+      "from": "GRAPH-032",
+      "to": "GRAPH-054",
+      "path": "knowledge/3d-force-graph-page.md"
+    }
+  ]
+}

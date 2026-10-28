@@ -1,0 +1,38 @@
+{
+  "taskId": "CTX-023",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-06T17:39:47+00:00",
+  "updatedAt": "2026-10-06T17:44:33+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "CTX-023.1",
+      "title": "Map dates and flags to a state",
+      "status": "DONE",
+      "summary": "Implementing license_state in src/context_mgmt/license.py. Test file already exists."
+    },
+    {
+      "id": "CTX-023.2",
+      "title": "Add the license defaults on OrgConfig",
+      "status": "DONE",
+      "summary": "Adding license default fields to OrgConfig in src/context_mgmt/config.py"
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

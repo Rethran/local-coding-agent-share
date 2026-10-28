@@ -1,0 +1,61 @@
+{
+  "taskId": "GRAPH-003",
+  "status": "DONE",
+  "attempt": 5,
+  "startedAt": "2026-09-15T19:09:06+00:00",
+  "updatedAt": "2026-09-15T20:08:08+00:00",
+  "summary": "Robot edges from one file, including nested keyword chain. GRAPH-003.3-003.5 skipped for demo graph.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": "python -m pytest tests/test_robot_extractor.py -q",
+  "lastFailureReason": "Assistant stopped without tool call at step 7.",
+  "lastRecoveryAction": "Rollback completed. Restored: ['src/living_graph/robot_extractor.py', 'tests/test_robot_extractor.py']; Deleted: []; Skipped: [].",
+  "changedFilesSinceAttemptStart": [
+    "src/living_graph/robot_extractor.py",
+    "tests/test_robot_extractor.py"
+  ],
+  "progressSummary": "GRAPH-003 complete. Nested fixture and keyword-body edges verified.",
+  "completedScopeItems": [
+    "Reviewed src/living_graph/robot_extractor.py: exists; extract_robot_edges present"
+  ],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": "Continue GRAPH-003.2 from continuityPacket nextStep without re-reading artifacts listed in doNotRepeat.",
+  "subtasks": [
+    {
+      "id": "GRAPH-003.1",
+      "title": "Parse one test case direct keyword calls",
+      "status": "DONE",
+      "summary": "Implement only enough Robot parsing to return two direct keyword call edges from one test case fixture."
+    },
+    {
+      "id": "GRAPH-003.2",
+      "title": "Parse user keyword body calls",
+      "status": "DONE",
+      "summary": "User-keyword body calls and nested keyword chain extract via robot.api."
+    },
+    {
+      "id": "GRAPH-003.3",
+      "title": "Handle keywords with zero calls",
+      "status": "DONE",
+      "summary": "Skipped by orchestrator (--to GRAPH-003.2); outside selected range."
+    },
+    {
+      "id": "GRAPH-003.4",
+      "title": "Handle multiple test cases in one file",
+      "status": "DONE",
+      "summary": "Skipped by orchestrator (--to GRAPH-003.2); outside selected range."
+    },
+    {
+      "id": "GRAPH-003.5",
+      "title": "Ignore non-call Robot lines",
+      "status": "DONE",
+      "summary": "Skipped by orchestrator (--to GRAPH-003.2); outside selected range."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

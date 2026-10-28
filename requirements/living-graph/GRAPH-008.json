@@ -1,0 +1,86 @@
+{
+  "id": "GRAPH-008",
+  "type": "task",
+  "summary": "Tag Python nodes as library_keyword",
+  "dependsOn": [
+    "GRAPH-007"
+  ],
+  "description": "Nodes produced by the Python extractor must use type library_keyword so they stay distinct from Robot test_case and user_keyword nodes.",
+  "scope": [
+    "Add extract_python_nodes(path) in src/living_graph/python_extractor.py",
+    "Given tests/fixtures/simple_library.py, every node.type is library_keyword",
+    "Do not use test_case, user_keyword, or unresolved for these nodes"
+  ],
+  "acceptanceCriteria": "Every node from tests/fixtures/simple_library.py has type library_keyword.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-009.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not merge Robot and Python graphs yet."
+  ],
+  "verification": [
+    "python -m pytest tests/test_python_node_type.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-008.1",
+      "title": "Set Python node type",
+      "summary": "Python-derived nodes are type library_keyword only.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "extract_python_nodes",
+        "module": "src/living_graph/python_extractor.py",
+        "test": "tests/test_python_node_type.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "tests/fixtures/simple_library.py",
+          "purpose": "Tiny Python fixture with one function calling another function."
+        },
+        {
+          "path": "src/living_graph/model.py",
+          "purpose": "GRAPH-002 Node and Edge contracts."
+        },
+        {
+          "path": "docs/data-contracts.md",
+          "purpose": "Node and Edge contract source of truth."
+        }
+      ],
+      "scope": [
+        "Add extract_python_nodes(path) in src/living_graph/python_extractor.py",
+        "Given tests/fixtures/simple_library.py, every node.type is library_keyword",
+        "Do not use test_case, user_keyword, or unresolved for these nodes"
+      ],
+      "dataExamples": [
+        "open_session type is library_keyword.",
+        "connect type is library_keyword."
+      ],
+      "businessRules": [
+        "Python function nodes use type library_keyword.",
+        "Do not change Robot node types in this task."
+      ],
+      "verification": [
+        "python -m pytest tests/test_python_node_type.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_python_node_type.py first.",
+        "Run python -m pytest tests/test_python_node_type.py -q and confirm failure.",
+        "Implement only extract_python_nodes in src/living_graph/python_extractor.py.",
+        "Run python -m pytest tests/test_python_node_type.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/python_extractor.py"
+    ],
+    "businessRules": [
+      "Python function nodes use type library_keyword.",
+      "Do not change Robot node types in this task."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_python_node_type.py -q"
+    ]
+  }
+}

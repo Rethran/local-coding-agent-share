@@ -1,0 +1,125 @@
+{
+  "id": "CTX-069",
+  "type": "task",
+  "summary": "Fail a quality score that drops past the margin",
+  "dependsOn": [
+    "CTX-003",
+    "CTX-068"
+  ],
+  "description": "T6. quality_ok is false when the score drop is greater than the margin. The function does not call a model.",
+  "scope": [
+    "A drop of 1 within margin 2 passes",
+    "A drop of 3 within margin 2 fails, and urlopen is not called"
+  ],
+  "acceptanceCriteria": "quality_ok(10, 9, 2) is true. quality_ok(10, 7, 2) is false. urlopen is not called. T6.",
+  "constraints": [
+    "Do not call a judge model.",
+    "Do not pass a drop larger than the margin.",
+    "Do not sleep or retry."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_069_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_069_1_pass.py -q -k CTX_069_1",
+    "python -m pytest tests/test_ctx_069_2_fail.py -q -k CTX_069_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-069.1",
+      "title": "Accept a small drop",
+      "summary": "A score moving from 10 to 9 with margin 2 returns true.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/judge.py",
+        "test": "tests/test_ctx_069_1_pass.py",
+        "function": "quality_ok"
+      },
+      "scope": [
+        "before 10",
+        "after 9",
+        "margin 2",
+        "result true"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_069_1_pass.py -q -k CTX_069_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_069_1.",
+        "This subtask's only job: A score moving from 10 to 9 with margin 2 returns true.",
+        "Touch only src/context_mgmt/judge.py and tests/test_ctx_069_1_pass.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Compare before - after with the margin. Do not call the network.",
+        "Run python -m pytest tests/test_ctx_069_1_pass.py -q -k CTX_069_1."
+      ],
+      "dataExamples": [
+        {
+          "before": 10,
+          "after": 9,
+          "margin": 2,
+          "ok": true
+        }
+      ],
+      "businessRules": [
+        "T6. The agreed margin is an argument."
+      ]
+    },
+    {
+      "id": "CTX-069.2",
+      "title": "Reject a large drop",
+      "summary": "A score moving from 10 to 7 with margin 2 returns false, and urlopen is not called.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/judge.py",
+        "test": "tests/test_ctx_069_2_fail.py",
+        "function": "quality_ok"
+      },
+      "scope": [
+        "before 10",
+        "after 7",
+        "margin 2",
+        "result false",
+        "urlopen not called"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_069_2_fail.py -q -k CTX_069_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_069_2.",
+        "This subtask's only job: A score moving from 10 to 7 with margin 2 returns false, and urlopen is not called.",
+        "Touch only src/context_mgmt/judge.py and tests/test_ctx_069_2_fail.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Patch urlopen and assert it was not called.",
+        "Run python -m pytest tests/test_ctx_069_2_fail.py -q -k CTX_069_2."
+      ],
+      "dataExamples": [
+        {
+          "before": 10,
+          "after": 7,
+          "margin": 2,
+          "ok": false
+        }
+      ],
+      "businessRules": [
+        "T6. A drop past the margin fails the check."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/judge.py"
+    ],
+    "businessRules": [
+      "quality_ok(before, after, margin) is true when before - after <= margin."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_069_1_pass.py -q -k CTX_069_1",
+      "python -m pytest tests/test_ctx_069_2_fail.py -q -k CTX_069_2"
+    ]
+  }
+}

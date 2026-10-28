@@ -1,0 +1,76 @@
+{
+  "id": "GRAPH-020",
+  "type": "task",
+  "summary": "Wire a single watch callback to incremental update",
+  "dependsOn": [
+    "GRAPH-018"
+  ],
+  "description": "A file-watch callback invoked once with a simulated file-changed event calls incremental_update exactly once with that path. Do not test real filesystem watching.",
+  "scope": [
+    "Add on_file_changed(path, incremental_update) in src/living_graph/watch.py",
+    "In the test, pass a mock incremental_update",
+    "Invoke on_file_changed once with tests/fixtures/simple_test.robot",
+    "Assert the mock was called once with that path"
+  ],
+  "acceptanceCriteria": "on_file_changed('tests/fixtures/simple_test.robot') calls incremental_update once with that path.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-021.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not use watchdog or other real FS watchers.",
+    "Do not add HTML rendering."
+  ],
+  "verification": [
+    "python -m pytest tests/test_watch_callback.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-020.1",
+      "title": "Callback calls incremental_update once",
+      "summary": "Simulated one-shot callback. No real watcher. No HTML.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "on_file_changed",
+        "module": "src/living_graph/watch.py",
+        "test": "tests/test_watch_callback.py"
+      },
+      "relatedArtifacts": [],
+      "scope": [
+        "Add on_file_changed(path, incremental_update) in src/living_graph/watch.py",
+        "In the test, pass a mock incremental_update",
+        "Invoke on_file_changed once with tests/fixtures/simple_test.robot",
+        "Assert the mock was called once with that path"
+      ],
+      "dataExamples": [
+        "Event path: tests/fixtures/simple_test.robot.",
+        "incremental_update call count is 1."
+      ],
+      "businessRules": [
+        "This is callback wiring only.",
+        "Do not start a blocking watch loop."
+      ],
+      "verification": [
+        "python -m pytest tests/test_watch_callback.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_watch_callback.py first.",
+        "Run python -m pytest tests/test_watch_callback.py -q and confirm failure.",
+        "Implement only on_file_changed in src/living_graph/watch.py.",
+        "Run python -m pytest tests/test_watch_callback.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/watch.py"
+    ],
+    "businessRules": [
+      "This is callback wiring only.",
+      "Do not start a blocking watch loop."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_watch_callback.py -q"
+    ]
+  }
+}

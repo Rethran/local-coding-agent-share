@@ -1,0 +1,90 @@
+{
+  "id": "GRAPH-004",
+  "type": "task",
+  "summary": "Tag extracted Robot nodes with source_path",
+  "dependsOn": [
+    "GRAPH-003"
+  ],
+  "description": "Attach the source file path to every node extracted from one Robot fixture so same-named keywords in different files are not merged later.",
+  "scope": [
+    "Add extract_robot_nodes(path) in src/living_graph/robot_extractor.py",
+    "Given tests/fixtures/simple_test.robot, every returned node has source_path tests/fixtures/simple_test.robot",
+    "Normalize the path to forward slashes",
+    "Do not resolve or merge names across files"
+  ],
+  "acceptanceCriteria": "extract_robot_nodes('tests/fixtures/simple_test.robot') returns nodes whose source_path is tests/fixtures/simple_test.robot with forward slashes.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-005.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not mark unresolved calls.",
+    "Do not parse Python files."
+  ],
+  "verification": [
+    "python -m pytest tests/test_robot_source_path.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-004.1",
+      "title": "Set source_path on Robot nodes",
+      "summary": "One Robot fixture. Every extracted node carries that file's forward-slash source_path.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "extract_robot_nodes",
+        "module": "src/living_graph/robot_extractor.py",
+        "test": "tests/test_robot_source_path.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "tests/fixtures/simple_test.robot",
+          "purpose": "Tiny Robot fixture with Example Test calling Keyword One and Keyword Two."
+        },
+        {
+          "path": "src/living_graph/model.py",
+          "purpose": "GRAPH-002 Node and Edge contracts."
+        },
+        {
+          "path": "docs/data-contracts.md",
+          "purpose": "Node and Edge contract source of truth."
+        }
+      ],
+      "scope": [
+        "Add extract_robot_nodes(path) in src/living_graph/robot_extractor.py",
+        "Given tests/fixtures/simple_test.robot, every returned node has source_path tests/fixtures/simple_test.robot",
+        "Normalize the path to forward slashes",
+        "Do not resolve or merge names across files"
+      ],
+      "dataExamples": [
+        "Example Test source_path is tests/fixtures/simple_test.robot.",
+        "Keyword One source_path is tests/fixtures/simple_test.robot.",
+        "Keyword Two source_path is tests/fixtures/simple_test.robot."
+      ],
+      "businessRules": [
+        "source_path is project-relative with forward slashes.",
+        "Node id format remains {source_path}::{name}."
+      ],
+      "verification": [
+        "python -m pytest tests/test_robot_source_path.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_robot_source_path.py first.",
+        "Run python -m pytest tests/test_robot_source_path.py -q and confirm failure.",
+        "Implement only extract_robot_nodes in src/living_graph/robot_extractor.py.",
+        "Run python -m pytest tests/test_robot_source_path.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/robot_extractor.py"
+    ],
+    "businessRules": [
+      "source_path is project-relative with forward slashes.",
+      "Node id format remains {source_path}::{name}."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_robot_source_path.py -q"
+    ]
+  }
+}

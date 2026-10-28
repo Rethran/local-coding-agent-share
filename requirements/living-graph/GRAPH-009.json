@@ -1,0 +1,85 @@
+{
+  "id": "GRAPH-009",
+  "type": "task",
+  "summary": "Merge Robot and Python edge lists",
+  "dependsOn": [
+    "GRAPH-003",
+    "GRAPH-006"
+  ],
+  "description": "Combine one small in-memory Robot edge list and one small in-memory Python edge list into a single list without duplicating identical edges. Do not re-run parsers.",
+  "scope": [
+    "Add merge_edges(robot_edges, python_edges) in src/living_graph/merge.py",
+    "Pass two tiny in-memory lists, not file paths",
+    "Return one combined list",
+    "Drop a second copy of an identical edge"
+  ],
+  "acceptanceCriteria": "merge_edges(robot_edges, python_edges) returns both unique edges and keeps a duplicated identical edge only once.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-010.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not compute fan-in or fan-out.",
+    "Do not serialize JSON.",
+    "Do not re-run Robot or Python parsers."
+  ],
+  "verification": [
+    "python -m pytest tests/test_merge_edges.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-009.1",
+      "title": "Combine two edge lists",
+      "summary": "Pure in-memory merge. Identical edges appear once. No parser calls.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "merge_edges",
+        "module": "src/living_graph/merge.py",
+        "test": "tests/test_merge_edges.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "src/living_graph/model.py",
+          "purpose": "GRAPH-002 Node and Edge contracts."
+        }
+      ],
+      "scope": [
+        "Add merge_edges(robot_edges, python_edges) in src/living_graph/merge.py",
+        "Pass two tiny in-memory lists, not file paths",
+        "Return one combined list",
+        "Drop a second copy of an identical edge"
+      ],
+      "dataExamples": [
+        "Robot input: Happy Path -> Open Application.",
+        "Python input: open_session -> connect.",
+        "Duplicate input of Happy Path -> Open Application is kept once.",
+        "Result length is 2 when those three rows are supplied."
+      ],
+      "businessRules": [
+        "Identity is caller_id, callee_id, and source_path.",
+        "Preserve first-seen order."
+      ],
+      "verification": [
+        "python -m pytest tests/test_merge_edges.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_merge_edges.py first.",
+        "Run python -m pytest tests/test_merge_edges.py -q and confirm failure.",
+        "Implement only merge_edges in src/living_graph/merge.py.",
+        "Run python -m pytest tests/test_merge_edges.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/merge.py"
+    ],
+    "businessRules": [
+      "Identity is caller_id, callee_id, and source_path.",
+      "Preserve first-seen order."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_merge_edges.py -q"
+    ]
+  }
+}

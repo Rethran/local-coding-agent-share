@@ -1,0 +1,82 @@
+{
+  "id": "GRAPH-022",
+  "type": "task",
+  "summary": "Map node type to a color",
+  "dependsOn": [
+    "GRAPH-002"
+  ],
+  "description": "A pure function maps node type to a color code, including a fallback for an unknown type.",
+  "scope": [
+    "Add node_color(node_type) in src/living_graph/render.py",
+    "Return the exact hex codes listed in dataExamples",
+    "Unknown type other returns #8993A4"
+  ],
+  "acceptanceCriteria": "node_color returns #4C9AFF for test_case, #36B37E for user_keyword, #FFAB00 for library_keyword, #FF5630 for unresolved, and #8993A4 for anything else.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-023.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not map fan-in to size.",
+    "Do not render 3D nodes."
+  ],
+  "verification": [
+    "python -m pytest tests/test_node_color.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-022.1",
+      "title": "Type string to hex color",
+      "summary": "Pure function. Five return values. No DOM.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "node_color",
+        "module": "src/living_graph/render.py",
+        "test": "tests/test_node_color.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "docs/data-contracts.md",
+          "purpose": "Node and Edge contract source of truth."
+        }
+      ],
+      "scope": [
+        "Add node_color(node_type) in src/living_graph/render.py",
+        "Return the exact hex codes listed in dataExamples",
+        "Unknown type other returns #8993A4"
+      ],
+      "dataExamples": [
+        "test_case -> #4C9AFF.",
+        "user_keyword -> #36B37E.",
+        "library_keyword -> #FFAB00.",
+        "unresolved -> #FF5630.",
+        "other -> #8993A4."
+      ],
+      "businessRules": [
+        "Input is the node type string only.",
+        "Do not read files."
+      ],
+      "verification": [
+        "python -m pytest tests/test_node_color.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_node_color.py first.",
+        "Run python -m pytest tests/test_node_color.py -q and confirm failure.",
+        "Implement only node_color in src/living_graph/render.py.",
+        "Run python -m pytest tests/test_node_color.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/render.py"
+    ],
+    "businessRules": [
+      "Input is the node type string only.",
+      "Do not read files."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_node_color.py -q"
+    ]
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "taskId": "CTX-045",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-06T21:17:29+00:00",
+  "updatedAt": "2026-10-06T21:20:37+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "CTX-045.1",
+      "title": "Return a limit reason",
+      "status": "DONE",
+      "summary": "Implementing check_limits in src/context_mgmt/limits.py per session lessons."
+    },
+    {
+      "id": "CTX-045.2",
+      "title": "Back off failed authentication",
+      "status": "DONE",
+      "summary": "Implementing auth_failure_delay in src/context_mgmt/limits.py."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

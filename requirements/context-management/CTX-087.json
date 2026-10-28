@@ -1,0 +1,142 @@
+{
+  "id": "CTX-087",
+  "type": "task",
+  "summary": "Write the editor MCP config",
+  "dependsOn": [
+    "CTX-086",
+    "CTX-083"
+  ],
+  "description": "ctx config write creates the VS Code or Cursor MCP file from editor_mcp_config.",
+  "scope": [
+    "VS Code config_type is stdio",
+    "Cursor config_type is empty"
+  ],
+  "acceptanceCriteria": "editor_mcp_config('vscode', command, home) returns config_type stdio, that command, mcp_arg mcp, and ctx_home home. editor_mcp_config('cursor', command, home) returns config_type as an empty string and the same command, mcp_arg, and ctx_home.",
+  "constraints": [
+    "Do not invent a second tool name.",
+    "Cursor output uses an empty config_type so the written file omits type.",
+    "Write .vscode/mcp.json or .cursor/mcp.json. Merge an existing JSON file. Leave an invalid file untouched."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_087_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_087_1_vscode.py -q -k CTX_087_1",
+    "python -m pytest tests/test_ctx_087_2_cursor.py -q -k CTX_087_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-087.1",
+      "title": "Shape the VS Code config",
+      "summary": "The vscode client returns stdio, the command, mcp, and the home.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/client_config.py",
+        "test": "tests/test_ctx_087_1_vscode.py",
+        "function": "editor_mcp_config"
+      },
+      "scope": [
+        "config_type stdio",
+        "command",
+        "mcp",
+        "ctx_home"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_087_1_vscode.py -q -k CTX_087_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_087_1.",
+        "This subtask's only job: The vscode client returns stdio, the command, mcp, and the home.",
+        "Touch src/context_mgmt/client_config.py, src/context_mgmt/cli.py, and tests/test_ctx_087_1_vscode.py.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "editor_mcp_config(client, command, home) for client vscode returns config_type stdio, command, mcp_arg mcp, and ctx_home home.",
+        "ctx config write --client vscode --workspace PATH writes .vscode/mcp.json from this dict. The args are -m, context_mgmt, mcp. env CTX_HOME is the home.",
+        "The test must call editor_mcp_config.",
+        "Run python -m pytest tests/test_ctx_087_1_vscode.py -q -k CTX_087_1."
+      ],
+      "dataExamples": [
+        {
+          "input": {
+            "client": "vscode",
+            "command": "C:/Python/python.exe",
+            "home": "C:/ctx-home"
+          },
+          "output": {
+            "config_type": "stdio",
+            "command": "C:/Python/python.exe",
+            "mcp_arg": "mcp",
+            "ctx_home": "C:/ctx-home"
+          }
+        }
+      ],
+      "businessRules": [
+        "VS Code starts ctx mcp over stdio."
+      ]
+    },
+    {
+      "id": "CTX-087.2",
+      "title": "Shape the Cursor config",
+      "summary": "The cursor client returns an empty config_type and the same command, mcp arg, and home.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/client_config.py",
+        "test": "tests/test_ctx_087_2_cursor.py",
+        "function": "editor_mcp_config"
+      },
+      "scope": [
+        "config_type empty",
+        "command",
+        "mcp",
+        "ctx_home"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_087_2_cursor.py -q -k CTX_087_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_087_2.",
+        "This subtask's only job: The cursor client returns an empty config_type and the same command, mcp arg, and home.",
+        "Touch only src/context_mgmt/client_config.py and tests/test_ctx_087_2_cursor.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "client cursor returns config_type as an empty string. ctx config write --client cursor writes .cursor/mcp.json and omits type.",
+        "The test must call editor_mcp_config.",
+        "Run python -m pytest tests/test_ctx_087_2_cursor.py -q -k CTX_087_2."
+      ],
+      "dataExamples": [
+        {
+          "input": {
+            "client": "cursor",
+            "command": "C:/Python/python.exe",
+            "home": "C:/ctx-home"
+          },
+          "output": {
+            "config_type": "",
+            "command": "C:/Python/python.exe",
+            "mcp_arg": "mcp",
+            "ctx_home": "C:/ctx-home"
+          }
+        }
+      ],
+      "businessRules": [
+        "Cursor's MCP file has no type field."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/client_config.py",
+      "src/context_mgmt/cli.py"
+    ],
+    "businessRules": [
+      "vscode uses type stdio. cursor omits type. Both run -m context_mgmt mcp."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_087_1_vscode.py -q -k CTX_087_1",
+      "python -m pytest tests/test_ctx_087_2_cursor.py -q -k CTX_087_2"
+    ]
+  }
+}

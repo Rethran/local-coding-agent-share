@@ -1,0 +1,32 @@
+{
+  "taskId": "GRAPH-010",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-09-16T19:35:58+00:00",
+  "updatedAt": "2026-09-16T19:41:03+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "GRAPH-010.1",
+      "title": "One node per name and source file",
+      "status": "DONE",
+      "summary": "Implementing nodes_from_edges in src/living_graph/merge.py"
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

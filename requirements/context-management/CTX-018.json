@@ -1,0 +1,146 @@
+{
+  "id": "CTX-018",
+  "type": "task",
+  "summary": "Expose check_context as a wrapper",
+  "dependsOn": [
+    "CTX-004",
+    "CTX-007"
+  ],
+  "description": "FR-C6-01 and FR-C6-03. make_check_context returns check_context(used_tokens, window_size, last_tool_output_tokens). The wrapper calls decide and contains no threshold logic of its own.",
+  "scope": [
+    "Three-argument check_context",
+    "context_pct is used_tokens / window_size",
+    "The module source does not contain the threshold literals"
+  ],
+  "acceptanceCriteria": "check_context(6000, 10000, 10) returns compact_recommended from decide. window_size 0 raises ValueError. mcp_server.py contains decide( and does not contain compact_threshold, 0.60, or 4000. FR-C6-01 FR-C6-03.",
+  "constraints": [
+    "Do not reimplement R1, R2, or R3 in the MCP module.",
+    "Do not compare against 0.60 in mcp_server.py.",
+    "Do not import FastAPI in the MCP module."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_018_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_018_1_check.py -q -k CTX_018_1",
+    "python -m pytest tests/test_ctx_018_2_no_rules.py -q -k CTX_018_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-018.1",
+      "title": "Return the decide result",
+      "summary": "check_context(6000, 10000, 10) returns action compact_recommended. window_size 0 raises ValueError.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/mcp_server.py",
+        "test": "tests/test_ctx_018_1_check.py",
+        "function": "make_check_context"
+      },
+      "scope": [
+        "make_check_context(config, emit, org_id=..., user_id=..., provider=..., model_id=..., salt=..., now=...)",
+        "The returned function takes exactly the three numbers",
+        "emit can append to a list"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_018_1_check.py -q -k CTX_018_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_018_1.",
+        "This subtask's only job: check_context(6000, 10000, 10) returns action compact_recommended. window_size 0 raises ValueError.",
+        "Touch only src/context_mgmt/mcp_server.py and tests/test_ctx_018_1_check.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Use default_config() with user_hash_salt test-salt.",
+        "now returns 2026-10-05T12:00:00Z.",
+        "Assert action compact_recommended for 6000, 10000, 10.",
+        "Run python -m pytest tests/test_ctx_018_1_check.py -q -k CTX_018_1."
+      ],
+      "dataExamples": [
+        {
+          "used_tokens": 6000,
+          "window_size": 10000,
+          "last_tool_output_tokens": 10,
+          "action": "compact_recommended"
+        }
+      ],
+      "businessRules": [
+        "FR-C6-01: the tool arguments are those three numbers.",
+        "context_pct 0.60 hits the default compact rule."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/rules.py",
+          "purpose": "Pure decide function. Precedence R3, then R2, then R1."
+        },
+        {
+          "path": "src/context_mgmt/config.py",
+          "purpose": "OrgConfig defaults used by later tasks."
+        }
+      ]
+    },
+    {
+      "id": "CTX-018.2",
+      "title": "Keep rule literals out of the wrapper",
+      "summary": "mcp_server.py calls decide and does not mention the threshold, 0.60, or 4000.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/mcp_server.py",
+        "test": "tests/test_ctx_018_2_no_rules.py",
+        "function": "make_check_context"
+      },
+      "scope": [
+        "Read the module source as text",
+        "Require the substring decide(",
+        "Forbid compact_threshold, 0.60, and 4000"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_018_2_no_rules.py -q -k CTX_018_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_018_2.",
+        "This subtask's only job: mcp_server.py calls decide and does not mention the threshold, 0.60, or 4000.",
+        "Touch only src/context_mgmt/mcp_server.py and tests/test_ctx_018_2_no_rules.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "This test reads src/context_mgmt/mcp_server.py. It does not copy rule code.",
+        "If a forbidden literal is present, delete it and call decide instead.",
+        "Run python -m pytest tests/test_ctx_018_2_no_rules.py -q -k CTX_018_2."
+      ],
+      "dataExamples": [
+        {
+          "required": "decide(",
+          "forbidden": [
+            "compact_threshold",
+            "0.60",
+            "4000"
+          ]
+        }
+      ],
+      "businessRules": [
+        "FR-C6-03: no rule logic of its own."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/rules.py",
+          "purpose": "Pure decide function. Precedence R3, then R2, then R1."
+        }
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/mcp_server.py"
+    ],
+    "businessRules": [
+      "Build one tool message with token_count last_tool_output_tokens and dedupe_key tool:last.",
+      "Return the decide dict unchanged."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_018_1_check.py -q -k CTX_018_1",
+      "python -m pytest tests/test_ctx_018_2_no_rules.py -q -k CTX_018_2"
+    ]
+  }
+}

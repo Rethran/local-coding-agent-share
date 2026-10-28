@@ -1,0 +1,189 @@
+{
+  "id": "CTX-021",
+  "type": "task",
+  "summary": "Keep chat working when a dependency fails",
+  "dependsOn": [
+    "CTX-011",
+    "CTX-017"
+  ],
+  "description": "T4 and acceptance criterion 4. Killing reporting, the rule engine, or the observer still leaves the developer request successful. The observer stays off the gateway path.",
+  "scope": [
+    "A raising emit still returns the upstream body",
+    "A raising decide forwards the original messages",
+    "A raising observer returns empty guidance and the gateway still returns 200"
+  ],
+  "acceptanceCriteria": "emit RuntimeError: status 200 and assistant content ok. decide RuntimeError: upstream receives the original tool content without the trim marker, status 200. run_observer on a raising observer returns empty guidance, and a gateway POST in the same test is still 200. T4.",
+  "constraints": [
+    "Do not call the observer from create_gateway.",
+    "Do not turn a decide failure into a 500.",
+    "Do not edit the CTX-011 test files. Add new tests."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_021_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_021_1_reporting.py -q -k CTX_021_1",
+    "python -m pytest tests/test_ctx_021_2_rules.py -q -k CTX_021_2",
+    "python -m pytest tests/test_ctx_021_3_observer.py -q -k CTX_021_3"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-021.1",
+      "title": "Survive a dead reporting sink",
+      "summary": "When emit raises, POST /v1/chat/completions still returns the upstream assistant content.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/gateway.py",
+        "test": "tests/test_ctx_021_1_reporting.py",
+        "function": "create_gateway"
+      },
+      "scope": [
+        "emit raises RuntimeError('c3 down')",
+        "Status 200",
+        "Content ok"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_021_1_reporting.py -q -k CTX_021_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_021_1.",
+        "This subtask's only job: When emit raises, POST /v1/chat/completions still returns the upstream assistant content.",
+        "Touch only src/context_mgmt/gateway.py and tests/test_ctx_021_1_reporting.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Use a new test file. Do not modify tests/test_ctx_011_2_emit_fails.py.",
+        "Assert the status and the assistant content.",
+        "Run python -m pytest tests/test_ctx_021_1_reporting.py -q -k CTX_021_1."
+      ],
+      "dataExamples": [
+        {
+          "status": 200,
+          "content": "ok"
+        }
+      ],
+      "businessRules": [
+        "T4 reporting kill. FR-C1-06."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/gateway.py",
+          "purpose": "OpenAI-compatible proxy."
+        }
+      ]
+    },
+    {
+      "id": "CTX-021.2",
+      "title": "Survive a dead rule engine",
+      "summary": "When decide raises, the upstream receives the original tool content and the caller still gets status 200.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/gateway.py",
+        "test": "tests/test_ctx_021_2_rules.py",
+        "function": "create_gateway"
+      },
+      "scope": [
+        "Patch context_mgmt.rules.decide to raise RuntimeError",
+        "Tool content ORIGINAL has token_count 4001",
+        "Forwarded content is ORIGINAL and has no trim marker"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_021_2_rules.py -q -k CTX_021_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_021_2.",
+        "This subtask's only job: When decide raises, the upstream receives the original tool content and the caller still gets status 200.",
+        "Touch only src/context_mgmt/gateway.py and tests/test_ctx_021_2_rules.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Record the upstream JSON.",
+        "Assert status 200 and the marker is absent from the forwarded tool content.",
+        "Run python -m pytest tests/test_ctx_021_2_rules.py -q -k CTX_021_2."
+      ],
+      "dataExamples": [
+        {
+          "tool_content": "ORIGINAL",
+          "token_count": 4001,
+          "status": 200
+        }
+      ],
+      "businessRules": [
+        "T4 rules kill. Forward the request unchanged."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/gateway.py",
+          "purpose": "OpenAI-compatible proxy."
+        },
+        {
+          "path": "src/context_mgmt/rules.py",
+          "purpose": "Pure decide function. Precedence R3, then R2, then R1."
+        }
+      ]
+    },
+    {
+      "id": "CTX-021.3",
+      "title": "Survive a dead observer",
+      "summary": "run_observer swallows a crash. A separate gateway call in the same test still returns 200.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/observer.py",
+        "test": "tests/test_ctx_021_3_observer.py",
+        "function": "run_observer"
+      },
+      "scope": [
+        "Observer analyze raises RuntimeError",
+        "run_observer returns empty guidance",
+        "create_gateway POST still returns 200"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_021_3_observer.py -q -k CTX_021_3"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_021_3.",
+        "This subtask's only job: run_observer swallows a crash. A separate gateway call in the same test still returns 200.",
+        "Touch only src/context_mgmt/observer.py and tests/test_ctx_021_3_observer.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Do not register the observer on a gateway route.",
+        "Call run_observer and the gateway in one test and assert both results.",
+        "Run python -m pytest tests/test_ctx_021_3_observer.py -q -k CTX_021_3."
+      ],
+      "dataExamples": [
+        {
+          "guidance": "",
+          "gateway_status": 200
+        }
+      ],
+      "businessRules": [
+        "T4 observer kill. P5: the observer is not on the request path."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/observer.py",
+          "purpose": "Async observer implementations."
+        },
+        {
+          "path": "src/context_mgmt/gateway.py",
+          "purpose": "OpenAI-compatible proxy."
+        }
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/gateway.py",
+      "src/context_mgmt/observer.py"
+    ],
+    "businessRules": [
+      "Fail-open means the upstream response is what the caller sees.",
+      "When decide raises, forward the original JSON body."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_021_1_reporting.py -q -k CTX_021_1",
+      "python -m pytest tests/test_ctx_021_2_rules.py -q -k CTX_021_2",
+      "python -m pytest tests/test_ctx_021_3_observer.py -q -k CTX_021_3"
+    ]
+  }
+}

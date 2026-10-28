@@ -1,0 +1,126 @@
+{
+  "id": "CTX-049",
+  "type": "task",
+  "summary": "Separate MCP events from gateway events",
+  "dependsOn": [
+    "CTX-019",
+    "CTX-022",
+    "CTX-043"
+  ],
+  "description": "SEC-31. Gateway events use source gateway. MCP events use source mcp. A service key cannot read stats. MCP events stop after the configured count.",
+  "scope": [
+    "The two sources are gateway and mcp",
+    "A service key gets 403 on stats and the 101st MCP event is rejected"
+  ],
+  "acceptanceCriteria": "A gateway emit includes source gateway. A check_context emit includes source mcp. GET /stats/daily with a service key returns 403. mcp_event_allowed(101, 100) is false and mcp_event_allowed(100, 100) is true. SEC-31.",
+  "constraints": [
+    "Do not let a service key read stats.",
+    "Do not let an MCP event overwrite a gateway total.",
+    "Do not drop the source field when it is present."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_049_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_049_1_source.py -q -k CTX_049_1",
+    "python -m pytest tests/test_ctx_049_2_cap.py -q -k CTX_049_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-049.1",
+      "title": "Stamp the event source",
+      "summary": "Gateway events say gateway and MCP events say mcp.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/gateway.py",
+        "test": "tests/test_ctx_049_1_source.py",
+        "function": "create_gateway"
+      },
+      "scope": [
+        "Gateway source gateway",
+        "MCP source mcp"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_049_1_source.py -q -k CTX_049_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_049_1.",
+        "This subtask's only job: Gateway events say gateway and MCP events say mcp.",
+        "Touch src/context_mgmt/gateway.py, src/context_mgmt/mcp_server.py, and tests/test_ctx_049_1_source.py.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Add the field. Do not remove fields older tests already assert.",
+        "Run python -m pytest tests/test_ctx_049_1_source.py -q -k CTX_049_1."
+      ],
+      "dataExamples": [
+        {
+          "gateway": "gateway",
+          "mcp": "mcp"
+        }
+      ],
+      "businessRules": [
+        "SEC-31: gateway events are authoritative because the gateway measures usage."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/mcp_server.py",
+          "purpose": "MCP events use source mcp."
+        }
+      ]
+    },
+    {
+      "id": "CTX-049.2",
+      "title": "Stop a service key from reading and cap MCP noise",
+      "summary": "A service key gets 403 on GET /stats/daily. The 101st MCP event is not allowed.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/api.py",
+        "test": "tests/test_ctx_049_2_cap.py",
+        "function": "mcp_event_allowed"
+      },
+      "scope": [
+        "service key status 403",
+        "count 100 allowed",
+        "count 101 denied"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_049_2_cap.py -q -k CTX_049_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_049_2.",
+        "This subtask's only job: A service key gets 403 on GET /stats/daily. The 101st MCP event is not allowed.",
+        "Touch only src/context_mgmt/api.py and tests/test_ctx_049_2_cap.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Use TestClient for the stats call. The cap function takes the count and the limit.",
+        "Run python -m pytest tests/test_ctx_049_2_cap.py -q -k CTX_049_2."
+      ],
+      "dataExamples": [
+        {
+          "service_status": 403,
+          "limit": 100
+        }
+      ],
+      "businessRules": [
+        "A stolen MCP credential can add noise only up to the cap, and cannot read data."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/gateway.py",
+      "src/context_mgmt/mcp_server.py",
+      "src/context_mgmt/api.py"
+    ],
+    "businessRules": [
+      "mcp_event_allowed(count, limit) is true when count <= limit."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_049_1_source.py -q -k CTX_049_1",
+      "python -m pytest tests/test_ctx_049_2_cap.py -q -k CTX_049_2"
+    ]
+  }
+}

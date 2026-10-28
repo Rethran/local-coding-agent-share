@@ -1,0 +1,38 @@
+{
+  "taskId": "CTX-036",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-10-06T20:18:36+00:00",
+  "updatedAt": "2026-10-06T20:28:08+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "CTX-036.1",
+      "title": "Accumulate in memory for one opening",
+      "status": "DONE",
+      "summary": "Implementer starting: creating SessionTotals in src/context_mgmt/session.py"
+    },
+    {
+      "id": "CTX-036.2",
+      "title": "Emit the cumulative saved total",
+      "status": "DONE",
+      "summary": "Implementer starting: integrating SessionTotals into gateway.py for cumulative tokens_saved_est"
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

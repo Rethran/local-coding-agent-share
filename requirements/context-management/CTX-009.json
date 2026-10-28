@@ -1,0 +1,167 @@
+{
+  "id": "CTX-009",
+  "type": "task",
+  "summary": "Forward chat completions and apply trims",
+  "dependsOn": [
+    "CTX-003",
+    "CTX-007"
+  ],
+  "description": "Add the OpenAI-compatible gateway. FR-C1-01 and FR-C1-04. create_gateway forwards to an injected httpx client and replaces messages when decide returns trim.",
+  "scope": [
+    "POST /v1/chat/completions",
+    "Non-streaming JSON is forwarded and the upstream JSON is returned",
+    "Trimmed messages are what the upstream receives"
+  ],
+  "acceptanceCriteria": "A short user message returns the upstream assistant content ok and the upstream request contains that user content. A tool message with token_count 4001 is forwarded with the trim marker, while the latest user content stays LATEST. FR-C1-01 FR-C1-04.",
+  "constraints": [
+    "Do not call a real network host. Use the injected httpx.Client only.",
+    "Do not trim the latest user message.",
+    "Do not require a live Ollama process."
+  ],
+  "workerGuidance": [
+    "Small local model rule: solve only the active subtask. Do not implement later CTX tasks early.",
+    "Every test function for this task's subtasks must contain that slice token, for example CTX_009_1.",
+    "After writing or changing a test, always call the declared pytest command before ending the turn. Do not stop with explanation text only.",
+    "If the active subtask's verification already passes because earlier work implemented it correctly, run the declared command and mark the subtask done. Do not rewrite unrelated files.",
+    "Keep edits inside targetArtifacts unless the subtask explicitly says otherwise.",
+    "When writing tests, assert only the current subtask's scope so later subtasks still have meaningful work."
+  ],
+  "verification": [
+    "python -m pytest tests/test_ctx_009_1_forward.py -q -k CTX_009_1",
+    "python -m pytest tests/test_ctx_009_2_trim.py -q -k CTX_009_2"
+  ],
+  "subtasks": [
+    {
+      "id": "CTX-009.1",
+      "title": "Forward a non-streaming chat request",
+      "summary": "POST /v1/chat/completions returns the upstream JSON. The injected client receives the user content.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/gateway.py",
+        "test": "tests/test_ctx_009_1_forward.py",
+        "function": "create_gateway"
+      },
+      "scope": [
+        "httpx.MockTransport returns choices[0].message.content ok",
+        "Request body is a single short user message",
+        "Status 200 and body content ok"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_009_1_forward.py -q -k CTX_009_1"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_009_1.",
+        "This subtask's only job: POST /v1/chat/completions returns the upstream JSON. The injected client receives the user content.",
+        "Touch only src/context_mgmt/gateway.py and tests/test_ctx_009_1_forward.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Record the upstream request JSON inside the transport.",
+        "Assert the forwarded user content matches the client request.",
+        "emit may be a lambda that ignores its argument.",
+        "Run python -m pytest tests/test_ctx_009_1_forward.py -q -k CTX_009_1."
+      ],
+      "dataExamples": [
+        {
+          "request_messages": [
+            {
+              "role": "user",
+              "content": "hi",
+              "token_count": 1
+            }
+          ],
+          "upstream": {
+            "choices": [
+              {
+                "message": {
+                  "role": "assistant",
+                  "content": "ok"
+                }
+              }
+            ],
+            "usage": {
+              "prompt_tokens": 1,
+              "completion_tokens": 1
+            }
+          }
+        }
+      ],
+      "businessRules": [
+        "FR-C1-01: OpenAI-compatible path and a configurable client, not a hardcoded host."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/rules.py",
+          "purpose": "Pure decide function. Precedence R3, then R2, then R1."
+        },
+        {
+          "path": "src/context_mgmt/config.py",
+          "purpose": "OrgConfig defaults used by later tasks."
+        }
+      ]
+    },
+    {
+      "id": "CTX-009.2",
+      "title": "Apply a trim before forward",
+      "summary": "The upstream request contains the trim marker. The latest user content is still LATEST.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "module": "src/context_mgmt/gateway.py",
+        "test": "tests/test_ctx_009_2_trim.py",
+        "function": "create_gateway"
+      },
+      "scope": [
+        "Tool token_count 4001 and context_pct left for decide to compute from messages only if present",
+        "Read context_pct from the JSON body and pass it to decide with the messages",
+        "Latest user content LATEST"
+      ],
+      "verification": [
+        "python -m pytest tests/test_ctx_009_2_trim.py -q -k CTX_009_2"
+      ],
+      "instructions": [
+        "Name the test function so it contains CTX_009_2.",
+        "This subtask's only job: The upstream request contains the trim marker. The latest user content is still LATEST.",
+        "Touch only src/context_mgmt/gateway.py and tests/test_ctx_009_2_trim.py unless the test needs an existing import helper.",
+        "Do not edit tests for other CTX subtasks in this attempt.",
+        "Put context_pct 0.10 on the JSON body and pass that into decide with the messages.",
+        "Assert the marker is in the upstream tool content and LATEST is unchanged.",
+        "The HTTP response content is still the upstream assistant text.",
+        "Run python -m pytest tests/test_ctx_009_2_trim.py -q -k CTX_009_2."
+      ],
+      "dataExamples": [
+        {
+          "context_pct": 0.1,
+          "tool_token_count": 4001,
+          "marker": "\n[context-mgmt:trimmed]\n",
+          "latest_user": "LATEST"
+        }
+      ],
+      "businessRules": [
+        "FR-C1-04: apply trim in place before the upstream call.",
+        "decide owns the trim. Do not reimplement head and tail in the gateway."
+      ],
+      "relatedArtifacts": [
+        {
+          "path": "src/context_mgmt/gateway.py",
+          "purpose": "OpenAI-compatible proxy."
+        },
+        {
+          "path": "src/context_mgmt/rules.py",
+          "purpose": "Pure decide function. Precedence R3, then R2, then R1."
+        }
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/context_mgmt/gateway.py"
+    ],
+    "businessRules": [
+      "create_gateway(client, config, emit, org_id, user_id, salt) -> FastAPI.",
+      "Upstream call is client.post('/v1/chat/completions', json=payload).",
+      "When action is trim, payload messages become decide(...).messages before the post."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_ctx_009_1_forward.py -q -k CTX_009_1",
+      "python -m pytest tests/test_ctx_009_2_trim.py -q -k CTX_009_2"
+    ]
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "taskId": "GRAPH-002",
+  "status": "DONE",
+  "attempt": 2,
+  "startedAt": "2026-09-15T19:02:45+00:00",
+  "updatedAt": "2026-09-15T19:09:06+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [
+    "Assistant stopped without tool call at step 2."
+  ],
+  "verificationResult": null,
+  "lastFailureReason": "Assistant stopped without tool call at step 2.",
+  "lastRecoveryAction": "Rollback skipped by configuration.",
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "GRAPH-002.1: no_tool_call. Next: Write tests/test_model.py first using the examples from docs/data-contracts.md.",
+  "completedScopeItems": [],
+  "remainingScopeItems": [
+    "Remaining: Define Node with id, name, type, source_path, fan_in default 0, fan_out default 0",
+    "Remaining: Define Edge with caller_id, callee_id, caller_name, callee_name, source_path, resolved",
+    "Remaining: Provide a to_dict helper or equivalent serialization method",
+    "Remaining: Normalize source paths to forward slashes"
+  ],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": "Write tests/test_model.py first using the examples from docs/data-contracts.md.",
+  "subtasks": [
+    {
+      "id": "GRAPH-002.1",
+      "title": "Create Node and Edge contracts",
+      "status": "DONE",
+      "summary": "Implement simple serializable Node and Edge contracts in src/living_graph/model.py."
+    },
+    {
+      "id": "GRAPH-002.2",
+      "title": "Represent unresolved calls",
+      "status": "DONE",
+      "summary": "Add a tiny helper or constructor behavior for unresolved keyword call nodes and edges."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

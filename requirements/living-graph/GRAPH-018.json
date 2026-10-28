@@ -1,0 +1,82 @@
+{
+  "id": "GRAPH-018",
+  "type": "task",
+  "summary": "Replace nodes from one changed fixture file",
+  "dependsOn": [
+    "GRAPH-017"
+  ],
+  "description": "After one fixture file changes, incremental update replaces nodes and edges sourced from that file and leaves other files' entries in the graph input.",
+  "scope": [
+    "Add incremental_update(graph, changed_path, new_edges) in src/living_graph/scan.py",
+    "Remove existing nodes and edges whose source_path equals changed_path",
+    "Insert new_edges for that path",
+    "Keep edges from a different source_path"
+  ],
+  "acceptanceCriteria": "incremental_update(graph, 'tests/fixtures/simple_test.robot', new_edges) drops old simple_test.robot edges and inserts new_edges.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-019.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Rebuilding nodes with nodes_from_edges is allowed. Do not require unchanged-file nodes to be the same Python objects.",
+    "Do not watch the filesystem."
+  ],
+  "verification": [
+    "python -m pytest tests/test_incremental_replace.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-018.1",
+      "title": "Replace one file's nodes and edges",
+      "summary": "Drop old rows for changed_path. Insert new_edges. Keep other files.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "incremental_update",
+        "module": "src/living_graph/scan.py",
+        "test": "tests/test_incremental_replace.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "src/living_graph/model.py",
+          "purpose": "GRAPH-002 Node and Edge contracts."
+        }
+      ],
+      "scope": [
+        "Add incremental_update(graph, changed_path, new_edges) in src/living_graph/scan.py",
+        "Remove existing nodes and edges whose source_path equals changed_path",
+        "Insert new_edges for that path",
+        "Keep edges from a different source_path"
+      ],
+      "dataExamples": [
+        "Existing graph has an edge from tests/fixtures/simple_test.robot and one from tests/fixtures/simple_library.py.",
+        "changed_path is tests/fixtures/simple_test.robot.",
+        "After update, the library edge remains and the robot edges match new_edges."
+      ],
+      "businessRules": [
+        "Match source_path with forward slashes.",
+        "Do not rescan unchanged files."
+      ],
+      "verification": [
+        "python -m pytest tests/test_incremental_replace.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_incremental_replace.py first.",
+        "Run python -m pytest tests/test_incremental_replace.py -q and confirm failure.",
+        "Implement only incremental_update in src/living_graph/scan.py.",
+        "Run python -m pytest tests/test_incremental_replace.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/scan.py"
+    ],
+    "businessRules": [
+      "Match source_path with forward slashes.",
+      "Do not rescan unchanged files."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_incremental_replace.py -q"
+    ]
+  }
+}

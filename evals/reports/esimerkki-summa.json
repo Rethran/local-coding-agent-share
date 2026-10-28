@@ -1,0 +1,532 @@
+{
+  "schema": "eval-report/v1",
+  "createdAt": "2026-10-03T18:43:12+00:00",
+  "sourceLog": "evals\\reports\\esimerkki-summa.json",
+  "model": "esimerkki",
+  "promptVariant": "summa",
+  "runStatus": "success",
+  "dryRun": false,
+  "plannedTrials": null,
+  "criteria": {
+    "subtask_done": {
+      "what": "The orchestrator marked the pinned subtask DONE after the independent verifier passed.",
+      "why": "This is the outcome that matters: the agent's own declared verification succeeded and the coordinator agreed. A fluent transcript that never reaches DONE is still a failure.",
+      "how": "Code. Read the copied requirements <task_id>.state.json after the run. Pass iff the matching subtask status is DONE.",
+      "grader": "code"
+    },
+    "reference_tests_pass": {
+      "what": "Tests from the historically accepted commit still pass against the code the agent just wrote.",
+      "why": "The agent's own tests can be too weak or accidentally rewritten. Overlaying the accepted commit's test files is a cheap substitute for hidden tests. These are regression tests, not independently authored hidden tests.",
+      "how": "Code. After the agent finishes, overlay tests/ files from accepted_commit, then run pytest on those paths in the worktree.",
+      "grader": "code"
+    },
+    "process_budget": {
+      "what": "The agent finished without looping, blowing the step budget, or drowning in tool errors.",
+      "why": "Local models often fail on process before they fail on correctness. A pass that took 80 identical read_file calls is not a prompt you want to keep.",
+      "how": "Code, from run_summary.json. Fail if attempts > 10, steps > 160, any identical tool fingerprint repeats more than 5 times, or tool error rate > 40%.",
+      "grader": "code",
+      "thresholds": {
+        "max_attempts": 10,
+        "max_steps": 160,
+        "max_repeat_of_one_call": 5,
+        "max_tool_error_rate": 0.4
+      }
+    }
+  },
+  "summary": {
+    "scorers": {
+      "process_budget": {
+        "passRate": 1.0,
+        "stderr": 0.0,
+        "n": 9,
+        "passed": 9,
+        "delta": 0.0
+      },
+      "reference_tests_pass": {
+        "passRate": 0.5556,
+        "stderr": 0.1656,
+        "n": 9,
+        "passed": 5,
+        "delta": 0.0
+      },
+      "subtask_done": {
+        "passRate": 1.0,
+        "stderr": 0.0,
+        "n": 9,
+        "passed": 9,
+        "delta": 0.0
+      }
+    },
+    "p95WallSeconds": 4.613,
+    "meanWallSeconds": 4.081,
+    "totalTokens": 0,
+    "nTrials": 9,
+    "nSamples": 3
+  },
+  "review": {
+    "falseDone": {
+      "rate": 0.4444,
+      "stderr": 0.1656,
+      "falseDone": 4,
+      "claimedDone": 9
+    },
+    "consistency": {
+      "scorer": "reference_tests_pass",
+      "reliable": [
+        {
+          "sampleId": "summa",
+          "title": "summa",
+          "passed": 3,
+          "epochs": 3
+        }
+      ],
+      "fragile": [
+        {
+          "sampleId": "erotus",
+          "title": "erotus",
+          "passed": 2,
+          "epochs": 3
+        }
+      ],
+      "cannot": [
+        {
+          "sampleId": "tulo",
+          "title": "tulo",
+          "passed": 0,
+          "epochs": 3
+        }
+      ]
+    },
+    "cost": {
+      "gpuMinutes": 0.61,
+      "fullSuccesses": 1,
+      "minutesPerSuccess": 0.61
+    },
+    "timing": {
+      "wallSeconds": {
+        "median": 4.114,
+        "worst": 4.613,
+        "n": 9
+      },
+      "steps": {
+        "median": null,
+        "worst": null,
+        "n": 0
+      }
+    },
+    "failureTypes": {
+      "counts": {
+        "timeout": 0,
+        "loop": 0,
+        "tool_errors": 0,
+        "step_budget": 0,
+        "reference_tests": 4,
+        "other": 0
+      },
+      "labels": {
+        "timeout": "aikakatkaisu",
+        "loop": "silmukka",
+        "tool_errors": "työkaluvirheet",
+        "step_budget": "askelbudjetti",
+        "reference_tests": "testit",
+        "other": "muu"
+      },
+      "order": [
+        "timeout",
+        "loop",
+        "tool_errors",
+        "step_budget",
+        "reference_tests",
+        "other"
+      ],
+      "failedTrials": 4
+    },
+    "referenceTests": {
+      "passRate": 0.5556,
+      "stderr": 0.1656,
+      "n": 9
+    },
+    "reliableShare": 0.3333,
+    "nSamples": 3,
+    "deltas": {
+      "referenceTestsPassRate": {
+        "delta": 0.0,
+        "combinedStderr": 0.2342,
+        "noise": true
+      },
+      "falseDoneRate": {
+        "delta": 0.0,
+        "combinedStderr": 0.2342,
+        "noise": true
+      },
+      "reliableShare": {
+        "delta": 0.0,
+        "combinedStderr": 0.3849,
+        "noise": true
+      }
+    }
+  },
+  "brief": {
+    "assign": "Summa onnistui kaikilla kolmella kerralla. Erotus onnistui vain joskus, 2 kertaa 3 kerrasta. Tulo ei onnistunut kertaakaan.",
+    "cost": "Yksi tehtävä onnistui joka kerralla. Yhtä sellaista tehtävää kohti kului 0,6 minuuttia, kun epäonnistuneetkin ajot lasketaan mukaan. Koko ajo vei 0,6 minuuttia.",
+    "trend": "Ero edelliseen ajoon on niin pieni, että se voi johtua sattumasta. Älä pidä sitä muutoksena.",
+    "trust": "Agentti merkitsi tehtävän valmiiksi 4 kertaa 9 kerrasta, vaikka testit eivät menneet läpi. Niissä merkintää ei voi uskoa ilman ihmisen tarkistusta.",
+    "time": "Tyypillinen ajo vei 4 sekuntia, hitain 5 sekuntia. Askeleita ei ole kirjattu.",
+    "fix": "Testit eivät menneet läpi. Korjaus kuuluu mallille tai sille ohjeelle, jonka malli sai.",
+    "headline": "1 luotettava, 1 hauras, 1 ei osaa · 0,6 min/onnistuminen"
+  },
+  "failures": [
+    {
+      "sampleId": "erotus",
+      "epoch": 3,
+      "title": "erotus",
+      "input": "Laske 5 - 2. Vastaa pelkällä luvulla.",
+      "criterion": "reference_tests_pass",
+      "explanation": "  [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n_________________________________ test_erotus _________________________________\ntests\\test_laskin.py:9: in test_erotus\n    assert erotus(5, 2) == 3\nE   assert 7 == 3\nE    +  where 7 = erotus(5, 2)\n=========================== short test summary info ===========================\nFAILED tests/test_laskin.py::test_erotus - assert 7 == 3\n1 failed, 2 deselected in 0.11s",
+      "stopReason": ""
+    },
+    {
+      "sampleId": "tulo",
+      "epoch": 1,
+      "title": "tulo",
+      "input": "Laske 2 * 4. Vastaa pelkällä luvulla.",
+      "criterion": "reference_tests_pass",
+      "explanation": "         [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n__________________________________ test_tulo __________________________________\ntests\\test_laskin.py:13: in test_tulo\n    assert tulo(2, 4) == 8\nE   assert 0 == 8\nE    +  where 0 = tulo(2, 4)\n=========================== short test summary info ===========================\nFAILED tests/test_laskin.py::test_tulo - assert 0 == 8\n1 failed, 2 deselected in 0.11s",
+      "stopReason": ""
+    },
+    {
+      "sampleId": "tulo",
+      "epoch": 2,
+      "title": "tulo",
+      "input": "Laske 2 * 4. Vastaa pelkällä luvulla.",
+      "criterion": "reference_tests_pass",
+      "explanation": "         [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n__________________________________ test_tulo __________________________________\ntests\\test_laskin.py:13: in test_tulo\n    assert tulo(2, 4) == 8\nE   assert 0 == 8\nE    +  where 0 = tulo(2, 4)\n=========================== short test summary info ===========================\nFAILED tests/test_laskin.py::test_tulo - assert 0 == 8\n1 failed, 2 deselected in 0.12s",
+      "stopReason": ""
+    },
+    {
+      "sampleId": "tulo",
+      "epoch": 3,
+      "title": "tulo",
+      "input": "Laske 2 * 4. Vastaa pelkällä luvulla.",
+      "criterion": "reference_tests_pass",
+      "explanation": "         [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n__________________________________ test_tulo __________________________________\ntests\\test_laskin.py:13: in test_tulo\n    assert tulo(2, 4) == 8\nE   assert 0 == 8\nE    +  where 0 = tulo(2, 4)\n=========================== short test summary info ===========================\nFAILED tests/test_laskin.py::test_tulo - assert 0 == 8\n1 failed, 2 deselected in 0.11s",
+      "stopReason": ""
+    }
+  ],
+  "flaky": [],
+  "trend": [
+    {
+      "createdAt": "2026-09-30T20:00:21+00:00",
+      "promptVariant": "baseline",
+      "model": "night-runner:latest",
+      "scorers": {
+        "process_budget": 1.0,
+        "reference_tests_pass": 0.0,
+        "subtask_done": 0.0
+      },
+      "referenceTestsPassRate": 0.0,
+      "falseDoneRate": null,
+      "reliableCases": 0
+    },
+    {
+      "createdAt": "2026-10-02T08:14:47+00:00",
+      "promptVariant": "baseline",
+      "model": "night-runner:latest",
+      "scorers": {
+        "process_budget": 1.0,
+        "reference_tests_pass": 0.9048,
+        "subtask_done": 1.0
+      },
+      "referenceTestsPassRate": 0.9048,
+      "falseDoneRate": 0.0952,
+      "reliableCases": 11
+    },
+    {
+      "createdAt": "2026-10-02T21:45:28+00:00",
+      "promptVariant": "baseline",
+      "model": "qwen3:8b",
+      "scorers": {
+        "process_budget": 0.6842,
+        "reference_tests_pass": 0.2105,
+        "subtask_done": 0.2105
+      },
+      "referenceTestsPassRate": 0.2105,
+      "falseDoneRate": 0.25,
+      "reliableCases": 2
+    },
+    {
+      "createdAt": "2026-10-03T17:57:56+00:00",
+      "promptVariant": "baseline",
+      "model": "night-runner:latest",
+      "scorers": {
+        "process_budget": 1.0,
+        "reference_tests_pass": 0.0,
+        "subtask_done": 0.0
+      },
+      "referenceTestsPassRate": 0.0,
+      "falseDoneRate": null,
+      "reliableCases": 0
+    },
+    {
+      "createdAt": "2026-10-03T18:20:55+00:00",
+      "promptVariant": "baseline",
+      "model": "night-runner:latest",
+      "scorers": {
+        "process_budget": 1.0,
+        "reference_tests_pass": 0.8889,
+        "subtask_done": 0.9722
+      },
+      "referenceTestsPassRate": 0.8889,
+      "falseDoneRate": 0.0857,
+      "reliableCases": 10
+    },
+    {
+      "createdAt": "2026-10-03T18:20:56+00:00",
+      "promptVariant": "baseline",
+      "model": "qwen3:8b",
+      "scorers": {
+        "process_budget": 0.6842,
+        "reference_tests_pass": 0.2105,
+        "subtask_done": 0.2105
+      },
+      "referenceTestsPassRate": 0.2105,
+      "falseDoneRate": 0.25,
+      "reliableCases": 2
+    },
+    {
+      "createdAt": "2026-10-03T18:25:46+00:00",
+      "promptVariant": "baseline",
+      "model": "night-runner:latest",
+      "scorers": {},
+      "referenceTestsPassRate": null,
+      "falseDoneRate": null,
+      "reliableCases": 0
+    },
+    {
+      "createdAt": "2026-10-03T18:43:02+00:00",
+      "promptVariant": "summa",
+      "model": "esimerkki",
+      "scorers": {
+        "process_budget": 1.0,
+        "reference_tests_pass": 0.5556,
+        "subtask_done": 1.0
+      },
+      "referenceTestsPassRate": 0.5556,
+      "falseDoneRate": 0.4444,
+      "reliableCases": 1
+    },
+    {
+      "createdAt": "2026-10-03T18:43:12+00:00",
+      "promptVariant": "summa",
+      "model": "esimerkki",
+      "scorers": {
+        "process_budget": 1.0,
+        "reference_tests_pass": 0.5556,
+        "subtask_done": 1.0
+      },
+      "referenceTestsPassRate": 0.5556,
+      "falseDoneRate": 0.4444,
+      "reliableCases": 1
+    }
+  ],
+  "trials": [
+    {
+      "sampleId": "summa",
+      "epoch": 1,
+      "title": "summa",
+      "input": "Laske 2 + 3. Vastaa pelkällä luvulla.",
+      "wallSeconds": 3.64,
+      "redFailed": true,
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Toteutus merkittiin valmiiksi."
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": ".                                                                        [100%]Running teardown with pytest sessionfinish...\n\n1 passed, 2 deselected in 0.01s"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Pieni esimerkki pysyi rajassa."
+        }
+      }
+    },
+    {
+      "sampleId": "summa",
+      "epoch": 2,
+      "title": "summa",
+      "input": "Laske 2 + 3. Vastaa pelkällä luvulla.",
+      "wallSeconds": 4.144,
+      "redFailed": true,
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Toteutus merkittiin valmiiksi."
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": ".                                                                        [100%]Running teardown with pytest sessionfinish...\n\n1 passed, 2 deselected in 0.01s"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Pieni esimerkki pysyi rajassa."
+        }
+      }
+    },
+    {
+      "sampleId": "summa",
+      "epoch": 3,
+      "title": "summa",
+      "input": "Laske 2 + 3. Vastaa pelkällä luvulla.",
+      "wallSeconds": 3.632,
+      "redFailed": true,
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Toteutus merkittiin valmiiksi."
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": ".                                                                        [100%]Running teardown with pytest sessionfinish...\n\n1 passed, 2 deselected in 0.01s"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Pieni esimerkki pysyi rajassa."
+        }
+      }
+    },
+    {
+      "sampleId": "erotus",
+      "epoch": 1,
+      "title": "erotus",
+      "input": "Laske 5 - 2. Vastaa pelkällä luvulla.",
+      "wallSeconds": 4.205,
+      "redFailed": true,
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Toteutus merkittiin valmiiksi."
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": ".                                                                        [100%]Running teardown with pytest sessionfinish...\n\n1 passed, 2 deselected in 0.01s"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Pieni esimerkki pysyi rajassa."
+        }
+      }
+    },
+    {
+      "sampleId": "erotus",
+      "epoch": 2,
+      "title": "erotus",
+      "input": "Laske 5 - 2. Vastaa pelkällä luvulla.",
+      "wallSeconds": 4.108,
+      "redFailed": true,
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Toteutus merkittiin valmiiksi."
+        },
+        "reference_tests_pass": {
+          "ok": true,
+          "explanation": ".                                                                        [100%]Running teardown with pytest sessionfinish...\n\n1 passed, 2 deselected in 0.01s"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Pieni esimerkki pysyi rajassa."
+        }
+      }
+    },
+    {
+      "sampleId": "erotus",
+      "epoch": 3,
+      "title": "erotus",
+      "input": "Laske 5 - 2. Vastaa pelkällä luvulla.",
+      "wallSeconds": 4.096,
+      "redFailed": true,
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Toteutus merkittiin valmiiksi."
+        },
+        "reference_tests_pass": {
+          "ok": false,
+          "explanation": "  [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n_________________________________ test_erotus _________________________________\ntests\\test_laskin.py:9: in test_erotus\n    assert erotus(5, 2) == 3\nE   assert 7 == 3\nE    +  where 7 = erotus(5, 2)\n=========================== short test summary info ===========================\nFAILED tests/test_laskin.py::test_erotus - assert 7 == 3\n1 failed, 2 deselected in 0.11s"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Pieni esimerkki pysyi rajassa."
+        }
+      }
+    },
+    {
+      "sampleId": "tulo",
+      "epoch": 1,
+      "title": "tulo",
+      "input": "Laske 2 * 4. Vastaa pelkällä luvulla.",
+      "wallSeconds": 4.175,
+      "redFailed": true,
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Toteutus merkittiin valmiiksi."
+        },
+        "reference_tests_pass": {
+          "ok": false,
+          "explanation": "         [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n__________________________________ test_tulo __________________________________\ntests\\test_laskin.py:13: in test_tulo\n    assert tulo(2, 4) == 8\nE   assert 0 == 8\nE    +  where 0 = tulo(2, 4)\n=========================== short test summary info ===========================\nFAILED tests/test_laskin.py::test_tulo - assert 0 == 8\n1 failed, 2 deselected in 0.11s"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Pieni esimerkki pysyi rajassa."
+        }
+      }
+    },
+    {
+      "sampleId": "tulo",
+      "epoch": 2,
+      "title": "tulo",
+      "input": "Laske 2 * 4. Vastaa pelkällä luvulla.",
+      "wallSeconds": 4.114,
+      "redFailed": true,
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Toteutus merkittiin valmiiksi."
+        },
+        "reference_tests_pass": {
+          "ok": false,
+          "explanation": "         [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n__________________________________ test_tulo __________________________________\ntests\\test_laskin.py:13: in test_tulo\n    assert tulo(2, 4) == 8\nE   assert 0 == 8\nE    +  where 0 = tulo(2, 4)\n=========================== short test summary info ===========================\nFAILED tests/test_laskin.py::test_tulo - assert 0 == 8\n1 failed, 2 deselected in 0.12s"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Pieni esimerkki pysyi rajassa."
+        }
+      }
+    },
+    {
+      "sampleId": "tulo",
+      "epoch": 3,
+      "title": "tulo",
+      "input": "Laske 2 * 4. Vastaa pelkällä luvulla.",
+      "wallSeconds": 4.613,
+      "redFailed": true,
+      "scores": {
+        "subtask_done": {
+          "ok": true,
+          "explanation": "Toteutus merkittiin valmiiksi."
+        },
+        "reference_tests_pass": {
+          "ok": false,
+          "explanation": "         [100%]Running teardown with pytest sessionfinish...\n\n================================== FAILURES ===================================\n__________________________________ test_tulo __________________________________\ntests\\test_laskin.py:13: in test_tulo\n    assert tulo(2, 4) == 8\nE   assert 0 == 8\nE    +  where 0 = tulo(2, 4)\n=========================== short test summary info ===========================\nFAILED tests/test_laskin.py::test_tulo - assert 0 == 8\n1 failed, 2 deselected in 0.11s"
+        },
+        "process_budget": {
+          "ok": true,
+          "explanation": "Pieni esimerkki pysyi rajassa."
+        }
+      }
+    }
+  ]
+}

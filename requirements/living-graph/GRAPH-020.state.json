@@ -1,0 +1,32 @@
+{
+  "taskId": "GRAPH-020",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-09-16T20:09:59+00:00",
+  "updatedAt": "2026-09-16T20:11:24+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "GRAPH-020.1",
+      "title": "Callback calls incremental_update once",
+      "status": "DONE",
+      "summary": "Simulated one-shot callback. No real watcher. No HTML."
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

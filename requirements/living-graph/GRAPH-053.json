@@ -1,0 +1,79 @@
+{
+  "id": "GRAPH-053",
+  "type": "task",
+  "summary": "Force 2D simulation — 3D engine still drifts nodes in z",
+  "dependsOn": [
+    "GRAPH-052"
+  ],
+  "description": "Bug: pinning z to 0 is not enough. 3d-force-graph defaults to a 3-axis simulation, so nodes drift in depth again after a few ticks. The user still sees clusters popping forward/back (seasick). Call numDimensions(2) on the ForceGraph3D instance so the layout can only move in x and y.",
+  "scope": [
+    "Call numDimensions(2) on the ForceGraph3D instance in viewer.js",
+    "Keep dagMode('lr')",
+    "Keep graphData"
+  ],
+  "acceptanceCriteria": "viewer.js contains numDimensions(2).",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-054.",
+    "Do not add a watcher or CLI unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not remove dagMode.",
+    "Do not add npm or a bundler."
+  ],
+  "verification": [
+    "python -m pytest tests/test_camera_plane.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-053.1",
+      "title": "numDimensions(2)",
+      "summary": "2D force layout. File-content tests only. Problem is leftover 3-axis drift.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "viewer.js",
+        "module": "src/living_graph/static/viewer.js",
+        "test": "tests/test_camera_plane.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "src/living_graph/static/viewer.js",
+          "purpose": "GRAPH-052 z pin. Engine still simulates z unless numDimensions(2)."
+        }
+      ],
+      "scope": [
+        "Call numDimensions(2) on the ForceGraph3D instance in viewer.js",
+        "Keep dagMode('lr')",
+        "Keep graphData"
+      ],
+      "dataExamples": [
+        "numDimensions(2) appears in viewer.js.",
+        "Without this call, nodes leave the xy plane after simulation ticks."
+      ],
+      "businessRules": [
+        "Tests read JS as text. Do not use a browser.",
+        "Two dimensions means x and y only."
+      ],
+      "verification": [
+        "python -m pytest tests/test_camera_plane.py -q"
+      ],
+      "instructions": [
+        "Add an assertion for numDimensions(2) in tests/test_camera_plane.py.",
+        "Run python -m pytest tests/test_camera_plane.py -q and confirm failure.",
+        "Call numDimensions(2) in viewer.js.",
+        "Run python -m pytest tests/test_camera_plane.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/static/viewer.js"
+    ],
+    "businessRules": [
+      "Tests read JS as text. Do not use a browser.",
+      "Two dimensions means x and y only."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_camera_plane.py -q"
+    ]
+  }
+}

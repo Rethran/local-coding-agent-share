@@ -1,0 +1,32 @@
+{
+  "taskId": "GRAPH-039",
+  "status": "DONE",
+  "attempt": 1,
+  "startedAt": "2026-09-17T11:13:09+00:00",
+  "updatedAt": "2026-09-17T11:14:44+00:00",
+  "summary": "All subtasks completed by orchestrator.",
+  "filesTouched": [],
+  "blockers": [],
+  "verificationResult": null,
+  "lastFailureReason": null,
+  "lastRecoveryAction": null,
+  "changedFilesSinceAttemptStart": [],
+  "progressSummary": "",
+  "completedScopeItems": [],
+  "remainingScopeItems": [],
+  "verifiedBehaviors": [],
+  "partialFilesTouched": [],
+  "recommendedResumeStep": null,
+  "subtasks": [
+    {
+      "id": "GRAPH-039.1",
+      "title": "Map each node id to its highlight set",
+      "status": "DONE",
+      "summary": "Implementing highlight_payload in src/living_graph/query.py"
+    }
+  ],
+  "activeSubtaskId": null,
+  "preflightStatus": "READY",
+  "preflightBlockers": [],
+  "planSidecarPath": null
+}

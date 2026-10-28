@@ -1,0 +1,84 @@
+{
+  "id": "GRAPH-011",
+  "type": "task",
+  "summary": "Compute fan-in per node",
+  "dependsOn": [
+    "GRAPH-010"
+  ],
+  "description": "Count how many distinct callers each node has from a tiny fixed edge list. Do not compute fan-out in this task.",
+  "scope": [
+    "Add compute_fan_in(nodes, edges) in src/living_graph/metrics.py",
+    "Return nodes with fan_in set from distinct caller_id values",
+    "A node with no incoming edges has fan_in 0"
+  ],
+  "acceptanceCriteria": "For Open Application called by Happy Path and Another Case, fan_in is 2. Happy Path has fan_in 0.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-012.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not compute fan-out.",
+    "Do not detect cycles."
+  ],
+  "verification": [
+    "python -m pytest tests/test_fan_in.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-011.1",
+      "title": "Count distinct callers",
+      "summary": "fan_in only. Distinct caller_id values. No fan-out.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "compute_fan_in",
+        "module": "src/living_graph/metrics.py",
+        "test": "tests/test_fan_in.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "src/living_graph/model.py",
+          "purpose": "GRAPH-002 Node and Edge contracts."
+        },
+        {
+          "path": "docs/data-contracts.md",
+          "purpose": "Node and Edge contract source of truth."
+        }
+      ],
+      "scope": [
+        "Add compute_fan_in(nodes, edges) in src/living_graph/metrics.py",
+        "Return nodes with fan_in set from distinct caller_id values",
+        "A node with no incoming edges has fan_in 0"
+      ],
+      "dataExamples": [
+        "Edges: Happy Path -> Open Application, Another Case -> Open Application.",
+        "Open Application fan_in is 2.",
+        "Happy Path fan_in is 0."
+      ],
+      "businessRules": [
+        "fan_in counts distinct caller_id values, not duplicate rows.",
+        "Do not modify fan_out in this task."
+      ],
+      "verification": [
+        "python -m pytest tests/test_fan_in.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_fan_in.py first.",
+        "Run python -m pytest tests/test_fan_in.py -q and confirm failure.",
+        "Implement only compute_fan_in in src/living_graph/metrics.py.",
+        "Run python -m pytest tests/test_fan_in.py -q and stop when it passes."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/metrics.py"
+    ],
+    "businessRules": [
+      "fan_in counts distinct caller_id values, not duplicate rows.",
+      "Do not modify fan_out in this task."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_fan_in.py -q"
+    ]
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "id": "GRAPH-031",
+  "type": "task",
+  "summary": "Keep Python nodes as library_keyword after scan",
+  "dependsOn": [
+    "GRAPH-008",
+    "GRAPH-010",
+    "GRAPH-015"
+  ],
+  "description": "Nodes derived from a .py source_path must stay type library_keyword in the scanned graph. GRAPH-008 tagged the Python extractor, but nodes_from_edges currently marks those callers as test_case.",
+  "scope": [
+    "Change nodes_from_edges in src/living_graph/merge.py so .py source_path nodes use type library_keyword",
+    "Robot .robot/.resource callers stay test_case",
+    "scan_fixtures then open_session.type is library_keyword"
+  ],
+  "acceptanceCriteria": "After scan_fixtures('tests/fixtures'), tests/fixtures/simple_library.py::open_session has type library_keyword, not test_case.",
+  "constraints": [
+    "Strict TDD: write the failing test first and run it before implementation.",
+    "Do not implement GRAPH-032.",
+    "Do not add UI, watcher, or CLI code unless this task explicitly requires it.",
+    "Keep fixtures tiny (2-5 meaningful lines).",
+    "Do not change unresolved node type.",
+    "Do not mount a 3D canvas."
+  ],
+  "verification": [
+    "python -m pytest tests/test_scan_python_node_type.py tests/test_dedupe_nodes.py -q"
+  ],
+  "subtasks": [
+    {
+      "id": "GRAPH-031.1",
+      "title": "Tag .py nodes library_keyword in nodes_from_edges",
+      "summary": "Path suffix .py means library_keyword. Robot types stay as they are.",
+      "readLegacy": false,
+      "targetArtifacts": {
+        "function": "nodes_from_edges",
+        "module": "src/living_graph/merge.py",
+        "test": "tests/test_scan_python_node_type.py"
+      },
+      "relatedArtifacts": [
+        {
+          "path": "tests/fixtures/simple_library.py",
+          "purpose": "open_session calls connect in the same file."
+        },
+        {
+          "path": "src/living_graph/scan.py",
+          "purpose": "scan_fixtures builds nodes through nodes_from_edges."
+        }
+      ],
+      "scope": [
+        "Change nodes_from_edges in src/living_graph/merge.py so .py source_path nodes use type library_keyword",
+        "Robot .robot/.resource callers stay test_case",
+        "scan_fixtures then open_session.type is library_keyword"
+      ],
+      "dataExamples": [
+        "tests/fixtures/simple_library.py::open_session type is library_keyword.",
+        "tests/fixtures/simple_test.robot::Happy Path type stays test_case."
+      ],
+      "businessRules": [
+        "Decide type from source_path suffix.",
+        "Unresolved callees stay type unresolved.",
+        "Do not break GRAPH-010 dedupe tests."
+      ],
+      "verification": [
+        "python -m pytest tests/test_scan_python_node_type.py tests/test_dedupe_nodes.py -q"
+      ],
+      "instructions": [
+        "Write the failing test in tests/test_scan_python_node_type.py first.",
+        "Run python -m pytest tests/test_scan_python_node_type.py -q and confirm failure.",
+        "Implement only the .py type rule in nodes_from_edges.",
+        "Run python -m pytest tests/test_scan_python_node_type.py tests/test_dedupe_nodes.py -q and stop when they pass."
+      ]
+    }
+  ],
+  "implementationLogic": {
+    "targetModules": [
+      "src/living_graph/merge.py"
+    ],
+    "businessRules": [
+      "Decide type from source_path suffix.",
+      "Unresolved callees stay type unresolved.",
+      "Do not break GRAPH-010 dedupe tests."
+    ],
+    "verificationCommands": [
+      "python -m pytest tests/test_scan_python_node_type.py tests/test_dedupe_nodes.py -q"
+    ]
+  }
+}
