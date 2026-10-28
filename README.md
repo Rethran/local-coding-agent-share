@@ -11,7 +11,7 @@ active.
 Living Graph:
 
 ```powershell
-cd C:\Users\santt\Desktop\local-coding-agent
+cd C:\Users\{user}\Desktop\local-coding-agent
 $env:LOCAL_AGENT_PROFILE = "living-graph"
 python main.py --from GRAPH-001 --to GRAPH-003
 ```
